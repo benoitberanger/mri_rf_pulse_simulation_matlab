@@ -21,7 +21,7 @@ classdef sinc < mri_rf_pulse_sim.rf_pulse.base
 
             self.amplitude_modulation = sinc(self.time/lob_size); % base shape
             self.amplitude_modulation = self.amplitude_modulation / trapz(self.time, self.amplitude_modulation); % normalize integral
-            self.amplitude_modulation = self.amplitude_modulation * self.flip_angle / self.gamma; % scale integrale with flip angle
+            self.amplitude_modulation = self.amplitude_modulation * self.flip_angle * pi/180 / self.gamma; % scale integrale with flip angle
             self.frequency_modulation = zeros(size(self.time));
             self.gradient_modulation  = zeros(size(self.time));
         end

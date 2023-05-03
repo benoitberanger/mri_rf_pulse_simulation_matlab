@@ -28,14 +28,20 @@ classdef (Abstract) base < handle
             figure('NumberTitle','off','Name',obj_def{end});
 
             a(1) = subplot(6,1,[1 2]);
-            plot(a(1), self.time, self.amplitude_modulation)
-
+            plot(a(1), self.time * 1000, self.amplitude_modulation * 1e6)
+            a(1).XTickLabel = {};
+            a(1).YLabel.String = 'a.m. (µT)';
+            
             a(2) = subplot(6,1,[3 4]);
-            plot(a(2), self.time, self.frequency_modulation)
+            plot(a(2), self.time * 1000, self.frequency_modulation)
+            a(2).XTickLabel = {};
+            a(2).YLabel.String = 'f.m. (Hz)';
 
             a(3) = subplot(6,1,[5 6]);
-            plot(a(3), self.time, self.gradient_modulation)
-
+            plot(a(3), self.time * 1000, self.gradient_modulation * 1e3)
+            a(3).XLabel.String = 'time (ms)';
+            a(3).YLabel.String = 'g.m. (mT/m)';
+            
         end
 
         function set.n_points(self, value)
