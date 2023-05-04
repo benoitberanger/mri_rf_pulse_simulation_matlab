@@ -7,9 +7,11 @@ end
 
 switch nuclei
     case '1H'
-        value = 2*pi * 42.58 * 1e6;
+        mega_hertz_per_testla = 42.58;
     otherwise
         error('unknown nuclei')
 end
+
+value = 2*pi * mega_hertz_per_testla * 1e6;
 
 end % fcn
