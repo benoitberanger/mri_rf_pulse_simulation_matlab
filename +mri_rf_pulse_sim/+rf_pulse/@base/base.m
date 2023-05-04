@@ -16,6 +16,13 @@ classdef (Abstract) base < handle
 
     end % props
 
+    properties (GetAccess = public, SetAccess = protected)
+        
+        B1__max                                                            % [T]   max value of amplitude_modulation(t)
+        gz__max                                                            % [T/m] max value of  gradient_modulation(t)
+        
+    end % props
+
     methods (Access = public)
 
         function plot(self)
