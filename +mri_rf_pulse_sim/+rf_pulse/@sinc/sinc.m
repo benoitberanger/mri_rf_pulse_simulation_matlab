@@ -23,7 +23,7 @@ classdef sinc < mri_rf_pulse_sim.rf_pulse.base
             self.amplitude_modulation = self.amplitude_modulation * deg2rad(self.flip_angle) / self.gamma; % scale integrale with flip angle
             self.frequency_modulation = zeros(size(self.time));
             self.gradient_modulation  = ones(size(self.time)) * self.gz;
-            
+
             self.B1__max = max(self.amplitude_modulation);
             self.gz__max = self.gz;
         end % fcn
