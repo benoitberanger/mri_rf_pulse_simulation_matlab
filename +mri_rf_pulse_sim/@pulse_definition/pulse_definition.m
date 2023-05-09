@@ -8,6 +8,8 @@ classdef pulse_definition < handle
     
     properties (GetAccess = public,  SetAccess = ?mri_rf_pulse_sim.app)
         
+        rf_pulse mri_rf_pulse_sim.rf_pulse.sinc
+        
         app mri_rf_pulse_sim.app
         fig matlab.ui.Figure
         
@@ -73,8 +75,8 @@ classdef pulse_definition < handle
                 'Style','listbox',...
                 'Units','Normalized',...
                 'Position',[0 0 1 1],...
-                'String',mri_rf_pulse_sim.get_list_rf_pulse);
-            
+                'String',mri_rf_pulse_sim.get_list_rf_pulse());
+                        
             % IMPORTANT
             guidata(figHandle,handles)
             % After creating the figure, dont forget the line
@@ -87,6 +89,22 @@ classdef pulse_definition < handle
                 varargout{1} = self;
             end
             
+            % initialize with default values
+            self.set_rf_pulse('sinc');
+
+            
+        end % fcn
+        
+        function set_rf_pulse(self, pulse)
+            switch class(pulse)
+                case 'char'
+                    self.rf_pulse = eval(sprintf('mri_rf_pulse_sim.rf_pulse.%s', pulse));
+                otherwise
+                    self.rf_pulse = pulse;
+            end
+            
+            handles = guidata(self.fig);
+            self.rf_pulse.plot(handles.uipanel_plot);
         end % fcn
         
     end % meths

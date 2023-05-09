@@ -25,23 +25,24 @@ classdef base < handle
 
     methods (Access = public)
 
-        function plot(self)
+        function plot(self, container)
             self.assert_nonempty_prop({'time', 'amplitude_modulation', 'frequency_modulation', 'gradient_modulation'})
-
-            obj_def = strsplit(class(self), '.');
-            figure('NumberTitle','off','Name',obj_def{end});
-
-            a(1) = subplot(6,1,[1 2]);
+            
+            if ~exist('container','var')
+                container = figure('NumberTitle','off','Name',self.summary());
+            end
+            
+            a(1) = subplot(6,1,[1 2],'Parent',container);
             plot(a(1), self.time*1e3, self.amplitude_modulation*1e6)
             a(1).XTickLabel = {};
             a(1).YLabel.String = 'a.m. (µT)';
 
-            a(2) = subplot(6,1,[3 4]);
+            a(2) = subplot(6,1,[3 4],'Parent',container);
             plot(a(2), self.time*1e3, self.frequency_modulation)
             a(2).XTickLabel = {};
             a(2).YLabel.String = 'f.m. (Hz)';
 
-            a(3) = subplot(6,1,[5 6]);
+            a(3) = subplot(6,1,[5 6],'Parent',container);
             plot(a(3), self.time*1e3, self.gradient_modulation*1e3)
             a(3).XLabel.String = 'time (ms)';
             a(3).YLabel.String = 'g.m. (mT/m)';

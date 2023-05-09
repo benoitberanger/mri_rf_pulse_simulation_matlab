@@ -1,9 +1,7 @@
 classdef app < handle
     
     properties (GetAccess = public,  SetAccess = public)
-        
-        rf_pulse     mri_rf_pulse_sim.rf_pulse.base
-        
+                
     end % props
     
     properties (GetAccess = public,  SetAccess = protected)
