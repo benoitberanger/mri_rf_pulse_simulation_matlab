@@ -1,42 +1,90 @@
 classdef sinc < mri_rf_pulse_sim.rf_pulse.base
-    
+
     properties (GetAccess = public, SetAccess = public)
-        
+
         n_lobs     (1,1) double {mustBePositive, mustBeInteger}            =  7         % [] number of lobs, from 1 to +Inf
         flip_angle (1,1) double {mustBePositive}                           = 90         % [deg] flip angle
         gz         (1,1) double                                            = 10 * 1e-3  % [T/m] slice/slab selection gradient
-        
+
     end % props
-    
-    
+
+
     methods (Access = public)
-        
+
         function self = sinc()
             self.generate();
         end % fcn
-        
+
         function generate(self)
             self.assert_nonempty_prop({'n_points', 'duration', 'n_lobs'})
-            
+
             self.time = linspace(-self.duration/2, +self.duration/2, self.n_points);
-            
+
             lob_size = self.duration / (2*self.n_lobs);
-            
+
             self.amplitude_modulation = sinc(self.time/lob_size); % base shape
             self.amplitude_modulation = self.amplitude_modulation / trapz(self.time, self.amplitude_modulation); % normalize integral
             self.amplitude_modulation = self.amplitude_modulation * deg2rad(self.flip_angle) / self.gamma; % scale integrale with flip angle
             self.frequency_modulation = zeros(size(self.time));
             self.gradient_modulation  = ones(size(self.time)) * self.gz;
-            
+
             self.B1__max = max(self.amplitude_modulation);
             self.gz__max = self.gz;
         end % fcn
-        
+
         function txt = summary(self)
             txt = sprintf('sinc : n_lobs=%d  flip_angle=%d°  gz=%gmT/m',...
                 self.n_lobs, self.flip_angle, self.gz*1e3);
         end % fcn
-        
+
+        function init_specific_gui(self, container)
+            handles = guidata(container);
+
+            handles.text_gz = uicontrol(container,...
+                'Style','text',...
+                'String','gz (mT/m) = ',...
+                'Units','normalized',...
+                'BackgroundColor',handles.figureBGcolor,...
+                'Position',[0 0 0.3 0.33]);
+
+            handles.text_flip_angle = uicontrol(container,...
+                'Style','text',...
+                'String','flip angle (°) = ',...
+                'Units','normalized',...
+                'BackgroundColor',handles.figureBGcolor,...
+                'Position',[0 0.33 0.3 0.33]);
+
+            handles.text_n_lobs = uicontrol(container,...
+                'Style','text',...
+                'String','n_lobs = ',...
+                'Units','normalized',...
+                'BackgroundColor',handles.figureBGcolor,...
+                'Position',[0 0.66 0.3 0.33]);
+
+            handles.edit_gz = uicontrol(container,...
+                'Style','edit',...
+                'String',num2str(self.gz * 1e3),...
+                'Units','normalized',...
+                'BackgroundColor',handles.editBGcolor,...
+                'Position',[0.3 0 0.7 0.33]);
+
+            handles.edit_flip_angle = uicontrol(container,...
+                'Style','edit',...
+                'String',num2str(self.flip_angle),...
+                'Units','normalized',...
+                'BackgroundColor',handles.editBGcolor,...
+                'Position',[0.3 0.33 0.7 0.33]);
+
+            handles.edit_n_lobs = uicontrol(container,...
+                'Style','edit',...
+                'String',num2str(self.n_lobs),...
+                'Units','normalized',...
+                'BackgroundColor',handles.editBGcolor,...
+                'Position',[0.3 0.66 0.7 0.33]);
+
+            guidata(handles.fig, handles);
+        end % fcn
+
     end % meths
-    
+
 end % class

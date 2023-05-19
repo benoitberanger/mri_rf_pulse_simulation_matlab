@@ -105,6 +105,8 @@ classdef pulse_definition < handle
             % initialize with default values
             self.set_rf_pulse('sinc');
             self.rf_pulse.init_base_gui(handles.uipanel_settings_base);
+            self.rf_pulse.init_specific_gui(handles.uipanel_settings_specific);
+            self.rf_pulse.plot(handles.uipanel_plot);
 
         end % fcn
 
@@ -115,9 +117,6 @@ classdef pulse_definition < handle
                 otherwise
                     self.rf_pulse = pulse;
             end
-
-            handles = guidata(self.fig);
-            self.rf_pulse.plot(handles.uipanel_plot);
         end % fcn
 
     end % meths
