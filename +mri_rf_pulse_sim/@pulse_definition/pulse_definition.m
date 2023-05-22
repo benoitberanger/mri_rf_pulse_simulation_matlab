@@ -1,11 +1,5 @@
 classdef pulse_definition < handle
 
-    properties (GetAccess = public,  SetAccess = public)
-
-
-
-    end % props
-
     properties (GetAccess = public,  SetAccess = ?mri_rf_pulse_sim.app)
 
         rf_pulse mri_rf_pulse_sim.rf_pulse.sinc
@@ -104,7 +98,7 @@ classdef pulse_definition < handle
 
             % initialize with default values
             self.set_rf_pulse('sinc');
-            self.rf_pulse.init_base_gui(handles.uipanel_settings_base);
+            self.rf_pulse.init_base_gui    (handles.uipanel_settings_base    );
             self.rf_pulse.init_specific_gui(handles.uipanel_settings_specific);
             self.rf_pulse.plot(handles.uipanel_plot);
 

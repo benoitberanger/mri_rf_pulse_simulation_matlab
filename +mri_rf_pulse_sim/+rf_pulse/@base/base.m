@@ -1,12 +1,11 @@
 classdef base < handle
 
-    properties (GetAccess = public, SetAccess = public)
+    properties (GetAccess = public, SetAccess = public, SetObservable = true)
 
         n_points              (1,1) double {mustBePositive, mustBeInteger} = 512                               % []  number of points defining the pulse
         duration              (1,1) double {mustBePositive}                =   5 * 1e-3                        % [s] pulse duration
 
         time                  (1,:) double                                                                     % [ms] time vector
-
         amplitude_modulation  (1,:) double                                                                     % [T]
         frequency_modulation  (1,:) double                                                                     % [Hz]
         gradient_modulation   (1,:) double                                                                     % [T/m]
@@ -17,21 +16,24 @@ classdef base < handle
     end % props
 
     properties (GetAccess = public, SetAccess = protected)
-
         B1__max                                                            % [T]   max value of amplitude_modulation(t)
         gz__max                                                            % [T/m] max value of  gradient_modulation(t)
+    end % props
 
+    properties (GetAccess = public, SetAccess = protected, Hidden)
+        ui__n_points matlab.ui.control.UIControl                           % pointer to the GUI object
+        ui__duration matlab.ui.control.UIControl                           % pointer to the GUI object
     end % props
 
     methods (Access = public)
 
         function plot(self, container)
             self.assert_nonempty_prop({'time', 'amplitude_modulation', 'frequency_modulation', 'gradient_modulation'})
-            
+
             if ~exist('container','var')
                 container = figure('NumberTitle','off','Name',self.summary());
             end
-            
+
             a(1) = subplot(6,1,[1 2],'Parent',container);
             plot(a(1), self.time*1e3, self.amplitude_modulation*1e6)
             a(1).XTickLabel = {};
@@ -48,6 +50,32 @@ classdef base < handle
             a(3).YLabel.String = 'g.m. (mT/m)';
         end
 
+    end % meths
+
+    methods (Access = protected)
+
+        function assert_nonempty_prop(self, prop_list)
+            assert(ischar(prop_list) || iscellstr(prop_list)) %#ok<ISCLSTR>
+            prop_list = cellstr(prop_list); % force cellstr
+            for p = 1 : numel(prop_list)
+                assert( ~isempty(self.(prop_list{p})), 'empty %s', prop_list{p} )
+            end
+        end % fcn
+
+        function callback_update_value(self, src, ~)
+            res = strsplit(src.Tag,'__');
+            prop_name = res{2};
+            prev_value = self.(prop_name);
+            try
+                self.(prop_name) = str2double(src.String) * src.UserData;
+            catch
+                src.String = num2str(prev_value * 1/src.UserData);
+            end
+        end % fcn
+
+    end % meths
+
+    methods (Access = {?mri_rf_pulse_sim.pulse_definition})
         function init_base_gui(self, container)
             handles = guidata(container);
 
@@ -65,36 +93,54 @@ classdef base < handle
                 'BackgroundColor',handles.figureBGcolor,...
                 'Position',[0 0.5 0.3 0.5]);
 
-            handles.edit_duration = uicontrol(container,...
+            name = 'edit__duration';
+            handles.(name) = uicontrol(container,...
+                'Tag',name,...
                 'Style','edit',...
                 'String',num2str(self.duration * 1e3),...
                 'Units','normalized',...
                 'BackgroundColor',handles.editBGcolor,...
-                'Position',[0.3 0 0.7 0.5]);
+                'Position',[0.3 0 0.7 0.5],...
+                'Callback',@self.callback_update_value,...
+                'UserData',1e-3); % scaling factor GUI -> SI units
+            self.ui__duration = handles.(name);
 
-            handles.edit_n_points = uicontrol(container,...
+            name = 'edit__n_points';
+            handles.(name) = uicontrol(container,...
+                'Tag',name,...
                 'Style','edit',...
                 'String',num2str(self.n_points),...
                 'Units','normalized',...
                 'BackgroundColor',handles.editBGcolor,...
-                'Position',[0.3 0.5 0.7 0.5]);
+                'Position',[0.3 0.5 0.7 0.5],...
+                'Callback',@self.callback_update_value,...
+                'UserData',1); % scaling factor GUI -> SI units
+            self.ui__n_points = handles.(name);
+
+            addlistener(self, 'duration', 'PostSet', @mri_rf_pulse_sim.rf_pulse.base.gui_prop_changed);
+            addlistener(self, 'n_points', 'PostSet', @mri_rf_pulse_sim.rf_pulse.base.gui_prop_changed);
 
             guidata(handles.fig, handles);
         end
 
-
     end % meths
 
-    methods (Access = protected)
+    methods (Static, Access = protected)
 
-        function assert_nonempty_prop(self, prop_list)
-            assert(ischar(prop_list) || iscellstr(prop_list)) %#ok<ISCLSTR>
-
-            prop_list = cellstr(prop_list); % force cellstr
-
-            for p = 1 : numel(prop_list)
-                assert( ~isempty(self.(prop_list{p})), 'empty %s', prop_list{p} )
-            end
+        function gui_prop_changed(metaProp, eventData)
+            % This method is called when the property is Set. It can be
+            % from the command line, from a script, from a function...
+            % It triggers the re-generation of the pulse, and a GUI update.
+            % It also happens when the value is modified in the GUI : this
+            % is useless, but it's a neglictable overhead for the moment.
+            prop_name      = metaProp.Name;
+            rf_pulse       = eventData.AffectedObject;
+            new_value      = rf_pulse.(prop_name);
+            gui_obj        = rf_pulse.(sprintf('ui__%s', prop_name));
+            gui_obj.String = num2str(new_value * 1/gui_obj.UserData);
+            handles        = guidata(gui_obj);
+            rf_pulse.generate();
+            rf_pulse.plot(handles.uipanel_plot);
         end % fcn
 
     end % meths
