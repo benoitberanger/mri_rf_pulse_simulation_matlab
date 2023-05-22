@@ -77,12 +77,13 @@ classdef base < handle
             end
         end % fcn
 
-        % 'wrapper' to add several observable properties in the GUI
+        % add several observable properties in the GUI
         function handles = add_synced_props(self, container, handles, list)
             n_props = size(list, 1);
+            list = flipud(list);
             spacing = 1/n_props;
 
-            for p = n_props : -1 : 1
+            for p = 1 : n_props
                 prop  = list{p,1};
                 txt   = list{p,2};
                 scale = list{p,3};
