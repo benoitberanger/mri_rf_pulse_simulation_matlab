@@ -2,9 +2,9 @@ classdef simulation_parameters < handle
 
     properties(GetAccess = public, SetAccess = public, SetObservable)
 
-        dZ__min  (1,1) double {mustBeFinite} = -30 * 1e-3                  % [m] slice (spin) position minimum
-        dZ__max  (1,1) double {mustBeFinite} = +30 * 1e-3                  % [m] slice (spin) position maximum
-        dZ__N    (1,1) double {mustBeFinite} =  61                         % [] number of slice positons
+        dZ__min  (1,1) double {mustBeFinite} = -10 * 1e-3                  % [m] slice (spin) position minimum
+        dZ__max  (1,1) double {mustBeFinite} = +10 * 1e-3                  % [m] slice (spin) position maximum
+        dZ__N    (1,1) double {mustBeFinite} = 101                         % [] number of slice positons
         dB0__min (1,1) double {mustBeFinite} =   0                         % [ppm] off-resonance minimum
         dB0__max (1,1) double {mustBeFinite} =   0                         % [ppm] off-resonance maximum
         dB0__N   (1,1) double {mustBeFinite} =   1                         % [] number of off-resonances

@@ -57,10 +57,22 @@ classdef simulation_results < handle
                 'BackgroundColor',figureBGcolor);
 
             handles.axes_Mxyz = axes(handles.uipanel_Mxyz);
-            plot(handles.axes_Mxyz, 0, [0;0;0])
+            plot(handles.axes_Mxyz, 0, [0;0;0]) % need to 'plot' something, to set other parameters
             handles.axes_Mxyz.XLabel.String = 'time (ms)';
             handles.axes_Mxyz.YLabel.String = 'Mxyz';
             legend(handles.axes_Mxyz, {'Mx', 'Mz', 'Mz'})
+
+            handles.uipanel_SliceProfile = uipanel(figHandle,...
+                'Title','SliceProfile(dZ)',...
+                'Units','Normalized',...
+                'Position',[0 0 1 0.5],...
+                'BackgroundColor',figureBGcolor);
+
+            handles.axes_SliceProfile = axes(handles.uipanel_SliceProfile);
+            plot(handles.axes_SliceProfile, 0, [0;0;0])
+            handles.axes_SliceProfile.XLabel.String = 'dZ (mm)';
+            handles.axes_SliceProfile.YLabel.String = 'final Mxyz';
+            legend(handles.axes_SliceProfile, {'final Mx', 'final My', 'final Mz'})
 
             % IMPORTANT
             guidata(figHandle,handles)
