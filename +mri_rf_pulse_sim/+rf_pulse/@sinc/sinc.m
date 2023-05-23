@@ -4,7 +4,7 @@ classdef sinc < mri_rf_pulse_sim.rf_pulse.base
 
         n_lobs     (1,1) double {mustBePositive, mustBeInteger}            =  7         % [] number of lobs, from 1 to +Inf
         flip_angle (1,1) double {mustBePositive}                           = 90         % [deg] flip angle
-        gz         (1,1) double                                            = 10 * 1e-3  % [T/m] slice/slab selection gradient
+        gz         (1,1) double {mustBeFinite}                             = 10 * 1e-3  % [T/m] slice/slab selection gradient
 
     end % props
 

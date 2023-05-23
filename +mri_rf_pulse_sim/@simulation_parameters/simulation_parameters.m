@@ -2,8 +2,19 @@ classdef simulation_parameters < handle
 
     properties(GetAccess = public, SetAccess = public, SetObservable)
 
-        dZ  (1,:) double  = linspace(-30,+30,61) * 1e-3                    % [m] slice (spin) position
-        dB0 (1,:) double  = 0                                              % [ppm] off-resonance
+        dZ__min  (1,1) double {mustBeFinite} = -30 * 1e-3                  % [m] slice (spin) position minimum
+        dZ__max  (1,1) double {mustBeFinite} = +30 * 1e-3                  % [m] slice (spin) position maximum
+        dZ__N    (1,1) double {mustBeFinite} =  61                         % [] number of slice positons
+        dB0__min (1,1) double {mustBeFinite} =   0                         % [ppm] off-resonance minimum
+        dB0__max (1,1) double {mustBeFinite} =   0                         % [ppm] off-resonance maximum
+        dB0__N   (1,1) double {mustBeFinite} =   1                         % [] number of off-resonances
+
+    end % props
+
+    properties(GetAccess = public, SetAccess = protected, Dependent)
+
+        dZ  (1,:) double                                                   % [m] slice (spin) position vector
+        dB0 (1,:) double                                                   % [ppm] off-resonance vector
 
     end % props
 
@@ -13,6 +24,15 @@ classdef simulation_parameters < handle
         fig matlab.ui.Figure
 
     end % props
+
+    methods % for Dependent properties
+        function value = get.dZ(self)
+            value = linspace(self.dZ__min, self.dZ__max, self.dZ__N);
+        end
+        function value = get.dB0(self)
+            value = linspace(self.dB0__min, self.dB0__max, self.dB0__N);
+        end
+    end % meths
 
     methods (Access = public)
 
@@ -89,24 +109,23 @@ classdef simulation_parameters < handle
     methods(Access = protected)
 
         function handles = add_gui_ranged_parameters(self, prop, scale, container, handles)
-            fields      = {'min'            'max'             'N'                 };
-            init_values = [ min(self.(prop)) max(self.(prop)) length(self.(prop)) ];
-            scales      = [ scale            scale            1                   ];
+            fields      = {'min'            'max'             'N'};
+            scales      = [ scale            scale             1 ];
 
             spacing = 1/length(fields);
 
             for f = 1 : length(fields)
                 field = fields{f};
 
-                name = sprintf('edit_%s',field);
+                name = sprintf('edit__%s__%s',prop,field);
                 handles.(name) = uicontrol(container,...
                     'Tag',name,...
                     'Style','edit',...
-                    'String',init_values(f) / scales(f),...
+                    'String',num2str(self.(sprintf('%s__%s',prop,field)) / scales(f)),...
                     'Units','normalized',...
                     'BackgroundColor',handles.editBGcolor,...
                     'Position',[(f-1)*spacing 0 spacing 0.6],...
-                    'Callback',@(varargin) disp(name),...
+                    'Callback',@self.callback_update_value,...
                     'UserData',scales(f)...
                     );
 
@@ -116,6 +135,19 @@ classdef simulation_parameters < handle
                     'Units','normalized',...
                     'BackgroundColor',handles.figureBGcolor,...
                     'Position',[(f-1)*spacing 0.6 spacing 0.1]);
+            end
+        end % fcn
+
+        % gui callback to propagate the fresh value to the underlying
+        % object in the app
+        function callback_update_value(self, src, ~)
+            res = strsplit(src.Tag,'__');
+            prop_name = [res{2} '__' res{3}];
+            prev_value = self.(prop_name);
+            try
+                self.(prop_name) = str2double(src.String) * src.UserData;
+            catch
+                src.String = num2str(prev_value * 1/src.UserData);
             end
         end % fcn
 
