@@ -32,10 +32,8 @@ classdef simulation_parameters < handle
     end % props
 
     properties(GetAccess = public, SetAccess = ?mri_rf_pulse_sim.app)
-
         app mri_rf_pulse_sim.app
         fig matlab.ui.Figure
-
     end % props
 
     methods % for Dependent properties
@@ -126,7 +124,7 @@ classdef simulation_parameters < handle
                 'Position',[0 0.9 0.5 0.1],...
                 'Callback',@self.callback_auto_simplot);
             self.ui__auto_simplot = handles.checkbox_auto_simplot;
-            addlistener(self, 'auto_simplot', 'PostSet', @mri_rf_pulse_sim.simulation_parameters.gui_prop_changed);
+            addlistener(self, 'auto_simplot', 'PostSet', @self.gui_prop_changed);
 
             % IMPORTANT
             guidata(figHandle,handles)
@@ -178,7 +176,7 @@ classdef simulation_parameters < handle
                     );
                 self.(sprintf('ui__%s', name)) = handles.(uiname);
 
-                addlistener(self, name, 'PostSet', @mri_rf_pulse_sim.simulation_parameters.gui_prop_changed);
+                addlistener(self, name, 'PostSet', @self.gui_prop_changed);
             end
         end % fcn
 
@@ -197,18 +195,17 @@ classdef simulation_parameters < handle
 
         function callback_auto_simplot(self, src, ~)
             self.auto_simplot = src.Value;
+            if self.auto_simplot
+                self.app.simplot();
+            end
         end % fcn
-
-    end % meths
-
-    methods (Static, Access = protected)
 
         % This method is called when the property is Set. It can be
         % from the command line, from a script, from a function...
         % It triggers the re-generation of the pulse, and a GUI update.
         % It also happens when the value is modified in the GUI : this
         % is useless, but it's a neglictable overhead for the moment.
-        function gui_prop_changed(metaProp, eventData)
+        function gui_prop_changed(self, metaProp, eventData)
             prop_name      = metaProp.Name;
             sim            = eventData.AffectedObject;
             new_value      = sim.(prop_name);
@@ -220,7 +217,10 @@ classdef simulation_parameters < handle
                     gui_obj.Value = new_value;
                 otherwise
                     error('sync not coded yet')
-            end % switch 
+            end % switch
+            if self.app.simulation_parameters.auto_simplot
+                self.app.simplot();
+            end
         end % fcn
 
     end % meths

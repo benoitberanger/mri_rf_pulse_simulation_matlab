@@ -21,8 +21,12 @@ classdef base < handle
     end % props
 
     properties (GetAccess = public, SetAccess = protected, Hidden)
-        ui__n_points matlab.ui.control.UIControl                           % pointer to the GUI object
-        ui__duration matlab.ui.control.UIControl                           % pointer to the GUI object
+        ui__n_points matlab.ui.control.UIControl                          % pointer to the GUI object
+        ui__duration matlab.ui.control.UIControl                          % pointer to the GUI object
+    end % props
+
+    properties(GetAccess = public, SetAccess = {?mri_rf_pulse_sim.app})
+        app mri_rf_pulse_sim.app
     end % props
 
     methods (Access = public)
@@ -145,6 +149,10 @@ classdef base < handle
             handles        = guidata(gui_obj);
             rf_pulse.generate();
             rf_pulse.plot(handles.uipanel_plot);
+            drawnow();
+            if rf_pulse.app.simulation_parameters.auto_simplot
+                rf_pulse.app.simplot();
+            end
         end % fcn
 
     end % meths
