@@ -56,6 +56,9 @@ classdef simulation_results < handle
 
             handles.axes_Mxyz = axes(handles.uipanel_Mxyz);
             plot(handles.axes_Mxyz, 0, [0;0;0]) % need to 'plot' something, to set other parameters
+            handles.axes_Mxyz.Children(3).Color = [230 030 030]/255;
+            handles.axes_Mxyz.Children(2).Color = [030 170 230]/255;
+            handles.axes_Mxyz.Children(1).Color = [030 230 030]/255;
             handles.axes_Mxyz.XLabel.String = 'time (ms)';
             handles.axes_Mxyz.YLabel.String = 'Mxyz';
             legend(handles.axes_Mxyz, {'Mx', 'My', 'Mz'})
@@ -67,10 +70,12 @@ classdef simulation_results < handle
                 'BackgroundColor',figureBGcolor);
 
             handles.axes_SliceProfile = axes(handles.uipanel_SliceProfile);
-            plot(handles.axes_SliceProfile, 0, [0;0;0])
+            plot(handles.axes_SliceProfile, 0, [0;0])
+            handles.axes_SliceProfile.Children(2).Color = [230 030 210]/255;
+            handles.axes_SliceProfile.Children(1).Color = [030 230 030]/255;
             handles.axes_SliceProfile.XLabel.String = 'dZ (mm)';
             handles.axes_SliceProfile.YLabel.String = 'final Mxyz';
-            legend(handles.axes_SliceProfile, {'final Mx', 'final My', 'final Mz'})
+            legend(handles.axes_SliceProfile, {'M\mid\mid', 'M\perp'})
 
             % IMPORTANT
             guidata(figHandle,handles)
