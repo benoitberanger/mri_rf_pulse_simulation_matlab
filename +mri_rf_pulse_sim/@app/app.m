@@ -14,6 +14,8 @@ classdef app < handle
         function self = app(varargin)
             if ~nargin
                 self.open_gui();
+                drawnow();
+                self.simplot();
             end
         end % fcn
 
@@ -58,6 +60,11 @@ classdef app < handle
                 'XData', self.simulation_parameters.dZ * 1e3,...
                 'YData', self.simulation_results.M(3,end,:,middle_dB0_idx));
 
+        end % fcn
+
+        function simplot(self)
+            self.simulate();
+            self.plot();
         end % fcn
 
     end % meths

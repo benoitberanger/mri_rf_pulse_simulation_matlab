@@ -9,6 +9,8 @@ classdef simulation_parameters < handle
         dB0__max (1,1) double {mustBeFinite} =   0                         % [ppm] off-resonance maximum
         dB0__N   (1,1) double {mustBeFinite} =   1                         % [] number of off-resonances
 
+        auto_simplot (1,1) logical = true                                  % state of the GUI checkbox
+
     end % props
 
     properties(GetAccess = public, SetAccess = public, Dependent)
@@ -19,12 +21,14 @@ classdef simulation_parameters < handle
     end % props
 
     properties (GetAccess = public, SetAccess = protected, Hidden)
-        ui__dZ__min  matlab.ui.control.UIControl                           % pointer to the GUI object
-        ui__dZ__max  matlab.ui.control.UIControl                           % pointer to the GUI object
-        ui__dZ__N    matlab.ui.control.UIControl                           % pointer to the GUI object
-        ui__dB0__min matlab.ui.control.UIControl                           % pointer to the GUI object
-        ui__dB0__max matlab.ui.control.UIControl                           % pointer to the GUI object
-        ui__dB0__N   matlab.ui.control.UIControl                           % pointer to the GUI object
+        ui__dZ__min      matlab.ui.control.UIControl                       % pointer to the GUI object
+        ui__dZ__max      matlab.ui.control.UIControl                       % pointer to the GUI object
+        ui__dZ__N        matlab.ui.control.UIControl                       % pointer to the GUI object
+        ui__dB0__min     matlab.ui.control.UIControl                       % pointer to the GUI object
+        ui__dB0__max     matlab.ui.control.UIControl                       % pointer to the GUI object
+        ui__dB0__N       matlab.ui.control.UIControl                       % pointer to the GUI object
+
+        ui__auto_simplot matlab.ui.control.UIControl                       % pointer to the GUI object
     end % props
 
     properties(GetAccess = public, SetAccess = ?mri_rf_pulse_sim.app)
@@ -95,17 +99,34 @@ classdef simulation_parameters < handle
             handles.uipanel_dB0 = uipanel(figHandle,...
                 'Title','dB0 [ppm] : off-resonance',...
                 'Units','Normalized',...
-                'Position',[0 0 1 0.5],...
+                'Position',[0 0 1 0.2],...
                 'BackgroundColor',figureBGcolor);
 
             handles.uipanel_dZ = uipanel(figHandle,...
                 'Title','dZ [mm] : slice (spin) position',...
                 'Units','Normalized',...
-                'Position',[0 0.5 1 0.5],...
+                'Position',[0 0.2 1 0.2],...
                 'BackgroundColor',figureBGcolor);
 
             handles = self.add_gui_ranged_parameters('dZ' , 1e-3, handles.uipanel_dZ , handles);
             handles = self.add_gui_ranged_parameters('dB0', 1   , handles.uipanel_dB0, handles);
+
+            handles.uipanel_controls = uipanel(figHandle,...
+                'Title','Controls',...
+                'Units','Normalized',...
+                'Position',[0 0.4 1 0.6],...
+                'BackgroundColor',figureBGcolor);
+
+            handles.checkbox_auto_simplot = uicontrol(handles.uipanel_controls,...
+                'Style','checkbox',...,
+                'BackgroundColor',handles.figureBGcolor,...
+                'Value',true,...
+                'String','auto sim+plot',...
+                'Units','normalized',...
+                'Position',[0 0.9 0.5 0.1],...
+                'Callback',@self.callback_auto_simplot);
+            self.ui__auto_simplot = handles.checkbox_auto_simplot;
+            addlistener(self, 'auto_simplot', 'PostSet', @mri_rf_pulse_sim.simulation_parameters.gui_prop_changed);
 
             % IMPORTANT
             guidata(figHandle,handles)
@@ -141,7 +162,7 @@ classdef simulation_parameters < handle
                     'String',field,...
                     'Units','normalized',...
                     'BackgroundColor',handles.figureBGcolor,...
-                    'Position',[(f-1)*spacing 0.6 spacing 0.1]);
+                    'Position',[(f-1)*spacing 0.6 spacing 0.4]);
 
                 name = sprintf('%s__%s',prop,field);
                 uiname = sprintf('edit__%s',name);
@@ -174,6 +195,10 @@ classdef simulation_parameters < handle
             end
         end % fcn
 
+        function callback_auto_simplot(self, src, ~)
+            self.auto_simplot = src.Value;
+        end % fcn
+
     end % meths
 
     methods (Static, Access = protected)
@@ -188,7 +213,14 @@ classdef simulation_parameters < handle
             sim            = eventData.AffectedObject;
             new_value      = sim.(prop_name);
             gui_obj        = sim.(sprintf('ui__%s', prop_name));
-            gui_obj.String = num2str(new_value * 1/gui_obj.UserData);
+            switch gui_obj.Style
+                case 'edit'
+                    gui_obj.String = num2str(new_value * 1/gui_obj.UserData);
+                case 'checkbox'
+                    gui_obj.Value = new_value;
+                otherwise
+                    error('sync not coded yet')
+            end % switch 
         end % fcn
 
     end % meths
