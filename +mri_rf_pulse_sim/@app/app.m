@@ -1,13 +1,9 @@
 classdef app < handle
 
-    properties (GetAccess = public,  SetAccess = public)
-
-    end % props
-
     properties (GetAccess = public,  SetAccess = protected)
 
-        pulse_definition mri_rf_pulse_sim.pulse_definition
-        simpar   struct
+        pulse_definition      mri_rf_pulse_sim.pulse_definition
+        simulation_parameters mri_rf_pulse_sim.simulation_parameters
         simres   struct
 
     end % props
@@ -28,8 +24,11 @@ classdef app < handle
     methods (Access = protected)
 
         function open_gui(self)
-            self.pulse_definition     = mri_rf_pulse_sim.pulse_definition('open_gui');
+            self.pulse_definition = mri_rf_pulse_sim.pulse_definition('open_gui');
             self.pulse_definition.app = self;
+
+            self.simulation_parameters = mri_rf_pulse_sim.simulation_parameters('open_gui');
+            self.simulation_parameters.app = self;
         end % fcn
 
     end % meths

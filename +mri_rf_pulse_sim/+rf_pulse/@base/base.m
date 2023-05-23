@@ -5,7 +5,7 @@ classdef base < handle
         n_points              (1,1) double {mustBePositive, mustBeInteger} = 512                               % []  number of points defining the pulse
         duration              (1,1) double {mustBePositive}                =   5 * 1e-3                        % [s] pulse duration
 
-        time                  (1,:) double                                                                     % [ms] time vector
+        time                  (1,:) double                                                                     % [s] time vector
         amplitude_modulation  (1,:) double                                                                     % [T]
         frequency_modulation  (1,:) double                                                                     % [Hz]
         gradient_modulation   (1,:) double                                                                     % [T/m]
