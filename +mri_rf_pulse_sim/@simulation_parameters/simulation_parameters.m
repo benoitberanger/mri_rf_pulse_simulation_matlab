@@ -47,6 +47,7 @@ classdef simulation_parameters < handle
             self.dZ__N   = length(value);
         end
         function set.dB0(self,value)
+            self.dB0__min =    min(value);
             self.dB0__max =    max(value);
             self.dB0__N   = length(value);
         end
