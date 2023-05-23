@@ -11,11 +11,20 @@ classdef simulation_parameters < handle
 
     end % props
 
-    properties(GetAccess = public, SetAccess = protected, Dependent)
+    properties(GetAccess = public, SetAccess = public, Dependent)
 
         dZ  (1,:) double                                                   % [m] slice (spin) position vector
         dB0 (1,:) double                                                   % [ppm] off-resonance vector
 
+    end % props
+
+    properties (GetAccess = public, SetAccess = protected, Hidden)
+        ui__dZ__min  matlab.ui.control.UIControl                           % pointer to the GUI object
+        ui__dZ__max  matlab.ui.control.UIControl                           % pointer to the GUI object
+        ui__dZ__N    matlab.ui.control.UIControl                           % pointer to the GUI object
+        ui__dB0__min matlab.ui.control.UIControl                           % pointer to the GUI object
+        ui__dB0__max matlab.ui.control.UIControl                           % pointer to the GUI object
+        ui__dB0__N   matlab.ui.control.UIControl                           % pointer to the GUI object
     end % props
 
     properties(GetAccess = public, SetAccess = ?mri_rf_pulse_sim.app)
@@ -31,6 +40,15 @@ classdef simulation_parameters < handle
         end
         function value = get.dB0(self)
             value = linspace(self.dB0__min, self.dB0__max, self.dB0__N);
+        end
+        function set.dZ(self,value)
+            self.dZ__min =    min(value);
+            self.dZ__max =    max(value);
+            self.dZ__N   = length(value);
+        end
+        function set.dB0(self,value)
+            self.dB0__max =    max(value);
+            self.dB0__N   = length(value);
         end
     end % meths
 
@@ -117,9 +135,17 @@ classdef simulation_parameters < handle
             for f = 1 : length(fields)
                 field = fields{f};
 
-                name = sprintf('edit__%s__%s',prop,field);
-                handles.(name) = uicontrol(container,...
-                    'Tag',name,...
+                handles.(sprintf('text_%s',field)) = uicontrol(container,...
+                    'Style','text',...
+                    'String',field,...
+                    'Units','normalized',...
+                    'BackgroundColor',handles.figureBGcolor,...
+                    'Position',[(f-1)*spacing 0.6 spacing 0.1]);
+
+                name = sprintf('%s__%s',prop,field);
+                uiname = sprintf('edit__%s',name);
+                handles.(uiname) = uicontrol(container,...
+                    'Tag',uiname,...
                     'Style','edit',...
                     'String',num2str(self.(sprintf('%s__%s',prop,field)) / scales(f)),...
                     'Units','normalized',...
@@ -128,13 +154,9 @@ classdef simulation_parameters < handle
                     'Callback',@self.callback_update_value,...
                     'UserData',scales(f)...
                     );
+                self.(sprintf('ui__%s', name)) = handles.(uiname);
 
-                handles.(sprintf('text_%s',field)) = uicontrol(container,...
-                    'Style','text',...
-                    'String',field,...
-                    'Units','normalized',...
-                    'BackgroundColor',handles.figureBGcolor,...
-                    'Position',[(f-1)*spacing 0.6 spacing 0.1]);
+                addlistener(self, name, 'PostSet', @mri_rf_pulse_sim.simulation_parameters.gui_prop_changed);
             end
         end % fcn
 
@@ -149,6 +171,23 @@ classdef simulation_parameters < handle
             catch
                 src.String = num2str(prev_value * 1/src.UserData);
             end
+        end % fcn
+
+    end % meths
+
+    methods (Static, Access = protected)
+
+        % This method is called when the property is Set. It can be
+        % from the command line, from a script, from a function...
+        % It triggers the re-generation of the pulse, and a GUI update.
+        % It also happens when the value is modified in the GUI : this
+        % is useless, but it's a neglictable overhead for the moment.
+        function gui_prop_changed(metaProp, eventData)
+            prop_name      = metaProp.Name;
+            sim            = eventData.AffectedObject;
+            new_value      = sim.(prop_name);
+            gui_obj        = sim.(sprintf('ui__%s', prop_name));
+            gui_obj.String = num2str(new_value * 1/gui_obj.UserData);
         end % fcn
 
     end % meths
