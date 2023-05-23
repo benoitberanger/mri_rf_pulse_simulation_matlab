@@ -58,7 +58,7 @@ classdef simulation_results < handle
             plot(handles.axes_Mxyz, 0, [0;0;0]) % need to 'plot' something, to set other parameters
             handles.axes_Mxyz.XLabel.String = 'time (ms)';
             handles.axes_Mxyz.YLabel.String = 'Mxyz';
-            legend(handles.axes_Mxyz, {'Mx', 'Mz', 'Mz'})
+            legend(handles.axes_Mxyz, {'Mx', 'My', 'Mz'})
 
             handles.uipanel_SliceProfile = uipanel(figHandle,...
                 'Title','SliceProfile(dZ)',...

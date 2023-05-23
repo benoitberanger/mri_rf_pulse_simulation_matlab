@@ -2,7 +2,7 @@ classdef base < handle
 
     properties (GetAccess = public, SetAccess = public, SetObservable)
 
-        n_points              (1,1) double {mustBePositive, mustBeInteger} = 512                               % []  number of points defining the pulse
+        n_points              (1,1) double {mustBePositive, mustBeInteger} = 128                               % []  number of points defining the pulse
         duration              (1,1) double {mustBePositive}                =   5 * 1e-3                        % [s] pulse duration
 
         time                  (1,:) double                                                                     % [s] time vector

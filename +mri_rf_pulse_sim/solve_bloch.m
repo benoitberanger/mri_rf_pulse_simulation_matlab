@@ -1,4 +1,4 @@
-function result = solve_bloch(Time, AmplitideModulation, FrequencyModulation, GradientModulation, SpatialPosition, DeltaB0, gamma, B0)
+function result = solve_bloch(Time, AmplitideModulation, FrequencyModulation, GradientModulation, SpatialPosition, DeltaB0, gamma)
 
 % Define the time vector for simulation
 dt = mean(diff(Time));
@@ -33,7 +33,6 @@ for b = 1 : length(DeltaB0)
 
     for p = 1 : length(SpatialPosition)
         dZ = SpatialPosition(p);
-
 
         % Loop through time and solve the Bloch equations numerically
         M = zeros(3,length(Time));
