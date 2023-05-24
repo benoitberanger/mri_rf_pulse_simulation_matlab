@@ -5,11 +5,13 @@ classdef app < handle
         simulation_parameters mri_rf_pulse_sim.simulation_parameters
         simulation_results    mri_rf_pulse_sim.simulation_results
 
-        listener__update_setup event.listener
+        listener__update_pulse  event.listener
+        listener__update_setup  event.listener
         listener__update_select event.listener
     end % props
 
     events
+        update_pulse
         update_setup
         update_select
     end
@@ -30,7 +32,7 @@ classdef app < handle
             end
         end % fcn
 
-        function simulate(self, varargin)
+        function simulate(self)
             fprintf('[app]: simulate() ... ')
             tic;
             self.simulation_results.M = mri_rf_pulse_sim.solve_bloch(...
@@ -44,7 +46,7 @@ classdef app < handle
             fprintf('done in %.3gs \n', toc)
         end % fcn
 
-        function plot(self, varargin)
+        function plot(self)
 
             % get stuff
             handles = guidata(self.simulation_results.fig);
@@ -75,7 +77,7 @@ classdef app < handle
 
         end % fcn
 
-        function simplot(self, varargin)
+        function simplot(self)
             self.simulate();
             self.plot();
         end % fcn
@@ -88,6 +90,7 @@ classdef app < handle
             self.pulse_definition = mri_rf_pulse_sim.pulse_definition('open_gui');
             self.pulse_definition.app = self;
             self.pulse_definition.rf_pulse.app = self;
+            self.listener__update_pulse = addlistener(self, 'update_pulse' , @self.callback__update_pulse);
 
             self.simulation_parameters = mri_rf_pulse_sim.simulation_parameters('open_gui');
             self.simulation_parameters.app = self;
@@ -98,11 +101,29 @@ classdef app < handle
             self.simulation_parameters.dZ .add_uicontrol_select(H_sr.uipanel_dZ) ;
             self.simulation_parameters.dB0.add_uicontrol_select(H_sr.uipanel_dB0);
 
-            self.listener__update_setup  = addlistener(self, 'update_setup' , @self.simplot);
-            self.listener__update_select = addlistener(self, 'update_select', @self.plot);
+            self.listener__update_setup  = addlistener(self, 'update_setup' , @self.callback__update_setup );
+            self.listener__update_select = addlistener(self, 'update_select', @self.callback__update_select);
             self.simulation_parameters.dZ .app = self;
             self.simulation_parameters.dB0.app = self;
         end % fcn
+
+        function callback__update_pulse(self, ~, ~)
+            if self.simulation_parameters.auto_simplot
+                self.simplot();
+            end
+        end
+
+        function callback__update_setup(self, ~, ~)
+            if self.simulation_parameters.auto_simplot
+                self.simplot();
+            end
+        end
+
+        function callback__update_select(self, ~, ~)
+            if self.simulation_parameters.auto_simplot
+                self.plot();
+            end
+        end
 
     end % meths
 

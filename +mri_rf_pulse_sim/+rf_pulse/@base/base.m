@@ -10,7 +10,6 @@ classdef base < handle
         frequency_modulation  (1,:) double                                                                     % [Hz]
         gradient_modulation   (1,:) double                                                                     % [T/m]
 
-        B0                    (1,1) double {mustBePositive}                =   2.89                            % [T] static magnetic field strength
         gamma                 (1,1) double {mustBePositive}                = mri_rf_pulse_sim.get_gamma('1H')  % [rad/T/s] gyromagnetic ration
 
     end % props
@@ -111,7 +110,7 @@ classdef base < handle
                     'UserData',scale); % scaling factor GUI -> SI units
                 self.(sprintf('ui__%s',prop)) = handles.(name);
 
-                addlistener(self, prop, 'PostSet', @mri_rf_pulse_sim.rf_pulse.base.gui_prop_changed);
+                addlistener(self, prop, 'PostSet', @self.gui_prop_changed);
             end
         end % fcn
 
@@ -131,28 +130,21 @@ classdef base < handle
             guidata(handles.fig, handles);
         end
 
-    end % meths
-
-    methods (Static, Access = protected)
-
         % This method is called when the property is Set. It can be
         % from the command line, from a script, from a function...
         % It triggers the re-generation of the pulse, and a GUI update.
         % It also happens when the value is modified in the GUI : this
         % is useless, but it's a neglictable overhead for the moment.
-        function gui_prop_changed(metaProp, eventData)
+        function gui_prop_changed(self, metaProp, ~)
             prop_name      = metaProp.Name;
-            rf_pulse       = eventData.AffectedObject;
-            new_value      = rf_pulse.(prop_name);
-            gui_obj        = rf_pulse.(sprintf('ui__%s', prop_name));
+            new_value      = self.(prop_name);
+            gui_obj        = self.(sprintf('ui__%s', prop_name));
             gui_obj.String = num2str(new_value * 1/gui_obj.UserData);
             handles        = guidata(gui_obj);
-            rf_pulse.generate();
-            rf_pulse.plot(handles.uipanel_plot);
+            self.generate();
+            self.plot(handles.uipanel_plot);
             drawnow();
-            if rf_pulse.app.simulation_parameters.auto_simplot
-                rf_pulse.app.simplot();
-            end
+            notify(self.app, 'update_pulse')
         end % fcn
 
     end % meths
