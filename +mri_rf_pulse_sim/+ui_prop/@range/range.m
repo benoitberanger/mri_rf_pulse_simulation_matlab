@@ -12,7 +12,9 @@ classdef range < handle
     end % props
 
     properties(GetAccess = public, SetAccess = public, Dependent)
-        vect   (1,:) double
+        vect         (1,:) double
+        middle_idx   (1,1) double
+        middle_value (1,1) double
     end % props
 
     properties (GetAccess = public, SetAccess = public)
@@ -24,15 +26,26 @@ classdef range < handle
     end % props
 
     methods % for Dependent properties
+
         function value = get.vect(self)
             value = linspace(self.min, self.max, self.N);
         end
+
+        function value = get.middle_idx(self)
+            value = round(self.N/2);
+        end % fcn
+
+        function value = get.middle_value(self)
+            value = self.vect(self.middle_idx);
+        end % fcn
+
         function set.vect(self,value)
             self.min    =    min(value); %#ok<CPROPLC>
             self.max    =    max(value); %#ok<CPROPLC>
             self.N      = length(value);
             self.select =        value(round(self.N/2));
         end
+
     end % meths
 
     methods (Access = public)
@@ -86,6 +99,35 @@ classdef range < handle
 
         end % fcn
 
+        function add_uicontrol_select(self,container)
+            uicontrol(container,...
+                'Style'          , 'text'                      ,...
+                'Units'          , 'normalized'                ,...
+                'Position'       , [0 0 0.2 1]                 ,...
+                'BackgroundColor', container.BackgroundColor   ,...
+                'String'         , sprintf('%s = ', self.name)  ...
+                );
+            self.edit_select = uicontrol(container,...
+                'Style'          , 'edit'                       ,...
+                'BackgroundColor', [1 1 1]                      ,...
+                'String'         , num2str(self.middle_value)   ,...
+                'Units'          , 'normalized'                 ,...
+                'Position'       , [0.2 0 0.2 1]                ,...
+                'Callback'       , @self.callback_update_select  ...
+                );
+            self.slider = uicontrol(container,...
+                'Style'          , 'slider'                     ,...
+                'Units'          ,'normalized'                  ,...
+                'Position'       , [0.4 0 0.6 1]                ,...
+                'Min'            , self.min                     ,...
+                'Max'            , self.max                     ,...
+                'Value'          , self.middle_value            ,...
+                'SliderStep'     , [1/(self.N-1) 1/(self.N-1)]  ,...
+                'Callback'       , @self.callback_update_select  ...
+                );
+            addlistener(self, 'select', 'PostSet', @self.postset_update_select);
+        end % fcn
+
     end % meths
 
     methods (Static)
@@ -122,7 +164,7 @@ classdef range < handle
                 'Units','normalized',...
                 'Position',[0 0.5 1 0.5]);
 
-            handles.uipanel_interact = uipanel(figHandle,...
+            handles.uipanel_select = uipanel(figHandle,...
                 'Title','Interact',...
                 'BackgroundColor',figureBGcolor,...
                 'Units','normalized',...
@@ -134,7 +176,8 @@ classdef range < handle
             % guidata(figHandle,handles) . It allows smart retrive like
             % handles=guidata(hObject)
 
-            self.add_uicontrol_setup(handles.uipanel_setup);
+            self.add_uicontrol_setup (handles.uipanel_setup );
+            self.add_uicontrol_select(handles.uipanel_select);
 
         end % fcn
 
@@ -158,6 +201,29 @@ classdef range < handle
             new_value     = self.(prop_name);
             ui_obj        = self.(sprintf('edit_%s',prop_name));
             ui_obj.String = num2str(new_value * ui_obj.UserData);
+        end % fcn
+
+        function callback_update_select(self, src, ~)
+            switch src.Style
+                case 'edit'
+                    new_value = str2double(src.String) / self.scale;
+                case 'slider'
+                    new_value = src.Value;
+            end
+
+            [~, closest_idx] = min(abs(self.vect - new_value)); %#ok<CPROPLC>
+            new_value = self.vect(closest_idx);
+
+            self.edit_select.String = num2str(new_value * 1000);
+            self.slider.Value = new_value;
+
+            self.select = new_value;
+        end % fcn
+
+        function postset_update_select(self, metaProp, eventData) %#ok<INUSD>
+            new_value               = self.select;
+            self.edit_select.String = num2str(new_value * self.scale);
+            self.slider.Value       = new_value;
         end % fcn
 
     end % meths
