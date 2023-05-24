@@ -37,6 +37,32 @@ classdef app < handle
             middle_dZ_idx  = round(self.simulation_parameters.dZ__N /2);
             middle_dB0_idx = round(self.simulation_parameters.dB0__N/2);
 
+            % slider dZ
+            handles.edit_dZ.String = num2str( self.simulation_parameters.dZ(middle_dZ_idx) * 1e3 );
+            if self.simulation_parameters.dZ__N > 1
+                handles.slider_dZ.Visible = true;
+                d = mean(diff(self.simulation_parameters.dZ));
+                handles.slider_dZ.SliderStep = [d d*10];
+                handles.slider_dZ.Min = self.simulation_parameters.dZ__min;
+                handles.slider_dZ.Max = self.simulation_parameters.dZ__max;
+                handles.slider_dZ.Value = self.simulation_parameters.dZ(middle_dZ_idx);
+            else
+                handles.slider_dZ.Visible = false;
+            end
+
+            % slider dB0
+            handles.edit_dB0.String = num2str( self.simulation_parameters.dB0(middle_dB0_idx) );
+            if self.simulation_parameters.dB0__N > 1
+                handles.slider_dB0.Visible = true;
+                d = mean(diff(self.simulation_parameters.dB0));
+                handles.slider_dB0.SliderStep = [d d*10];
+                handles.slider_dB0.Min = self.simulation_parameters.dB0__min;
+                handles.slider_dB0.Max = self.simulation_parameters.dB0__max;
+                handles.slider_dB0.Value = self.simulation_parameters.dB0(middle_dB0_idx);
+            else
+                handles.slider_dB0.Visible = false;
+            end
+
             % plot Mxyz
             set(handles.axes_Mxyz.Children(3),...
                 'XData', self.pulse_definition.rf_pulse.time * 1e3,...
