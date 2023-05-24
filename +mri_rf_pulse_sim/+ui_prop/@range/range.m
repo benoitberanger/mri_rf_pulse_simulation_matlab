@@ -51,14 +51,21 @@ classdef range < handle
     methods (Access = public)
 
         % constructor
-        function self = range(name)
+        function self = range(varargin)
             if nargin < 1
                 self = mri_rf_pulse_sim.ui_prop.range.demo();
                 return
             end
 
-            if nargin == 1
-                self.name = name;
+            if     nargin == 1
+                self.name  = varargin{1};
+            elseif nargin == 2
+                self.name  = varargin{1};
+                self.vect  = varargin{2};
+            elseif nargin == 3
+                self.name  = varargin{1};
+                self.vect  = varargin{2};
+                self.scale = varargin{3};
             else
                 error('@mri_rf_pulse_sim.ui_prop.range constructor -> 1 argument, the ''name'' ')
             end
@@ -134,9 +141,7 @@ classdef range < handle
 
         function self = demo()
 
-            self       = mri_rf_pulse_sim.ui_prop.range('demo_range');
-            self.vect  = linspace(-10,10,11)/1000;
-            self.scale = 1000;
+            self = mri_rf_pulse_sim.ui_prop.range('demo_range', linspace(-10,10,11)/1000, 1000);
 
             % Create a figure
             figHandle = figure( ...
@@ -196,11 +201,16 @@ classdef range < handle
             end
         end % fcn
 
-        function postset_update_setup(self, metaProp, eventData) %#ok<INUSD>
+        function postset_update_setup(self, metaProp, ~)
             prop_name     = metaProp.Name;
             new_value     = self.(prop_name);
             ui_obj        = self.(sprintf('edit_%s',prop_name));
             ui_obj.String = num2str(new_value * ui_obj.UserData);
+
+            self.slider.Min        = self.min;
+            self.slider.Max        = self.max;
+            self.slider.SliderStep = [1/(self.N-1) 1/(self.N-1)];
+            self.select            = self.middle_value;
         end % fcn
 
         function callback_update_select(self, src, ~)
@@ -220,7 +230,7 @@ classdef range < handle
             self.select = new_value;
         end % fcn
 
-        function postset_update_select(self, metaProp, eventData) %#ok<INUSD>
+        function postset_update_select(self, ~, ~)
             new_value               = self.select;
             self.edit_select.String = num2str(new_value * self.scale);
             self.slider.Value       = new_value;
