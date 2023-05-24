@@ -1,90 +1,81 @@
 classdef app < handle
 
     properties (GetAccess = public,  SetAccess = protected)
-
         pulse_definition      mri_rf_pulse_sim.pulse_definition
         simulation_parameters mri_rf_pulse_sim.simulation_parameters
         simulation_results    mri_rf_pulse_sim.simulation_results
 
+        listener__update_setup event.listener
+        listener__update_select event.listener
     end % props
+
+    events
+        update_setup
+        update_select
+    end
 
     methods (Access = public)
 
         % contructor
         function self = app(varargin)
             if ~nargin
+                fprintf('[app]: open_gui() ... ')
+                tic;
                 self.open_gui();
+                fprintf('done in %.3gs \n', toc)
+
                 drawnow();
+
                 self.simplot();
             end
         end % fcn
 
-        function simulate(self)
+        function simulate(self, varargin)
+            fprintf('[app]: simulate() ... ')
+            tic;
             self.simulation_results.M = mri_rf_pulse_sim.solve_bloch(...
                 self.pulse_definition.rf_pulse.time,...
                 self.pulse_definition.rf_pulse.amplitude_modulation,...
                 self.pulse_definition.rf_pulse.frequency_modulation,...
                 self.pulse_definition.rf_pulse.gradient_modulation,...
-                self.simulation_parameters.dZ,...
-                self.simulation_parameters.dB0,...
+                self.simulation_parameters.dZ.vect,...
+                self.simulation_parameters.dB0.vect,...
                 self.pulse_definition.rf_pulse.gamma);
+            fprintf('done in %.3gs \n', toc)
         end % fcn
 
-        function plot(self)
+        function plot(self, varargin)
 
             % get stuff
             handles = guidata(self.simulation_results.fig);
-            middle_dZ_idx  = round(self.simulation_parameters.dZ__N /2);
-            middle_dB0_idx = round(self.simulation_parameters.dB0__N/2);
+            dZ  = self.simulation_parameters.dZ ;
+            dB0 = self.simulation_parameters.dB0;
 
-            % slider dZ
-            handles.edit_dZ.String = num2str( self.simulation_parameters.dZ(middle_dZ_idx) * 1e3 );
-            if self.simulation_parameters.dZ__N > 1
-                handles.slider_dZ.Visible = true;
-                d = mean(diff(self.simulation_parameters.dZ));
-                handles.slider_dZ.SliderStep = [d d*10];
-                handles.slider_dZ.Min = self.simulation_parameters.dZ__min;
-                handles.slider_dZ.Max = self.simulation_parameters.dZ__max;
-                handles.slider_dZ.Value = self.simulation_parameters.dZ(middle_dZ_idx);
-            else
-                handles.slider_dZ.Visible = false;
-            end
-
-            % slider dB0
-            handles.edit_dB0.String = num2str( self.simulation_parameters.dB0(middle_dB0_idx) );
-            if self.simulation_parameters.dB0__N > 1
-                handles.slider_dB0.Visible = true;
-                d = mean(diff(self.simulation_parameters.dB0));
-                handles.slider_dB0.SliderStep = [d d*10];
-                handles.slider_dB0.Min = self.simulation_parameters.dB0__min;
-                handles.slider_dB0.Max = self.simulation_parameters.dB0__max;
-                handles.slider_dB0.Value = self.simulation_parameters.dB0(middle_dB0_idx);
-            else
-                handles.slider_dB0.Visible = false;
-            end
+            idx_dZ  = find(dZ .vect == dZ .select);
+            idx_dB0 = find(dB0.vect == dB0.select);
 
             % plot Mxyz
             set(handles.axes_Mxyz.Children(3),...
                 'XData', self.pulse_definition.rf_pulse.time * 1e3,...
-                'YData', self.simulation_results.M(1,:,middle_dZ_idx,middle_dB0_idx));
+                'YData', self.simulation_results.M(1,:,idx_dZ,idx_dB0));
             set(handles.axes_Mxyz.Children(2),...
                 'XData', self.pulse_definition.rf_pulse.time * 1e3,...
-                'YData', self.simulation_results.M(2,:,middle_dZ_idx,middle_dB0_idx));
+                'YData', self.simulation_results.M(2,:,idx_dZ,idx_dB0));
             set(handles.axes_Mxyz.Children(1),...
                 'XData', self.pulse_definition.rf_pulse.time * 1e3,...
-                'YData', self.simulation_results.M(3,:,middle_dZ_idx,middle_dB0_idx));
+                'YData', self.simulation_results.M(3,:,idx_dZ,idx_dB0));
 
             % plot slice profile
             set(handles.axes_SliceProfile.Children(2),...
-                'XData', self.simulation_parameters.dZ * 1e3,...
-                'YData', sqrt(self.simulation_results.M(1,end,:,middle_dB0_idx).^2+self.simulation_results.M(2,end,:,middle_dB0_idx).^2));
+                'XData', dZ.vect * dZ.scale,...
+                'YData', sqrt(self.simulation_results.M(1,end,:,idx_dB0).^2+self.simulation_results.M(2,end,:,idx_dB0).^2));
             set(handles.axes_SliceProfile.Children(1),...
-                'XData', self.simulation_parameters.dZ * 1e3,...
-                'YData', self.simulation_results.M(3,end,:,middle_dB0_idx));
+                'XData', dZ.vect * dZ.scale,...
+                'YData', self.simulation_results.M(3,end,:,idx_dB0));
 
         end % fcn
 
-        function simplot(self)
+        function simplot(self, varargin)
             self.simulate();
             self.plot();
         end % fcn
@@ -103,6 +94,14 @@ classdef app < handle
 
             self.simulation_results = mri_rf_pulse_sim.simulation_results('open_gui');
             self.simulation_results.app = self;
+            H_sr = guidata(self.simulation_results.fig);
+            self.simulation_parameters.dZ .add_uicontrol_select(H_sr.uipanel_dZ) ;
+            self.simulation_parameters.dB0.add_uicontrol_select(H_sr.uipanel_dB0);
+
+            self.listener__update_setup  = addlistener(self, 'update_setup' , @self.simplot);
+            self.listener__update_select = addlistener(self, 'update_select', @self.plot);
+            self.simulation_parameters.dZ .app = self;
+            self.simulation_parameters.dB0.app = self;
         end % fcn
 
     end % meths

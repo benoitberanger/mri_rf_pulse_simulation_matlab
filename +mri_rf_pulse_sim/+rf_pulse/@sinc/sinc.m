@@ -1,6 +1,6 @@
 classdef sinc < mri_rf_pulse_sim.rf_pulse.base
 
-    properties (GetAccess = public, SetAccess = public, SetObservable)
+    properties (GetAccess = public, SetAccess = public, SetObservable, AbortSet)
 
         n_lobs     (1,1) double {mustBePositive, mustBeInteger}            =  7         % [] number of lobs, from 1 to +Inf
         flip_angle (1,1) double {mustBePositive}                           = 90         % [deg] flip angle

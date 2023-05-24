@@ -1,6 +1,6 @@
 classdef range < handle
 
-    properties(GetAccess = public, SetAccess = public, SetObservable)
+    properties(GetAccess = public, SetAccess = public, SetObservable, AbortSet)
         name   (1,:) char
 
         min    (1,1) double {mustBeFinite}
@@ -23,6 +23,7 @@ classdef range < handle
         edit_N        matlab.ui.control.UIControl
         edit_select   matlab.ui.control.UIControl
         slider        matlab.ui.control.UIControl
+        app           mri_rf_pulse_sim.app
     end % props
 
     methods % for Dependent properties
@@ -122,6 +123,11 @@ classdef range < handle
                 'Position'       , [0.2 0 0.2 1]                ,...
                 'Callback'       , @self.callback_update_select  ...
                 );
+            if self.N > 1
+                SliderStep = [1/(self.N-1) 1/(self.N-1)];
+            else
+                SliderStep = [1 1];
+            end
             self.slider = uicontrol(container,...
                 'Style'          , 'slider'                     ,...
                 'Units'          ,'normalized'                  ,...
@@ -129,7 +135,7 @@ classdef range < handle
                 'Min'            , self.min                     ,...
                 'Max'            , self.max                     ,...
                 'Value'          , self.middle_value            ,...
-                'SliderStep'     , [1/(self.N-1) 1/(self.N-1)]  ,...
+                'SliderStep'     , SliderStep                   ,...
                 'Callback'       , @self.callback_update_select  ...
                 );
             addlistener(self, 'select', 'PostSet', @self.postset_update_select);
@@ -211,6 +217,8 @@ classdef range < handle
             self.slider.Max        = self.max;
             self.slider.SliderStep = [1/(self.N-1) 1/(self.N-1)];
             self.select            = self.middle_value;
+
+            notify(self.app, 'update_setup')
         end % fcn
 
         function callback_update_select(self, src, ~)
@@ -234,6 +242,8 @@ classdef range < handle
             new_value               = self.select;
             self.edit_select.String = num2str(new_value * self.scale);
             self.slider.Value       = new_value;
+
+            notify(self.app, 'update_select')
         end % fcn
 
     end % meths
