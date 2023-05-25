@@ -2,7 +2,7 @@ classdef (Abstract) base_class < handle & matlab.mixin.CustomCompactDisplayProvi
 
     properties (GetAccess = public,  SetAccess = public, Hidden)
         app                                            % pointer to the app
-        parent                                                             % pointer to an unknown object (unknown type)
+        parent                                         % pointer to an unknown object (unknown type)
         listener_update        event.listener
         listener_update_app    event.listener
         listener_update_parent event.listener
@@ -37,6 +37,11 @@ classdef (Abstract) base_class < handle & matlab.mixin.CustomCompactDisplayProvi
             if ~isempty(self.app)
                 notify(self.app,'update')
             end
+        end % fcn
+
+        function delete(self,varargin)
+            self.app    = [];
+            self.parent = [];
         end % fcn
 
     end % meths
