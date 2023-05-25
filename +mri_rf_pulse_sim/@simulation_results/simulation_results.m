@@ -18,13 +18,16 @@ classdef simulation_results < mri_rf_pulse_sim.base_class
             action = varargin{1};
             switch action
                 case 'open_gui'
+                    if nargin > 1
+                        self.app = varargin{2};
+                    end
                     self.open_gui();
                 otherwise
                     error('unknown action')
             end
         end % fcn
 
-        function varargout = open_gui(self)
+        function open_gui(self)
 
             % Create a figure
             figHandle = figure( ...
@@ -60,6 +63,11 @@ classdef simulation_results < mri_rf_pulse_sim.base_class
                 'Units','Normalized',...
                 'Position',[0 0.8 1 0.1],...
                 'BackgroundColor',figureBGcolor);
+
+            self.app.simulation_parameters.dZ .add_uicontrol_select(handles.uipanel_dZ )
+            self.app.simulation_parameters.dB0.add_uicontrol_select(handles.uipanel_dB0)
+            self.app.simulation_parameters.dZ .app = self.app;
+            self.app.simulation_parameters.dB0.app = self.app;
 
             %--------------------------------------------------------------
             % Mxyz
@@ -103,10 +111,6 @@ classdef simulation_results < mri_rf_pulse_sim.base_class
             % handles=guidata(hObject)
 
             self.fig = figHandle;
-
-            if nargout > 0
-                varargout{1} = self;
-            end
 
             % initialize with default values
 

@@ -28,13 +28,16 @@ classdef simulation_parameters < mri_rf_pulse_sim.base_class
             action = varargin{1};
             switch action
                 case 'open_gui'
+                    if nargin > 1
+                        self.app = varargin{2};
+                    end
                     self.open_gui();
                 otherwise
                     error('unknown action')
             end
         end % fcn
 
-        function varargout = open_gui(self)
+        function open_gui(self)
 
             % Create a figure
             figHandle = figure( ...
@@ -95,10 +98,6 @@ classdef simulation_parameters < mri_rf_pulse_sim.base_class
             % handles=guidata(hObject)
 
             self.fig = figHandle;
-
-            if nargout > 0
-                varargout{1} = self;
-            end
 
             % initialize with default values
 

@@ -89,24 +89,13 @@ classdef app < handle
     methods (Access = protected)
 
         function open_gui(self)
-            self.pulse_definition = mri_rf_pulse_sim.pulse_definition('open_gui');
-            self.pulse_definition.app = self;
-            self.pulse_definition.rf_pulse.app = self;
-            self.listener__update_pulse = addlistener(self, 'update_pulse' , @self.callback__update_pulse);
+            self.pulse_definition      = mri_rf_pulse_sim.pulse_definition     ('open_gui', self);
+            self.simulation_parameters = mri_rf_pulse_sim.simulation_parameters('open_gui', self);
+            self.simulation_results    = mri_rf_pulse_sim.simulation_results   ('open_gui', self);   
 
-            self.simulation_parameters = mri_rf_pulse_sim.simulation_parameters('open_gui');
-            self.simulation_parameters.app = self;
-
-            self.simulation_results = mri_rf_pulse_sim.simulation_results('open_gui');
-            self.simulation_results.app = self;
-            H_sr = guidata(self.simulation_results.fig);
-            self.simulation_parameters.dZ .add_uicontrol_select(H_sr.uipanel_dZ) ;
-            self.simulation_parameters.dB0.add_uicontrol_select(H_sr.uipanel_dB0);
-
+            self.listener__update_pulse  = addlistener(self, 'update_pulse' , @self.callback__update_pulse );
             self.listener__update_setup  = addlistener(self, 'update_setup' , @self.callback__update_setup );
             self.listener__update_select = addlistener(self, 'update_select', @self.callback__update_select);
-            self.simulation_parameters.dZ .app = self;
-            self.simulation_parameters.dB0.app = self;
         end % fcn
 
         function callback__update_pulse(self, ~, ~)
