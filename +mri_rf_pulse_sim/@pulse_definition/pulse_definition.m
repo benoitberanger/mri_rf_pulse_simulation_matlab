@@ -1,10 +1,9 @@
-classdef pulse_definition < handle
+classdef pulse_definition < mri_rf_pulse_sim.base_class
 
     properties (GetAccess = public,  SetAccess = ?mri_rf_pulse_sim.app)
 
         rf_pulse mri_rf_pulse_sim.rf_pulse.sinc
 
-        app mri_rf_pulse_sim.app
         fig matlab.ui.Figure
 
     end % props
@@ -111,7 +110,16 @@ classdef pulse_definition < handle
                 otherwise
                     self.rf_pulse = pulse;
             end
+            self.rf_pulse.parent = self;
         end % fcn
+
+        function callback_update(self, ~, ~)
+            self.rf_pulse.generate();
+            handles = guidata(self.fig);
+            self.rf_pulse.plot(handles.uipanel_plot);
+            drawnow();
+            notify(self.app, 'update_pulse');
+        end
 
     end % meths
 

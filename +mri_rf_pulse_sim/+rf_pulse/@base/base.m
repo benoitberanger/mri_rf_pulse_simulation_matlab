@@ -1,34 +1,38 @@
-classdef base < handle
+classdef base < mri_rf_pulse_sim.base_class
 
-    properties (GetAccess = public, SetAccess = public, SetObservable, AbortSet)
+    properties (GetAccess = public, SetAccess = public)
+        n_points mri_rf_pulse_sim.ui_prop.scalar = mri_rf_pulse_sim.ui_prop.scalar('n_points', 128                   ); % []  number of points defining the pulse
+        duration mri_rf_pulse_sim.ui_prop.scalar = mri_rf_pulse_sim.ui_prop.scalar('duration',    5 * 1e-3, 'ms', 1e3); % [s] pulse duration
 
-        n_points              (1,1) double {mustBePositive, mustBeInteger} = 128                               % []  number of points defining the pulse
-        duration              (1,1) double {mustBePositive}                =   5 * 1e-3                        % [s] pulse duration
+        time                  (1,:) double                                                                              % [s] time vector
+        amplitude_modulation  (1,:) double                                                                              % [T]
+        frequency_modulation  (1,:) double                                                                              % [Hz]
+        gradient_modulation   (1,:) double                                                                              % [T/m]
 
-        time                  (1,:) double                                                                     % [s] time vector
-        amplitude_modulation  (1,:) double                                                                     % [T]
-        frequency_modulation  (1,:) double                                                                     % [Hz]
-        gradient_modulation   (1,:) double                                                                     % [T/m]
-
-        gamma                 (1,1) double {mustBePositive}                = mri_rf_pulse_sim.get_gamma('1H')  % [rad/T/s] gyromagnetic ration
-
+        gamma                 (1,1) double {mustBePositive} = mri_rf_pulse_sim.get_gamma('1H')                          % [rad/T/s] gyromagnetic ration
     end % props
 
-    properties (GetAccess = public, SetAccess = protected)
+    properties (GetAccess = public, SetAccess = protected, Dependent)
         B1__max                                                            % [T]   max value of amplitude_modulation(t)
-        gz__max                                                            % [T/m] max value of  gradient_modulation(t)
+        Gz__max                                                            % [T/m] max value of  gradient_modulation(t)
     end % props
 
-    properties (GetAccess = public, SetAccess = protected, Hidden)
-        ui__n_points matlab.ui.control.UIControl                          % pointer to the GUI object
-        ui__duration matlab.ui.control.UIControl                          % pointer to the GUI object
-    end % props
-
-    properties(GetAccess = public, SetAccess = {?mri_rf_pulse_sim.app})
-        app mri_rf_pulse_sim.app
-    end % props
+    methods % no attribute for dependent properies
+        function value = get.B1__max(self)
+            value = max(self.amplitude_modulation);
+        end % fcn
+        function value = get.Gz__max(self)
+            value = max(self.gradient_modulation);
+        end % fcn
+    end % meths
 
     methods (Access = public)
+
+        % constructor
+        function self = base(varargin)
+            self.n_points.parent = self;
+            self.duration.parent = self;
+        end
 
         % plot the shape of the pulse : AM, FM, GM
         % it will be plotted in a new figure or a pre-opened figure/uipanel
@@ -55,6 +59,10 @@ classdef base < handle
             a(3).YLabel.String = 'g.m. (mT/m)';
         end
 
+        function callback_update(self, ~, ~)
+            self.notify_parent();
+        end
+
     end % meths
 
     methods (Access = protected)
@@ -67,85 +75,16 @@ classdef base < handle
             end
         end % fcn
 
-        % gui callback to propagate the fresh value to the underlying
-        % object in the app
-        function callback_update_value(self, src, ~)
-            res = strsplit(src.Tag,'__');
-            prop_name = res{2};
-            prev_value = self.(prop_name);
-            try
-                self.(prop_name) = str2double(src.String) * src.UserData;
-            catch
-                src.String = num2str(prev_value * 1/src.UserData);
-            end
-        end % fcn
-
-        % add several observable properties in the GUI
-        function handles = add_synced_props(self, container, handles, list)
-            n_props = size(list, 1);
-            list = flipud(list);
-            spacing = 1/n_props;
-
-            for p = 1 : n_props
-                prop  = list{p,1};
-                txt   = list{p,2};
-                scale = list{p,3};
-
-                handles.(sprintf('text_%s', prop)) = uicontrol(container,...
-                    'Style','text',...
-                    'String',txt,...
-                    'Units','normalized',...
-                    'BackgroundColor',handles.figureBGcolor,...
-                    'Position',[0 (p-1)*spacing 0.3 spacing]);
-
-                name = sprintf('edit__%s', prop);
-                handles.(name) = uicontrol(container,...
-                    'Tag',name,...
-                    'Style','edit',...
-                    'String',num2str(self.(prop) / scale),...
-                    'Units','normalized',...
-                    'BackgroundColor',handles.editBGcolor,...
-                    'Position',[0.3 (p-1)*spacing 0.7 spacing],...
-                    'Callback',@self.callback_update_value,...
-                    'UserData',scale); % scaling factor GUI -> SI units
-                self.(sprintf('ui__%s',prop)) = handles.(name);
-
-                addlistener(self, prop, 'PostSet', @self.gui_prop_changed);
-            end
-        end % fcn
-
     end % meths
 
     methods (Access = {?mri_rf_pulse_sim.pulse_definition})
 
         function init_base_gui(self, container)
-            handles = guidata(container);
-
-            handles = self.add_synced_props(container, handles, ...
-                {
-                'duration'  'duration (ms) = '  1e-3
-                'n_points'       'n_points = '  1
-                });
-
-            guidata(handles.fig, handles);
+            mri_rf_pulse_sim.ui_prop.scalar.add_uicontrol_multi_scalar( ...
+                container, ...
+                [self.n_points, self.duration] ...
+                );
         end
-
-        % This method is called when the property is Set. It can be
-        % from the command line, from a script, from a function...
-        % It triggers the re-generation of the pulse, and a GUI update.
-        % It also happens when the value is modified in the GUI : this
-        % is useless, but it's a neglictable overhead for the moment.
-        function gui_prop_changed(self, metaProp, ~)
-            prop_name      = metaProp.Name;
-            new_value      = self.(prop_name);
-            gui_obj        = self.(sprintf('ui__%s', prop_name));
-            gui_obj.String = num2str(new_value * 1/gui_obj.UserData);
-            handles        = guidata(gui_obj);
-            self.generate();
-            self.plot(handles.uipanel_plot);
-            drawnow();
-            notify(self.app, 'update_pulse')
-        end % fcn
 
     end % meths
 

@@ -1,4 +1,4 @@
-classdef scalar < handle
+classdef scalar < mri_rf_pulse_sim.base_class
 
     properties(GetAccess = public, SetAccess = public, SetObservable, AbortSet)
         name   (1,:) char
@@ -9,7 +9,6 @@ classdef scalar < handle
 
     properties (GetAccess = public, SetAccess = public)
         edit    matlab.ui.control.UIControl
-        parent
     end % props
 
     methods (Access = public)
@@ -142,7 +141,6 @@ classdef scalar < handle
             spacing = 1/numel(scalars);
             for s = 1 : length(scalars)
                 rect = [0 (s-1)*spacing 1 spacing];
-                scalars(s)
                 scalars(s).add_uicontrol(container, rect);
             end
         end % fcn
@@ -164,7 +162,7 @@ classdef scalar < handle
             new_value        = self.value;
             self.edit.String = num2str(new_value * self.scale);
 
-            notify(self.parent, 'update')
+            self.notify_parent();
         end % fcn
 
     end % meths

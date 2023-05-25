@@ -4,7 +4,9 @@ classdef app < handle
         pulse_definition      mri_rf_pulse_sim.pulse_definition
         simulation_parameters mri_rf_pulse_sim.simulation_parameters
         simulation_results    mri_rf_pulse_sim.simulation_results
+    end % props
 
+    properties (GetAccess = public,  SetAccess = protected, Hidden)
         listener__update_pulse  event.listener
         listener__update_setup  event.listener
         listener__update_select event.listener

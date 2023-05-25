@@ -1,11 +1,10 @@
-classdef simulation_results < handle
+classdef simulation_results < mri_rf_pulse_sim.base_class
 
     properties(GetAccess = public, SetAccess = {?mri_rf_pulse_sim.app})
         M (:,:,:,:) double
     end % props
 
     properties(GetAccess = public, SetAccess = ?mri_rf_pulse_sim.app)
-        app mri_rf_pulse_sim.app
         fig matlab.ui.Figure
     end % props
 

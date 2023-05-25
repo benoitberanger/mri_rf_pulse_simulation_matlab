@@ -1,4 +1,4 @@
-classdef simulation_parameters < handle
+classdef simulation_parameters < mri_rf_pulse_sim.base_class
 
     properties(GetAccess = public, SetAccess = public, SetObservable, AbortSet)
         dZ  mri_rf_pulse_sim.ui_prop.range = mri_rf_pulse_sim.ui_prop.range('dZ' , linspace(-10,10,201)/1e3, 1e3) % [m] slice (spin) position
@@ -12,13 +12,15 @@ classdef simulation_parameters < handle
     end % props
 
     properties(GetAccess = public, SetAccess = ?mri_rf_pulse_sim.app)
-        app mri_rf_pulse_sim.app
         fig matlab.ui.Figure
     end % props
 
     methods (Access = public)
 
         function self = simulation_parameters(varargin)
+            self.dZ .parent = self;
+            self.dB0.parent = self;
+
             if nargin < 1
                 return
             end

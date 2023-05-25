@@ -1,4 +1,4 @@
-classdef range < handle
+classdef range < mri_rf_pulse_sim.base_class
 
     properties(GetAccess = public, SetAccess = public, SetObservable, AbortSet)
         name   (1,:) char
@@ -23,7 +23,6 @@ classdef range < handle
         edit_N        matlab.ui.control.UIControl
         edit_select   matlab.ui.control.UIControl
         slider        matlab.ui.control.UIControl
-        app           mri_rf_pulse_sim.app
     end % props
 
     methods % no attributes for Dependent properties
