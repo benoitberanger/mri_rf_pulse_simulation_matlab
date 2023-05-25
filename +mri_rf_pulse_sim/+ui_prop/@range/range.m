@@ -26,7 +26,7 @@ classdef range < handle
         app           mri_rf_pulse_sim.app
     end % props
 
-    methods % for Dependent properties
+    methods % no attributes for Dependent properties
 
         function value = get.vect(self)
             value = linspace(self.min, self.max, self.N);
@@ -68,7 +68,7 @@ classdef range < handle
                 self.vect  = varargin{2};
                 self.scale = varargin{3};
             else
-                error('@mri_rf_pulse_sim.ui_prop.range constructor -> 1 argument, the ''name'' ')
+                error('%s constructor -> 1,2,3 arguments', mfilename)
             end
         end % fcn
 

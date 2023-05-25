@@ -1,8 +1,8 @@
 classdef simulation_parameters < handle
 
     properties(GetAccess = public, SetAccess = public, SetObservable, AbortSet)
-        dZ  = mri_rf_pulse_sim.ui_prop.range('dZ' , linspace(-10,10,201)/1e3, 1e3) % [m] slice (spin) position
-        dB0 = mri_rf_pulse_sim.ui_prop.range('dB0', linspace(0,0,1))               % [ppm] off-resonance vector
+        dZ  mri_rf_pulse_sim.ui_prop.range = mri_rf_pulse_sim.ui_prop.range('dZ' , linspace(-10,10,201)/1e3, 1e3) % [m] slice (spin) position
+        dB0 mri_rf_pulse_sim.ui_prop.range = mri_rf_pulse_sim.ui_prop.range('dB0', linspace(0,0,1))               % [ppm] off-resonance vector
 
         auto_simplot (1,1) logical = true                                  % state of the GUI checkbox
     end % props
@@ -69,8 +69,6 @@ classdef simulation_parameters < handle
 
             self.dZ .add_uicontrol_setup(handles.uipanel_dZ )
             self.dB0.add_uicontrol_setup(handles.uipanel_dB0)
-            addlistener(self, 'dZ' , 'PostSet', @self.gui_prop_changed);
-            addlistener(self, 'dB0', 'PostSet', @self.gui_prop_changed);
 
             handles.uipanel_controls = uipanel(figHandle,...
                 'Title','Controls',...
