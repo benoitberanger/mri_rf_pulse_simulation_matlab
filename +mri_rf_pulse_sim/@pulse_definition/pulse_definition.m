@@ -36,7 +36,8 @@ classdef pulse_definition < mri_rf_pulse_sim.base_class
                 'Name'            , 'Pulse definition'       , ...
                 'NumberTitle'     , 'off'                    , ...
                 'Units'           , 'Pixels'                 , ...
-                'Position'        , [50, 50, 450, 750]       );
+                'Position'        , [50, 50, 450, 750]       , ...
+                'CloseRequestFcn' , @self.cleanup            );
 
             figureBGcolor = [0.9 0.9 0.9]; set(figHandle,'Color',figureBGcolor);
             buttonBGcolor = figureBGcolor - 0.1;
@@ -117,6 +118,16 @@ classdef pulse_definition < mri_rf_pulse_sim.base_class
             self.rf_pulse.plot(handles.uipanel_plot);
             drawnow();
             notify(self.app, 'update_pulse');
+        end % fcn
+
+    end % meths
+
+    methods(Access = protected)
+
+        function cleanup(self,varargin)
+            delete(self.rf_pulse)
+            delete(self.fig)
+            notify(self.app,'cleanup')
         end
 
     end % meths

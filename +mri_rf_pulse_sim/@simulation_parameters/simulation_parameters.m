@@ -46,7 +46,8 @@ classdef simulation_parameters < mri_rf_pulse_sim.base_class
                 'Name'            , 'Simulation parameters'  , ...
                 'NumberTitle'     , 'off'                    , ...
                 'Units'           , 'Pixels'                 , ...
-                'Position'        , [500, 50, 300, 350]      );
+                'Position'        , [500, 50, 300, 350]      , ...
+                'CloseRequestFcn' , @self.cleanup            );
 
             figureBGcolor = [0.9 0.9 0.9]; set(figHandle,'Color',figureBGcolor);
             buttonBGcolor = figureBGcolor - 0.1;
@@ -118,6 +119,13 @@ classdef simulation_parameters < mri_rf_pulse_sim.base_class
                 self.app.simplot();
             end
         end % fcn
+
+        function cleanup(self,varargin)
+            delete(self.dZ)
+            delete(self.dB0)
+            delete(self.fig)
+            notify(self.app,'cleanup')
+        end
 
     end % meths
 

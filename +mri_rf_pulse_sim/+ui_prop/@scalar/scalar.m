@@ -80,7 +80,7 @@ classdef scalar < mri_rf_pulse_sim.base_class
         end % fcn
 
         function delete(self)
-            delete(self.delete(self.listener))
+            delete(self.listener)
         end % fcn
 
     end % meths

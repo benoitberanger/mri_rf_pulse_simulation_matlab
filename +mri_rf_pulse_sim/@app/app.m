@@ -10,12 +10,16 @@ classdef app < handle
         listener__update_pulse  event.listener
         listener__update_setup  event.listener
         listener__update_select event.listener
+
+        listener__cleanup       event.listener
     end % props
 
     events
         update_pulse
         update_setup
         update_select
+
+        cleanup
     end
 
     methods (Access = public)
@@ -24,9 +28,11 @@ classdef app < handle
         function self = app(varargin)
             if ~nargin
                 fprintf('[app]: open_gui() ... ')
-                tic;
+                tic
                 self.open_gui();
                 fprintf('done in %.3gs \n', toc)
+
+                self.listener__cleanup = addlistener(self, 'cleanup', @self.callback_cleanup);
 
                 drawnow();
 
@@ -91,7 +97,7 @@ classdef app < handle
         function open_gui(self)
             self.pulse_definition      = mri_rf_pulse_sim.pulse_definition     ('open_gui', self);
             self.simulation_parameters = mri_rf_pulse_sim.simulation_parameters('open_gui', self);
-            self.simulation_results    = mri_rf_pulse_sim.simulation_results   ('open_gui', self);   
+            self.simulation_results    = mri_rf_pulse_sim.simulation_results   ('open_gui', self);
 
             self.listener__update_pulse  = addlistener(self, 'update_pulse' , @self.callback__update_pulse );
             self.listener__update_setup  = addlistener(self, 'update_setup' , @self.callback__update_setup );
@@ -114,6 +120,28 @@ classdef app < handle
             if self.simulation_parameters.auto_simplot
                 self.plot();
             end
+        end
+
+        function callback_cleanup(self, ~, ~)
+            fprintf('[app]: cleanup() ... ')
+            tic
+
+            delete(self.listener__update_pulse )
+            delete(self.listener__update_setup )
+            delete(self.listener__update_select)
+            delete(self.listener__cleanup      )
+
+            delete(self.pulse_definition     .fig)
+            delete(self.simulation_parameters.fig)
+            delete(self.simulation_results   .fig)
+
+            delete(self.pulse_definition     )
+            delete(self.simulation_parameters)
+            delete(self.simulation_results   )
+
+            delete(self)
+
+            fprintf('done in %.3gs \n', toc)
         end
 
     end % meths
