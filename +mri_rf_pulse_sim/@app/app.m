@@ -131,9 +131,13 @@ classdef app < handle
             delete(self.listener__update_select)
             delete(self.listener__cleanup      )
 
-            delete(self.pulse_definition     .fig)
-            delete(self.simulation_parameters.fig)
-            delete(self.simulation_results   .fig)
+            delete(self.pulse_definition     .fig);
+            delete(self.simulation_parameters.fig);
+            delete(self.simulation_results   .fig);
+
+            self.pulse_definition     .cleanup();
+            self.simulation_parameters.cleanup();
+            self.simulation_results   .cleanup();
 
             delete(self.pulse_definition     )
             delete(self.simulation_parameters)

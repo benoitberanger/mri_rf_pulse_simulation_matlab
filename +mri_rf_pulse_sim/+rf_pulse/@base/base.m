@@ -1,15 +1,15 @@
 classdef base < mri_rf_pulse_sim.base_class
 
     properties (GetAccess = public, SetAccess = public)
-        n_points mri_rf_pulse_sim.ui_prop.scalar = mri_rf_pulse_sim.ui_prop.scalar('n_points', 128                   ); % []  number of points defining the pulse
-        duration mri_rf_pulse_sim.ui_prop.scalar = mri_rf_pulse_sim.ui_prop.scalar('duration',    5 * 1e-3, 'ms', 1e3); % [s] pulse duration
+        n_points mri_rf_pulse_sim.ui_prop.scalar                           % []  number of points defining the pulse
+        duration mri_rf_pulse_sim.ui_prop.scalar                           % [s] pulse duration
 
-        time                  (1,:) double                                                                              % [s] time vector
-        amplitude_modulation  (1,:) double                                                                              % [T]
-        frequency_modulation  (1,:) double                                                                              % [Hz]
-        gradient_modulation   (1,:) double                                                                              % [T/m]
+        time                  (1,:) double                                 % [s] time vector
+        amplitude_modulation  (1,:) double                                 % [T]
+        frequency_modulation  (1,:) double                                 % [Hz]
+        gradient_modulation   (1,:) double                                 % [T/m]
 
-        gamma                 (1,1) double {mustBePositive} = mri_rf_pulse_sim.get_gamma('1H')                          % [rad/T/s] gyromagnetic ration
+        gamma                 (1,1) double {mustBePositive} = mri_rf_pulse_sim.get_gamma('1H') % [rad/T/s] gyromagnetic ration
     end % props
 
     properties (GetAccess = public, SetAccess = protected, Dependent)
@@ -30,7 +30,9 @@ classdef base < mri_rf_pulse_sim.base_class
 
         % constructor
         function self = base(varargin)
+            self.n_points        = mri_rf_pulse_sim.ui_prop.scalar('n_points', 128                   );
             self.n_points.parent = self;
+            self.duration        = mri_rf_pulse_sim.ui_prop.scalar('duration',    5 * 1e-3, 'ms', 1e3);
             self.duration.parent = self;
         end
 
@@ -75,6 +77,11 @@ classdef base < mri_rf_pulse_sim.base_class
             end
         end % fcn
 
+        function cleanup_base(self)
+            delete(self.n_points)
+            delete(self.duration)
+        end
+
     end % meths
 
     methods (Access = {?mri_rf_pulse_sim.pulse_definition})
@@ -84,7 +91,7 @@ classdef base < mri_rf_pulse_sim.base_class
                 container, ...
                 [self.n_points, self.duration] ...
                 );
-        end
+        end % fcn
 
     end % meths
 

@@ -2,9 +2,9 @@ classdef sinc < mri_rf_pulse_sim.rf_pulse.base
 
     properties (GetAccess = public, SetAccess = public, SetObservable, AbortSet)
 
-        n_lobs     mri_rf_pulse_sim.ui_prop.scalar = mri_rf_pulse_sim.ui_prop.scalar('n_lobs'    ,  7                    )  % [] number of lobs, from 1 to +Inf
-        flip_angle mri_rf_pulse_sim.ui_prop.scalar = mri_rf_pulse_sim.ui_prop.scalar('flip_angle', 90       , '°'        )  % [deg] flip angle
-        gz         mri_rf_pulse_sim.ui_prop.scalar = mri_rf_pulse_sim.ui_prop.scalar('gz'        , 10 * 1e-3, 'mT/m', 1e3); % [T/m] slice/slab selection gradient
+        n_lobs     mri_rf_pulse_sim.ui_prop.scalar                         % [] number of lobs, from 1 to +Inf
+        flip_angle mri_rf_pulse_sim.ui_prop.scalar                         % [deg] flip angle
+        gz         mri_rf_pulse_sim.ui_prop.scalar                         % [T/m] slice/slab selection gradient
 
     end % props
 
@@ -12,6 +12,9 @@ classdef sinc < mri_rf_pulse_sim.rf_pulse.base
 
         % constructor
         function self = sinc()
+            self.n_lobs            = mri_rf_pulse_sim.ui_prop.scalar('n_lobs'    ,  7                    );
+            self.flip_angle        = mri_rf_pulse_sim.ui_prop.scalar('flip_angle', 90       , '°'        );
+            self.gz                = mri_rf_pulse_sim.ui_prop.scalar('gz'        , 10 * 1e-3, 'mT/m', 1e3);
             self.n_lobs    .parent = self;
             self.flip_angle.parent = self;
             self.gz        .parent = self;
@@ -49,6 +52,13 @@ classdef sinc < mri_rf_pulse_sim.rf_pulse.base
                 [self.n_lobs, self.flip_angle, self.gz]...
                 );
         end % fcn
+
+        function cleanup(self)
+            self.cleanup_base()
+            delete(self.n_lobs)
+            delete(self.flip_angle)
+            delete(self.gz)
+        end
 
     end % meths
 

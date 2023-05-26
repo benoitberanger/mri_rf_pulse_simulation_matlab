@@ -1,8 +1,8 @@
 classdef simulation_parameters < mri_rf_pulse_sim.base_class
 
     properties(GetAccess = public, SetAccess = public, SetObservable, AbortSet)
-        dZ  mri_rf_pulse_sim.ui_prop.range = mri_rf_pulse_sim.ui_prop.range('dZ' , linspace(-10,10,201)/1e3, 1e3) % [m] slice (spin) position
-        dB0 mri_rf_pulse_sim.ui_prop.range = mri_rf_pulse_sim.ui_prop.range('dB0', linspace(0,0,1))               % [ppm] off-resonance vector
+        dZ  mri_rf_pulse_sim.ui_prop.range                                 % [m] slice (spin) position
+        dB0 mri_rf_pulse_sim.ui_prop.range                                 % [ppm] off-resonance vector
 
         auto_simplot (1,1) logical = true                                  % state of the GUI checkbox
     end % props
@@ -18,7 +18,10 @@ classdef simulation_parameters < mri_rf_pulse_sim.base_class
     methods (Access = public)
 
         function self = simulation_parameters(varargin)
+
+            self.dZ         = mri_rf_pulse_sim.ui_prop.range('dZ' , linspace(-10,10,201)/1e3, 1e3);
             self.dZ .parent = self;
+            self.dB0        = mri_rf_pulse_sim.ui_prop.range('dB0', linspace(0,0,1));
             self.dB0.parent = self;
 
             if nargin < 1
@@ -35,6 +38,7 @@ classdef simulation_parameters < mri_rf_pulse_sim.base_class
                 otherwise
                     error('unknown action')
             end
+
         end % fcn
 
         function open_gui(self)
@@ -47,7 +51,7 @@ classdef simulation_parameters < mri_rf_pulse_sim.base_class
                 'NumberTitle'     , 'off'                    , ...
                 'Units'           , 'Pixels'                 , ...
                 'Position'        , [500, 50, 300, 350]      , ...
-                'CloseRequestFcn' , @self.cleanup            );
+                'CloseRequestFcn' , @self.callback_cleanup   );
 
             figureBGcolor = [0.9 0.9 0.9]; set(figHandle,'Color',figureBGcolor);
             buttonBGcolor = figureBGcolor - 0.1;
@@ -120,13 +124,18 @@ classdef simulation_parameters < mri_rf_pulse_sim.base_class
             end
         end % fcn
 
-        function cleanup(self,varargin)
-            delete(self.dZ)
-            delete(self.dB0)
-            delete(self.fig)
+        function callback_cleanup(self,varargin)
             notify(self.app,'cleanup')
         end
 
+    end % meths
+
+    methods(Access = ?mri_rf_pulse_sim.app)
+        function cleanup(self)
+            delete(self.dZ)
+            delete(self.dB0)
+            delete(self.fig)
+        end
     end % meths
 
 end % class

@@ -101,7 +101,6 @@ classdef range < mri_rf_pulse_sim.base_class
                     );
 
                 addlistener(self, prop, 'PostSet', @self.postset_update_setup);
-
             end
 
         end % fcn
@@ -122,6 +121,7 @@ classdef range < mri_rf_pulse_sim.base_class
                 'Position'       , [0.2 0 0.2 1]                ,...
                 'Callback'       , @self.callback_update_select  ...
                 );
+
             if self.N > 1
                 SliderStep = [1/(self.N-1) 1/(self.N-1)];
             else
@@ -137,6 +137,7 @@ classdef range < mri_rf_pulse_sim.base_class
                 'SliderStep'     , SliderStep                   ,...
                 'Callback'       , @self.callback_update_select  ...
                 );
+            
             addlistener(self, 'select', 'PostSet', @self.postset_update_select);
         end % fcn
 

@@ -9,7 +9,6 @@ classdef scalar < mri_rf_pulse_sim.base_class
 
     properties (GetAccess = public, SetAccess = public)
         edit     matlab.ui.control.UIControl
-        listener event.listener
     end % props
 
     methods (Access = public)
@@ -75,12 +74,8 @@ classdef scalar < mri_rf_pulse_sim.base_class
                 'Callback'        , @self.callback_update             ...
                 );
 
-            self.listener = addlistener(self, 'value', 'PostSet', @self.postset_update);
+            addlistener(self, 'value', 'PostSet', @self.postset_update);
 
-        end % fcn
-
-        function delete(self)
-            delete(self.listener)
         end % fcn
 
     end % meths
