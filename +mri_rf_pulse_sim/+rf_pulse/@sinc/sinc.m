@@ -53,13 +53,6 @@ classdef sinc < mri_rf_pulse_sim.rf_pulse.base
                 );
         end % fcn
 
-        function cleanup(self)
-            self.cleanup_base()
-            delete(self.n_lobs)
-            delete(self.flip_angle)
-            delete(self.gz)
-        end
-
     end % meths
 
 end % class

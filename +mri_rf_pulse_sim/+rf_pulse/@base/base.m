@@ -77,11 +77,6 @@ classdef base < mri_rf_pulse_sim.base_class
             end
         end % fcn
 
-        function cleanup_base(self)
-            delete(self.n_points)
-            delete(self.duration)
-        end
-
     end % meths
 
     methods (Access = {?mri_rf_pulse_sim.pulse_definition})

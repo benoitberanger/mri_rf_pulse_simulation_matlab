@@ -39,14 +39,6 @@ classdef (Abstract) base_class < handle & matlab.mixin.CustomCompactDisplayProvi
             end
         end % fcn
 
-        function delete(self)
-            self.app    = [];
-            self.parent = [];
-            delete(self.listener_update       )
-            delete(self.listener_update_app   )
-            delete(self.listener_update_parent)
-        end % fcn
-
     end % meths
 
 end % class

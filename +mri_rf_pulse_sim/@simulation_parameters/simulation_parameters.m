@@ -130,12 +130,4 @@ classdef simulation_parameters < mri_rf_pulse_sim.base_class
 
     end % meths
 
-    methods(Access = ?mri_rf_pulse_sim.app)
-        function cleanup(self)
-            delete(self.dZ)
-            delete(self.dB0)
-            delete(self.fig)
-        end
-    end % meths
-
 end % class

@@ -127,12 +127,4 @@ classdef simulation_results < mri_rf_pulse_sim.base_class
 
     end
 
-    methods(Access = ?mri_rf_pulse_sim.app)
-
-        function cleanup(self,varargin)
-            delete(self.fig)
-        end
-
-    end
-
 end % class

@@ -108,43 +108,30 @@ classdef app < handle
             if self.simulation_parameters.auto_simplot
                 self.simplot();
             end
-        end
+        end % fcn
 
         function callback__update_setup(self, ~, ~)
             if self.simulation_parameters.auto_simplot
                 self.simplot();
             end
-        end
+        end % fcn
 
         function callback__update_select(self, ~, ~)
             if self.simulation_parameters.auto_simplot
                 self.plot();
             end
-        end
+        end % fcn
+
+    end % meths
+
+    methods(Access = {?mri_rf_pulse_sim.pulse_definition, ?mri_rf_pulse_sim.simulation_parameters, ?mri_rf_pulse_sim.simulation_results})
 
         function callback_cleanup(self, ~, ~)
             fprintf('[app]: cleanup() ... ')
             tic
-
-            delete(self.listener__update_pulse )
-            delete(self.listener__update_setup )
-            delete(self.listener__update_select)
-            delete(self.listener__cleanup      )
-
-            delete(self.pulse_definition     .fig);
-            delete(self.simulation_parameters.fig);
-            delete(self.simulation_results   .fig);
-
-            self.pulse_definition     .cleanup();
-            self.simulation_parameters.cleanup();
-            self.simulation_results   .cleanup();
-
-            delete(self.pulse_definition     )
-            delete(self.simulation_parameters)
-            delete(self.simulation_results   )
-
-            delete(self)
-
+            try delete(self.pulse_definition     .fig); catch, end
+            try delete(self.simulation_parameters.fig); catch, end
+            try delete(self.simulation_results   .fig); catch, end
             fprintf('done in %.3gs \n', toc)
         end
 

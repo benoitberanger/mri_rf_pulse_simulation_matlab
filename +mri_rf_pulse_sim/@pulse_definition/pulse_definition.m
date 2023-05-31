@@ -130,14 +130,4 @@ classdef pulse_definition < mri_rf_pulse_sim.base_class
 
     end % meths
 
-    methods(Access = ?mri_rf_pulse_sim.app)
-
-        function cleanup(self,varargin)
-            self.rf_pulse.cleanup();
-            delete(self.rf_pulse)
-            delete(self.fig)
-        end % fcn
-
-    end % meths
-
 end % class
