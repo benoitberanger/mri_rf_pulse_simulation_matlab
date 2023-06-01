@@ -99,10 +99,15 @@ classdef pulse_definition < mri_rf_pulse_sim.base_class
             idx_sinc = find(strcmp(handles.listbox_rf_pulse.String,'sinc'));
             handles.listbox_rf_pulse.Value = idx_sinc;
             self.callback_set_rf_pulse(handles.listbox_rf_pulse);
-            
+
         end % fcn
 
         function set_rf_pulse(self, pulse)
+            handles = guidata(self.fig);
+            delete(handles.uipanel_settings_base    .Children)
+            delete(handles.uipanel_settings_specific.Children)
+            delete(handles.uipanel_plot             .Children)
+
             switch class(pulse)
                 case 'char'
                     self.rf_pulse = eval(sprintf('mri_rf_pulse_sim.rf_pulse.%s', pulse));
@@ -110,6 +115,11 @@ classdef pulse_definition < mri_rf_pulse_sim.base_class
                     self.rf_pulse = pulse;
             end
             self.rf_pulse.parent = self;
+
+            self.rf_pulse.init_base_gui    (handles.uipanel_settings_base    );
+            self.rf_pulse.init_specific_gui(handles.uipanel_settings_specific);
+            self.rf_pulse.plot(handles.uipanel_plot);
+            notify(self.app, 'update_pulse');
         end % fcn
 
         function callback_update(self, ~, ~)
@@ -123,20 +133,10 @@ classdef pulse_definition < mri_rf_pulse_sim.base_class
     end % meths
 
     methods(Access = protected)
-        
+
         function callback_set_rf_pulse(self,hObject,~)
-            handles = guidata(hObject);
             new_pulse_name = hObject.String{hObject.Value};
-            
-            delete(handles.uipanel_settings_base    .Children)
-            delete(handles.uipanel_settings_specific.Children)
-            delete(handles.uipanel_plot             .Children)
-            
             self.set_rf_pulse(new_pulse_name);
-            self.rf_pulse.init_base_gui    (handles.uipanel_settings_base    );
-            self.rf_pulse.init_specific_gui(handles.uipanel_settings_specific);
-            self.rf_pulse.plot(handles.uipanel_plot);
-            notify(self.app, 'update_pulse');
         end % fcn
 
         function callback_cleanup(self,varargin)
