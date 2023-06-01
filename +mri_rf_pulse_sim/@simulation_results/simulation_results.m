@@ -96,8 +96,8 @@ classdef simulation_results < mri_rf_pulse_sim.base_class
                 'OuterPosition',[0 0 0.7 1]);
             self.axes_Mxyz = handles.axes_Mxyz;
             hold(handles.axes_Mxyz, 'on');
-            self.line_Mx = plot(handles.axes_Mxyz, 0, NaN, 'Color',[230 030 030]/255, 'LineStyle','-', 'LineWidth',1, 'DisplayName', 'Mx');
-            self.line_My = plot(handles.axes_Mxyz, 0, NaN, 'Color',[030 170 230]/255, 'LineStyle','-', 'LineWidth',1, 'DisplayName', 'My');
+            self.line_Mx = plot(handles.axes_Mxyz, 0, NaN, 'Color',[230 030 030]/255, 'LineStyle','-', 'LineWidth',2, 'DisplayName', 'Mx');
+            self.line_My = plot(handles.axes_Mxyz, 0, NaN, 'Color',[030 170 230]/255, 'LineStyle','-', 'LineWidth',2, 'DisplayName', 'My');
             self.line_Mz = plot(handles.axes_Mxyz, 0, NaN, 'Color',[030 230 030]/255, 'LineStyle','-', 'LineWidth',2, 'DisplayName', 'Mz');
             xlabel(handles.axes_Mxyz, 'time (ms)');
             ylabel(handles.axes_Mxyz, 'Mxyz');
@@ -112,9 +112,10 @@ classdef simulation_results < mri_rf_pulse_sim.base_class
             colormap(self.axes_Sphere, white)
             self.line3_Mxyz = plot3(handles.axes_Sphere, 0,0,0, 'LineWidth', 2);
             self.q3_Mxyz_end = quiver3(handles.axes_Sphere,0,0,0,0,0,0,0,'Color',[000 000 000]/255,'LineWidth',2);
-            axis(handles.axes_Sphere, 'equal')
             axis(handles.axes_Sphere, 'off')
             rotate3d(handles.axes_Sphere, 'on')
+            axis(handles.axes_Sphere, 'vis3d')
+            view(handles.axes_Sphere,[1 1 1])
             quiver3(handles.axes_Sphere,0,0,0,1,0,0,0,'Color',[230 030 030]/255)
             quiver3(handles.axes_Sphere,0,0,0,0,1,0,0,'Color',[030 170 230]/255)
             quiver3(handles.axes_Sphere,0,0,0,0,0,1,0,'Color',[030 230 030]/255)
