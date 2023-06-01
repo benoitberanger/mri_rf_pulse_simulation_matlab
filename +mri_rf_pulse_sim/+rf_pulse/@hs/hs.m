@@ -26,7 +26,7 @@ classdef hs < mri_rf_pulse_sim.rf_pulse.base
 
         % generate time, AM, FM, GM
         function generate(self)
-            self.assert_nonempty_prop({'A0', 'beta', 'mu'})
+            self.assert_nonempty_prop({'A0', 'beta', 'mu', 'gz'})
 
             self.time = linspace(-self.duration.value/2, +self.duration.value/2, self.n_points.value);
 

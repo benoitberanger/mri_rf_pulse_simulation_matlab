@@ -137,9 +137,16 @@ classdef range < mri_rf_pulse_sim.base_class
                 'SliderStep'     , SliderStep                   ,...
                 'Callback'       , @self.callback_update_select  ...
                 );
-            
+
             addlistener(self, 'select', 'PostSet', @self.postset_update_select);
         end % fcn
+
+        function displayRep = compactRepresentationForSingleLine(self,displayConfiguration,width)
+            txt = sprintf('linspace(%g,%g,%d)/%g', ...
+                self.min*self.scale, self.max*self.scale, self.N, self.scale);
+            displayRep = widthConstrainedDataRepresentation(self,displayConfiguration,width,...
+                StringArray=txt,AllowTruncatedDisplayForScalar=true);
+        end % dcn
 
     end % meths
 

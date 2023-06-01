@@ -1,7 +1,7 @@
 classdef (Abstract) base_class < handle & matlab.mixin.CustomCompactDisplayProvider
 
     properties (GetAccess = public,  SetAccess = public, Hidden)
-        app                                            % pointer to the app
+        app                    mri_rf_pulse_sim.app    % pointer to the app
         parent                                         % pointer to an unknown object (unknown type)
         listener_update        event.listener
         listener_update_app    event.listener
@@ -23,10 +23,6 @@ classdef (Abstract) base_class < handle & matlab.mixin.CustomCompactDisplayProvi
             self.listener_update_parent = addlistener(self, 'update_parent', @self.notify_parent  );
         end % fcn
 
-    end % meths
-
-    methods(Access = public)
-
         function notify_parent(self,~,~)
             if ~isempty(self.parent)
                 notify(self.parent,'update')
@@ -38,7 +34,7 @@ classdef (Abstract) base_class < handle & matlab.mixin.CustomCompactDisplayProvi
                 notify(self.app,'update')
             end
         end % fcn
-
+        
     end % meths
 
 end % class

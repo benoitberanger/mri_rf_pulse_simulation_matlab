@@ -78,6 +78,13 @@ classdef scalar < mri_rf_pulse_sim.base_class
 
         end % fcn
 
+        function displayRep = compactRepresentationForSingleLine(self,displayConfiguration,width)
+            txt = sprintf('%g (%g %s)', ...
+                self.value, self.value*self.scale, self.unit);
+            displayRep = widthConstrainedDataRepresentation(self,displayConfiguration,width,...
+                StringArray=txt,AllowTruncatedDisplayForScalar=true);
+        end % dcn
+
     end % meths
 
     methods (Static)
