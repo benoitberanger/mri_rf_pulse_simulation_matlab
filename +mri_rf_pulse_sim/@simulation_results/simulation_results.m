@@ -10,6 +10,11 @@ classdef simulation_results < mri_rf_pulse_sim.base_class
         line_My matlab.graphics.chart.primitive.Line
         line_Mz matlab.graphics.chart.primitive.Line
 
+        axes_Sphere matlab.graphics.axis.Axes
+        surface_Sphere matlab.graphics.chart.primitive.Surface
+        line3_Mxyz matlab.graphics.chart.primitive.Line
+        q3_Mxyz_end matlab.graphics.chart.primitive.Quiver
+        
         axes_SliceProfile matlab.graphics.axis.Axes
         line_Mpara matlab.graphics.chart.primitive.Line
         line_Mperp matlab.graphics.chart.primitive.Line
@@ -88,7 +93,7 @@ classdef simulation_results < mri_rf_pulse_sim.base_class
                 'BackgroundColor',figureBGcolor);
 
             handles.axes_Mxyz = axes(handles.uipanel_Mxyz,...
-                'OuterPosition',[0 0 1 1]);
+                'OuterPosition',[0 0 0.7 1]);
             self.axes_Mxyz = handles.axes_Mxyz;
             hold(handles.axes_Mxyz, 'on');
             self.line_Mx = plot(handles.axes_Mxyz, 0, NaN, 'Color',[230 030 030]/255, 'LineStyle','-', 'LineWidth',1, 'DisplayName', 'Mx');
@@ -97,6 +102,22 @@ classdef simulation_results < mri_rf_pulse_sim.base_class
             xlabel(handles.axes_Mxyz, 'time (ms)');
             ylabel(handles.axes_Mxyz, 'Mxyz');
             legend(handles.axes_Mxyz)
+
+            handles.axes_Sphere = axes(handles.uipanel_Mxyz,...
+                'Position',[0.7 0 0.3 1]);
+            self.axes_Sphere = handles.axes_Sphere;
+            hold(handles.axes_Sphere, 'on')
+            [X,Y,Z] = sphere(100);
+            self.surface_Sphere = surf(handles.axes_Sphere, X, Y , Z, 'FaceAlpha',0.2, 'EdgeColor','none');
+            colormap(self.axes_Sphere, white)
+            self.line3_Mxyz = plot3(handles.axes_Sphere, 0,0,0, 'LineWidth', 2);
+            self.q3_Mxyz_end = quiver3(handles.axes_Sphere,0,0,0,0,0,0,0,'Color',[000 000 000]/255,'LineWidth',2);
+            axis(handles.axes_Sphere, 'equal')
+            axis(handles.axes_Sphere, 'off')
+            rotate3d(handles.axes_Sphere, 'on')
+            quiver3(handles.axes_Sphere,0,0,0,1,0,0,0,'Color',[230 030 030]/255)
+            quiver3(handles.axes_Sphere,0,0,0,0,1,0,0,'Color',[030 170 230]/255)
+            quiver3(handles.axes_Sphere,0,0,0,0,0,1,0,'Color',[030 230 030]/255)
 
             %--------------------------------------------------------------
             % SliceProfile
@@ -110,7 +131,7 @@ classdef simulation_results < mri_rf_pulse_sim.base_class
             self.axes_SliceProfile = handles.axes_SliceProfile;
             hold(handles.axes_SliceProfile, 'on')
             self.line_Mperp = plot(handles.axes_SliceProfile, 0, NaN, 'Color',[230 030 210]/255, 'LineStyle','-', 'LineWidth',2, 'DisplayName', 'M\perp');
-            self.line_Mpara = plot(handles.axes_SliceProfile, 0, NaN, 'Color',[030 230 030]/255, 'LineStyle','-', 'LineWidth',1, 'DisplayName', 'M\mid\mid');
+            self.line_Mpara = plot(handles.axes_SliceProfile, 0, NaN, 'Color',[030 230 030]/255, 'LineStyle','-', 'LineWidth',2, 'DisplayName', 'M\mid\mid');
             xlabel(handles.axes_SliceProfile, 'dZ [mm]');
             ylabel(handles.axes_SliceProfile, 'final Mxyz');
             legend(handles.axes_SliceProfile)
@@ -132,6 +153,7 @@ classdef simulation_results < mri_rf_pulse_sim.base_class
     methods(Access = protected)
 
         function callback_cleanup(self,varargin)
+            delete(self.fig)
             notify(self.app,'cleanup')
         end
 

@@ -125,6 +125,7 @@ classdef pulse_definition < mri_rf_pulse_sim.base_class
     methods(Access = protected)
 
         function callback_cleanup(self,varargin)
+            delete(self.fig)
             notify(self.app,'cleanup')
         end % fcn
 

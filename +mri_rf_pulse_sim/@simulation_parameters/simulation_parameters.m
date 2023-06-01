@@ -125,6 +125,7 @@ classdef simulation_parameters < mri_rf_pulse_sim.base_class
         end % fcn
 
         function callback_cleanup(self,varargin)
+            delete(self.fig)
             notify(self.app,'cleanup')
         end
 
