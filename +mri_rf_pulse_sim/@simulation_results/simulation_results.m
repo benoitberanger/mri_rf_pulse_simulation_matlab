@@ -1,11 +1,19 @@
 classdef simulation_results < mri_rf_pulse_sim.base_class
 
-    properties(GetAccess = public, SetAccess = {?mri_rf_pulse_sim.app})
-        M (:,:,:,:) double
-    end % props
-
     properties(GetAccess = public, SetAccess = ?mri_rf_pulse_sim.app)
+        M (:,:,:,:) double
+
         fig matlab.ui.Figure
+
+        axes_Mxyz matlab.graphics.axis.Axes
+        line_Mx matlab.graphics.chart.primitive.Line
+        line_My matlab.graphics.chart.primitive.Line
+        line_Mz matlab.graphics.chart.primitive.Line
+
+        axes_SliceProfile matlab.graphics.axis.Axes
+        line_Mpara matlab.graphics.chart.primitive.Line
+        line_Mperp matlab.graphics.chart.primitive.Line
+
     end % props
 
     methods (Access = public)
@@ -81,13 +89,14 @@ classdef simulation_results < mri_rf_pulse_sim.base_class
 
             handles.axes_Mxyz = axes(handles.uipanel_Mxyz,...
                 'OuterPosition',[0 0 1 1]);
-            plot(handles.axes_Mxyz, 0, [0;0;0]) % need to 'plot' something, to set other parameters
-            handles.axes_Mxyz.Children(3).Color = [230 030 030]/255;
-            handles.axes_Mxyz.Children(2).Color = [030 170 230]/255;
-            handles.axes_Mxyz.Children(1).Color = [030 230 030]/255;
-            handles.axes_Mxyz.XLabel.String = 'time (ms)';
-            handles.axes_Mxyz.YLabel.String = 'Mxyz';
-            legend(handles.axes_Mxyz, {'Mx', 'My', 'Mz'})
+            self.axes_Mxyz = handles.axes_Mxyz;
+            hold(handles.axes_Mxyz, 'on');
+            self.line_Mx = plot(handles.axes_Mxyz, 0, NaN, 'Color',[230 030 030]/255, 'LineStyle','-', 'LineWidth',1, 'DisplayName', 'Mx');
+            self.line_My = plot(handles.axes_Mxyz, 0, NaN, 'Color',[030 170 230]/255, 'LineStyle','-', 'LineWidth',1, 'DisplayName', 'My');
+            self.line_Mz = plot(handles.axes_Mxyz, 0, NaN, 'Color',[030 230 030]/255, 'LineStyle','-', 'LineWidth',2, 'DisplayName', 'Mz');
+            xlabel(handles.axes_Mxyz, 'time (ms)');
+            ylabel(handles.axes_Mxyz, 'Mxyz');
+            legend(handles.axes_Mxyz)
 
             %--------------------------------------------------------------
             % SliceProfile
@@ -98,12 +107,13 @@ classdef simulation_results < mri_rf_pulse_sim.base_class
                 'BackgroundColor',figureBGcolor);
 
             handles.axes_SliceProfile = axes(handles.uipanel_SliceProfile);
-            plot(handles.axes_SliceProfile, 0, [0;0])
-            handles.axes_SliceProfile.Children(2).Color = [230 030 210]/255;
-            handles.axes_SliceProfile.Children(1).Color = [030 230 030]/255;
-            handles.axes_SliceProfile.XLabel.String = 'dZ [mm]';
-            handles.axes_SliceProfile.YLabel.String = 'final Mxyz';
-            legend(handles.axes_SliceProfile, {'M\mid\mid', 'M\perp'})
+            self.axes_SliceProfile = handles.axes_SliceProfile;
+            hold(handles.axes_SliceProfile, 'on')
+            self.line_Mperp = plot(handles.axes_SliceProfile, 0, NaN, 'Color',[230 030 210]/255, 'LineStyle','-', 'LineWidth',2, 'DisplayName', 'M\perp');
+            self.line_Mpara = plot(handles.axes_SliceProfile, 0, NaN, 'Color',[030 230 030]/255, 'LineStyle','-', 'LineWidth',1, 'DisplayName', 'M\mid\mid');
+            xlabel(handles.axes_SliceProfile, 'dZ [mm]');
+            ylabel(handles.axes_SliceProfile, 'final Mxyz');
+            legend(handles.axes_SliceProfile)
 
             % IMPORTANT
             guidata(figHandle,handles)
