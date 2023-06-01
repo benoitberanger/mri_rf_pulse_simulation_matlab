@@ -2,7 +2,7 @@ classdef pulse_definition < mri_rf_pulse_sim.base_class
 
     properties (GetAccess = public,  SetAccess = ?mri_rf_pulse_sim.app)
 
-        rf_pulse mri_rf_pulse_sim.rf_pulse.sinc
+        rf_pulse mri_rf_pulse_sim.rf_pulse.base
 
         fig matlab.ui.Figure
 
@@ -68,11 +68,12 @@ classdef pulse_definition < mri_rf_pulse_sim.base_class
                 'Position',[0.4 0.7 0.6 0.3],...
                 'BackgroundColor',figureBGcolor);
 
-            handles.uitree_rf_pulse = uicontrol(handles.uipanel_selection,...
+            handles.listbox_rf_pulse = uicontrol(handles.uipanel_selection,...
                 'Style','listbox',...
                 'Units','Normalized',...
                 'Position',[0 0 1 1],...
-                'String',mri_rf_pulse_sim.get_list_rf_pulse());
+                'String',mri_rf_pulse_sim.get_list_rf_pulse(),...
+                'Callback',@self.callback_set_rf_pulse);
 
             handles.uipanel_settings_specific = uipanel(handles.uipanel_settings,...
                 'Title','Pulse specific',...
@@ -95,11 +96,10 @@ classdef pulse_definition < mri_rf_pulse_sim.base_class
             self.fig = figHandle;
 
             % initialize with default values
-            self.set_rf_pulse('sinc');
-            self.rf_pulse.init_base_gui    (handles.uipanel_settings_base    );
-            self.rf_pulse.init_specific_gui(handles.uipanel_settings_specific);
-            self.rf_pulse.plot(handles.uipanel_plot);
-
+            idx_sinc = find(strcmp(handles.listbox_rf_pulse.String,'sinc'));
+            handles.listbox_rf_pulse.Value = idx_sinc;
+            self.callback_set_rf_pulse(handles.listbox_rf_pulse);
+            
         end % fcn
 
         function set_rf_pulse(self, pulse)
@@ -123,6 +123,21 @@ classdef pulse_definition < mri_rf_pulse_sim.base_class
     end % meths
 
     methods(Access = protected)
+        
+        function callback_set_rf_pulse(self,hObject,~)
+            handles = guidata(hObject);
+            new_pulse_name = hObject.String{hObject.Value};
+            
+            delete(handles.uipanel_settings_base    .Children)
+            delete(handles.uipanel_settings_specific.Children)
+            delete(handles.uipanel_plot             .Children)
+            
+            self.set_rf_pulse(new_pulse_name);
+            self.rf_pulse.init_base_gui    (handles.uipanel_settings_base    );
+            self.rf_pulse.init_specific_gui(handles.uipanel_settings_specific);
+            self.rf_pulse.plot(handles.uipanel_plot);
+            notify(self.app, 'update_pulse');
+        end % fcn
 
         function callback_cleanup(self,varargin)
             delete(self.fig)
