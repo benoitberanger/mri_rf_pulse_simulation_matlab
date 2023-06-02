@@ -9,6 +9,16 @@ classdef hs < mri_rf_pulse_sim.rf_pulse.base
 
     end % props
 
+    properties (GetAccess = public, SetAccess = protected, Dependent)
+        bandwidth (1,1) double                                             % Hz
+    end % props
+
+    methods % no attribute for dependent properies
+        function value = get.bandwidth(self)
+            value = self.beta.value * self.mu.value  / pi;
+        end% % fcn
+    end % meths
+
     methods (Access = public)
 
         % constructor
@@ -32,13 +42,13 @@ classdef hs < mri_rf_pulse_sim.rf_pulse.base
 
             self.amplitude_modulation = self.A0.value*sech(self.beta.value * self.time);
             self.frequency_modulation = -self.mu.value * self.beta.value * tanh(self.beta.value * self.time);
-            self.gradient_modulation  = ones(size(self.time)) * self.gz.value;
+            self. gradient_modulation = ones(size(self.time)) * self.gz.value;
         end % fcn
 
         % synthesis text
         function txt = summary(self)
-            txt = sprintf('hs : A0=%gµT  beta=%g  mu=%g  gz=%gmT/m',...
-                self.A0.value*self.A0.scale, self.beta.value, self.mu.value, self.gz.value*self.gz.scale);
+            txt = sprintf('hs : BW=%gHz  A0=%gµT  beta=%g  mu=%g  gz=%gmT/m',...
+                self.bandwidth, self.A0.value*self.A0.scale, self.beta.value, self.mu.value, self.gz.value*self.gz.scale);
         end % fcn
 
     end % meths
