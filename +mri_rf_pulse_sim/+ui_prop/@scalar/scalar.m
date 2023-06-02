@@ -39,6 +39,38 @@ classdef scalar < mri_rf_pulse_sim.base_class
             end
         end % fcn
 
+        function out = double(self)
+            out = self.value;
+        end % fcn
+
+        function out = plus(LEFT, RIGHT)
+            out = double(LEFT) + double(RIGHT);
+        end % fcn
+        function out = minus(LEFT, RIGHT)
+            out = double(LEFT) - double(RIGHT);
+        end % fcn
+
+        function out = mtimes(LEFT, RIGHT)
+            out = double(LEFT) * double(RIGHT);
+        end % fcn
+        function out = mrdivide(LEFT, RIGHT)
+            out = double(LEFT) / double(RIGHT);
+        end % fcn
+
+        function out = uplus(RIGHT)
+            out = +double(RIGHT);
+        end % fcn
+        function out = uminus(RIGHT)
+            out = -double(RIGHT);
+        end % fcn
+        
+        function out = get(self)
+            out = self.value * self.scale;
+        end % fcn
+        function set(self, in)
+            self.value = in;
+        end % fcn
+        
         function add_uicontrol(self,container,rect)
 
             if nargin < 3

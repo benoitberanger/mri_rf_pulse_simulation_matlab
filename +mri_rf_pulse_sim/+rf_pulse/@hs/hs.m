@@ -15,7 +15,7 @@ classdef hs < mri_rf_pulse_sim.rf_pulse.base
 
     methods % no attribute for dependent properies
         function value = get.bandwidth(self)
-            value = self.beta.value * self.mu.value  / pi;
+            value = self.beta * self.mu  / pi;
         end% % fcn
     end % meths
 
@@ -38,17 +38,17 @@ classdef hs < mri_rf_pulse_sim.rf_pulse.base
         function generate(self)
             self.assert_nonempty_prop({'A0', 'beta', 'mu', 'gz'})
 
-            self.time = linspace(-self.duration.value/2, +self.duration.value/2, self.n_points.value);
+            self.time = linspace(-self.duration/2, +self.duration/2, self.n_points);
 
-            self.amplitude_modulation = self.A0.value*sech(self.beta.value * self.time);
-            self.frequency_modulation = -self.mu.value * self.beta.value * tanh(self.beta.value * self.time);
-            self. gradient_modulation = ones(size(self.time)) * self.gz.value;
+            self.amplitude_modulation = self.A0*sech(self.beta * self.time);
+            self.frequency_modulation = -self.mu * self.beta * tanh(self.beta * self.time);
+            self. gradient_modulation = ones(size(self.time)) * self.gz;
         end % fcn
 
         % synthesis text
         function txt = summary(self)
             txt = sprintf('hs : BW=%gHz  A0=%gµT  beta=%g  mu=%g  gz=%gmT/m',...
-                self.bandwidth, self.A0.value*self.A0.scale, self.beta.value, self.mu.value, self.gz.value*self.gz.scale);
+                self.bandwidth, self.A0.get(), self.beta.get(), self.mu.get(), self.gz.get());
         end % fcn
 
     end % meths

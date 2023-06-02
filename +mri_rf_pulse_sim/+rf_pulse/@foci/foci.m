@@ -13,11 +13,11 @@ classdef foci < mri_rf_pulse_sim.rf_pulse.hs
         function  value = get.A(self)
             value = 10 * ones(size(self.time));
 
-            cond1 = sech(self.beta.value*self.time) >  0.1;
-            value(cond1) = 1 ./ sech(self.beta.value*self.time(cond1));
+            cond1 = sech(self.beta*self.time) >  0.1;
+            value(cond1) = 1 ./ sech(self.beta*self.time(cond1));
 
-            cond2 = cosh(self.beta.value*self.time) < 10.0;
-            value(cond2) = cosh(self.beta.value*self.time(cond2));
+            cond2 = cosh(self.beta*self.time) < 10.0;
+            value(cond2) = cosh(self.beta*self.time(cond2));
         end % fcn
 
     end % meths
@@ -33,7 +33,7 @@ classdef foci < mri_rf_pulse_sim.rf_pulse.hs
             self.A0.value = 100 * 1e-6; % this B1max is not in the article, but I still need to set it with reasonable value
             self.beta.value = 1618;
             BW = 2000; % Hz
-            self.mu.value = BW * pi / self.beta.value;
+            self.mu.value = BW * pi / self.beta;
             self.gz.value = 2.5 * 1e-3;
 
             self.generate();

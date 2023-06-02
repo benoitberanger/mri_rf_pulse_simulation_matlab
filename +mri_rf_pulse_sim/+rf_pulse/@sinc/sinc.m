@@ -25,21 +25,21 @@ classdef sinc < mri_rf_pulse_sim.rf_pulse.base
         function generate(self)
             self.assert_nonempty_prop({'n_points', 'duration', 'n_lobs'})
 
-            self.time = linspace(-self.duration.value/2, +self.duration.value/2, self.n_points.value);
+            self.time = linspace(-self.duration/2, +self.duration/2, self.n_points.get());
 
-            lob_size = self.duration.value / (2*self.n_lobs.value);
+            lob_size = self.duration / (2*self.n_lobs);
 
             self.amplitude_modulation = sinc(self.time/lob_size); % base shape
             self.amplitude_modulation = self.amplitude_modulation / trapz(self.time, self.amplitude_modulation); % normalize integral
-            self.amplitude_modulation = self.amplitude_modulation * deg2rad(self.flip_angle.value) / self.gamma; % scale integrale with flip angle
+            self.amplitude_modulation = self.amplitude_modulation * deg2rad(self.flip_angle.get()) / self.gamma; % scale integrale with flip angle
             self.frequency_modulation = zeros(size(self.time));
-            self.gradient_modulation  = ones(size(self.time)) * self.gz.value;
+            self.gradient_modulation  = ones(size(self.time)) * self.gz;
         end % fcn
 
         % synthesis text
         function txt = summary(self)
             txt = sprintf('sinc : n_lobs=%d  flip_angle=%d°  gz=%gmT/m',...
-                self.n_lobs.value, self.flip_angle.value, self.gz.value*self.gz.scale);
+                self.n_lobs.get(), self.flip_angle.get(), self.gz.get());
         end % fcn
 
     end % meths

@@ -45,6 +45,10 @@ classdef range < mri_rf_pulse_sim.base_class
             self.N      = length(value);
             self.select =        value(round(self.N/2));
         end
+        
+        function out = get(self)
+            out = self.vect;
+        end % fcn
 
     end % meths
 
