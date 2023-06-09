@@ -36,7 +36,6 @@ classdef scalar < mri_rf_pulse_sim.base_class
             if isfield(args, 'unit'  ), self.unit   = args.unit  ; end
             if isfield(args, 'scale' ), self.scale  = args.scale ; end
             if isfield(args, 'parent'), self.parent = args.parent; end
-
         end % fcn
 
         function out = double(self)

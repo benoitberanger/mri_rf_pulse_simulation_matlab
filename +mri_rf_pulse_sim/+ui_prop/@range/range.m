@@ -55,24 +55,26 @@ classdef range < mri_rf_pulse_sim.base_class
     methods (Access = public)
 
         % constructor
-        function self = range(varargin)
-            if nargin < 1
+        function self = range(args)
+            arguments
+                args.name
+                args.vect
+                args.scale
+                args.parent
+            end % args
+            
+            if length(fieldnames(args)) < 1
                 self = mri_rf_pulse_sim.ui_prop.range.demo();
                 return
             end
 
-            if     nargin == 1
-                self.name  = varargin{1};
-            elseif nargin == 2
-                self.name  = varargin{1};
-                self.vect  = varargin{2};
-            elseif nargin == 3
-                self.name  = varargin{1};
-                self.vect  = varargin{2};
-                self.scale = varargin{3};
-            else
-                error('%s constructor -> 1,2,3 arguments', mfilename)
-            end
+            assert(isfield(args, 'name'), 'name is required')
+            assert(isfield(args, 'vect'), 'vect is required')
+            self.name = args.name;
+            self.vect = args.vect;
+
+            if isfield(args, 'scale' ), self.scale  = args.scale ; end
+            if isfield(args, 'parent'), self.parent = args.parent; end
         end % fcn
 
         function add_uicontrol_setup(self,container)

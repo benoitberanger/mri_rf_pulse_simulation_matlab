@@ -15,12 +15,10 @@ classdef simulation_parameters < mri_rf_pulse_sim.base_class
 
         function self = simulation_parameters(varargin)
 
-            self.dZ         = mri_rf_pulse_sim.ui_prop.range('dZ' , linspace(-10,10,201)/1e3, 1e3);
-            self.dZ .parent = self;
-            self.dB0        = mri_rf_pulse_sim.ui_prop.range('dB0', linspace(0,0,1));
-            self.dB0.parent = self;
+            self.dZ  = mri_rf_pulse_sim.ui_prop.range(parent=self, name='dZ' , vect=linspace(-10,10,201)/1e3, scale=1e3);
+            self.dB0 = mri_rf_pulse_sim.ui_prop.range(parent=self, name='dB0', vect=linspace(0,0,1)                    );
 
-            self.auto_simplot = mri_rf_pulse_sim.ui_prop.bool(name='auto_simplot', text='auto_simplot', value=true, parent=self);
+            self.auto_simplot = mri_rf_pulse_sim.ui_prop.bool(parent=self, name='auto_simplot', text='auto_simplot', value=true);
 
             if nargin < 1
                 return
@@ -102,7 +100,7 @@ classdef simulation_parameters < mri_rf_pulse_sim.base_class
                 self.app.simplot();
             end
         end % fcn
-        
+
     end % meths
 
     methods(Access = protected)
