@@ -30,10 +30,8 @@ classdef base < mri_rf_pulse_sim.base_class
 
         % constructor
         function self = base(varargin)
-            self.n_points        = mri_rf_pulse_sim.ui_prop.scalar('n_points', 128                   );
-            self.n_points.parent = self;
-            self.duration        = mri_rf_pulse_sim.ui_prop.scalar('duration',    5 * 1e-3, 'ms', 1e3);
-            self.duration.parent = self;
+            self.n_points = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='n_points', value=128                             );
+            self.duration = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='duration', value=  5 * 1e-3, unit='ms', scale=1e3);
         end
 
         % plot the shape of the pulse : AM, FM, GM

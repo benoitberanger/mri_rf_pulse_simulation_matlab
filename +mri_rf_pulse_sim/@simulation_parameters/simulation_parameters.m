@@ -20,8 +20,7 @@ classdef simulation_parameters < mri_rf_pulse_sim.base_class
             self.dB0        = mri_rf_pulse_sim.ui_prop.range('dB0', linspace(0,0,1));
             self.dB0.parent = self;
 
-            self.auto_simplot        = mri_rf_pulse_sim.ui_prop.bool(name='auto_simplot', text='auto_simplot', value=true);
-            self.auto_simplot.parent = self;
+            self.auto_simplot = mri_rf_pulse_sim.ui_prop.bool(name='auto_simplot', text='auto_simplot', value=true, parent=self);
 
             if nargin < 1
                 return

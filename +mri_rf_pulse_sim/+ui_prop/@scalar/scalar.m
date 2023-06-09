@@ -14,29 +14,29 @@ classdef scalar < mri_rf_pulse_sim.base_class
     methods (Access = public)
 
         % constructor
-        function self = scalar(varargin)
-            if nargin < 1
+        function self = scalar(args)
+            arguments
+                args.name
+                args.value
+                args.unit
+                args.scale
+                args.parent
+            end % args
+
+            if length(fieldnames(args)) < 1
                 self = mri_rf_pulse_sim.ui_prop.scalar.demo();
                 return
             end
 
-            if     nargin == 1
-                self.name  = varargin{1};
-            elseif nargin == 2
-                self.name  = varargin{1};
-                self.value = varargin{2};
-            elseif nargin == 3
-                self.name  = varargin{1};
-                self.value = varargin{2};
-                self.unit  = varargin{3};
-            elseif nargin == 4
-                self.name  = varargin{1};
-                self.value = varargin{2};
-                self.unit  = varargin{3};
-                self.scale = varargin{4};
-            else
-                error('%s constructor -> 1,2,3,4 arguments', mfilename)
-            end
+            assert(isfield(args,  'name'),  'name is required')
+            assert(isfield(args, 'value'), 'value is required')
+            self.name  = args.name;
+            self.value = args.value;
+
+            if isfield(args, 'unit'  ), self.unit   = args.unit  ; end
+            if isfield(args, 'scale' ), self.scale  = args.scale ; end
+            if isfield(args, 'parent'), self.parent = args.parent; end
+
         end % fcn
 
         function out = double(self)
@@ -63,14 +63,14 @@ classdef scalar < mri_rf_pulse_sim.base_class
         function out = uminus(RIGHT)
             out = -double(RIGHT);
         end % fcn
-        
+
         function out = get(self)
             out = self.value * self.scale;
         end % fcn
         function set(self, in)
             self.value = in;
         end % fcn
-        
+
         function add_uicontrol(self,container,rect)
 
             if nargin < 3
@@ -123,12 +123,16 @@ classdef scalar < mri_rf_pulse_sim.base_class
 
         function scalars = demo()
 
-            time = mri_rf_pulse_sim.ui_prop.scalar('time', 1/1000,   'ms', 1000);
+            time = mri_rf_pulse_sim.ui_prop.scalar(...
+                name  ='time'  ,...
+                value = 1/1000 ,...
+                unit  = 'ms'   ,...
+                scale = 1000   );
 
-            v1   = mri_rf_pulse_sim.ui_prop.scalar('v1'  , 1     ,  'm/s'      );
-            v2   = mri_rf_pulse_sim.ui_prop.scalar('v2'  , 1/1000, 'mm/s', 1000);
-            p1   = mri_rf_pulse_sim.ui_prop.scalar('p1'  , 49.3                );
-            p2   = mri_rf_pulse_sim.ui_prop.scalar('p2'                        );
+            v1   = mri_rf_pulse_sim.ui_prop.scalar(name='v1'  , value=1     , unit='m/s'             );
+            v2   = mri_rf_pulse_sim.ui_prop.scalar(name='v2'  , value=1/1000, unit='mm/s', scale=1000);
+            p1   = mri_rf_pulse_sim.ui_prop.scalar(name='p1'  , value=49.3                           );
+            p2   = mri_rf_pulse_sim.ui_prop.scalar(name='p2'  , value=666                            );
 
             % Create a figure
             figHandle = figure( ...

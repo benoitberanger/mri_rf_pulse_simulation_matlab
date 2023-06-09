@@ -18,6 +18,7 @@ classdef bool < mri_rf_pulse_sim.base_class
                 args.name
                 args.text
                 args.value
+                args.parent
             end % args
 
             if length(fieldnames(args)) < 1
@@ -28,8 +29,9 @@ classdef bool < mri_rf_pulse_sim.base_class
             assert(isfield(args, 'name'), 'name is required')
             self.name = args.name;
 
-            if isfield(args, 'text' ), self.text  = args.text ; end
-            if isfield(args, 'value'), self.value = args.value; end
+            if isfield(args, 'text'  ), self.text   = args.text  ; end
+            if isfield(args, 'value' ), self.value  = args.value ; end
+            if isfield(args, 'parent'), self.parent = args.parent; end
 
         end % fcn
 
@@ -80,8 +82,8 @@ classdef bool < mri_rf_pulse_sim.base_class
         end % fcn
 
         function displayRep = compactRepresentationForSingleLine(self,displayConfiguration,width)
-            txt = sprintf('%s = %g (%s)', ...
-                self.name, self.value, self.text);
+            txt = sprintf('%g (%s)', ...
+                self.value, self.text);
             displayRep = widthConstrainedDataRepresentation(self,displayConfiguration,width,...
                 StringArray=txt,AllowTruncatedDisplayForScalar=true);
         end % dcn

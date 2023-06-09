@@ -12,12 +12,9 @@ classdef sinc < mri_rf_pulse_sim.rf_pulse.base
 
         % constructor
         function self = sinc()
-            self.n_lobs            = mri_rf_pulse_sim.ui_prop.scalar('n_lobs'    ,  7                    );
-            self.flip_angle        = mri_rf_pulse_sim.ui_prop.scalar('flip_angle', 90       , '°'        );
-            self.gz                = mri_rf_pulse_sim.ui_prop.scalar('gz'        , 10 * 1e-3, 'mT/m', 1e3);
-            self.n_lobs    .parent = self;
-            self.flip_angle.parent = self;
-            self.gz        .parent = self;
+            self.n_lobs            = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='n_lobs'    ,  value=7                               );
+            self.flip_angle        = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle', value=90       , unit='°'              );
+            self.gz                = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='gz'        , value=10 * 1e-3, unit='mT/m', scale=1e3);
             self.generate();
         end % fcn
 
