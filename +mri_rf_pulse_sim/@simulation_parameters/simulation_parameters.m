@@ -1,14 +1,10 @@
 classdef simulation_parameters < mri_rf_pulse_sim.base_class
 
-    properties(GetAccess = public, SetAccess = public, SetObservable, AbortSet)
+    properties(GetAccess = public, SetAccess = public)
         dZ  mri_rf_pulse_sim.ui_prop.range                                 % [m] slice (spin) position
         dB0 mri_rf_pulse_sim.ui_prop.range                                 % [ppm] off-resonance vector
 
-        auto_simplot (1,1) logical = true                                  % state of the GUI checkbox
-    end % props
-
-    properties (GetAccess = public, SetAccess = protected, Hidden)
-        ui__auto_simplot matlab.ui.control.UIControl                       % pointer to the GUI object
+        auto_simplot mri_rf_pulse_sim.ui_prop.bool                         % state of the GUI checkbox
     end % props
 
     properties(GetAccess = public, SetAccess = ?mri_rf_pulse_sim.app)
@@ -23,6 +19,9 @@ classdef simulation_parameters < mri_rf_pulse_sim.base_class
             self.dZ .parent = self;
             self.dB0        = mri_rf_pulse_sim.ui_prop.range('dB0', linspace(0,0,1));
             self.dB0.parent = self;
+
+            self.auto_simplot        = mri_rf_pulse_sim.ui_prop.bool(name='auto_simplot', text='auto_simplot', value=true);
+            self.auto_simplot.parent = self;
 
             if nargin < 1
                 return
@@ -85,16 +84,7 @@ classdef simulation_parameters < mri_rf_pulse_sim.base_class
                 'Position',[0 0.4 1 0.6],...
                 'BackgroundColor',figureBGcolor);
 
-            handles.checkbox_auto_simplot = uicontrol(handles.uipanel_controls,...
-                'Style','checkbox',...,
-                'BackgroundColor',handles.figureBGcolor,...
-                'Value',true,...
-                'String','auto sim+plot',...
-                'Units','normalized',...
-                'Position',[0 0.9 0.5 0.1],...
-                'Callback',@self.callback_auto_simplot);
-            self.ui__auto_simplot = handles.checkbox_auto_simplot;
-            addlistener(self, 'auto_simplot', 'PostSet', @self.gui_prop_changed);
+            self.auto_simplot.add_uicontrol(handles.uipanel_controls)
 
             % IMPORTANT
             guidata(figHandle,handles)
@@ -108,21 +98,15 @@ classdef simulation_parameters < mri_rf_pulse_sim.base_class
 
         end % fcn
 
-    end % meths
-
-    methods(Access = protected)
-
-        function callback_auto_simplot(self, src, ~)
-            self.auto_simplot = src.Value;
-            self.app.listener__update_setup .Enabled = self.auto_simplot;
-            self.app.listener__update_select.Enabled = self.auto_simplot;
-        end % fcn
-
-        function gui_prop_changed(self, ~, ~)
-            if self.app.simulation_parameters.auto_simplot
+        function callback_update(self, ~, ~)
+            if self.auto_simplot.get()
                 self.app.simplot();
             end
         end % fcn
+        
+    end % meths
+
+    methods(Access = protected)
 
         function callback_cleanup(self,varargin)
             delete(self.fig)

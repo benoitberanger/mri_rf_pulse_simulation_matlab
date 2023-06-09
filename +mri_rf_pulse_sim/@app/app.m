@@ -116,19 +116,19 @@ classdef app < handle
         end % fcn
 
         function callback__update_pulse(self, ~, ~)
-            if self.simulation_parameters.auto_simplot
+            if self.simulation_parameters.auto_simplot.get()
                 self.simplot();
             end
         end % fcn
 
         function callback__update_setup(self, ~, ~)
-            if self.simulation_parameters.auto_simplot
+            if self.simulation_parameters.auto_simplot.get()
                 self.simplot();
             end
         end % fcn
 
         function callback__update_select(self, ~, ~)
-            if self.simulation_parameters.auto_simplot
+            if self.simulation_parameters.auto_simplot.get()
                 self.plot();
             end
         end % fcn
