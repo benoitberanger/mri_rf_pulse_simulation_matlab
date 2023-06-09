@@ -8,7 +8,7 @@ classdef scalar < mri_rf_pulse_sim.base_class
     end % props
 
     properties (GetAccess = public, SetAccess = public)
-        edit     matlab.ui.control.UIControl
+        edit         matlab.ui.control.UIControl
     end % props
 
     methods (Access = public)
