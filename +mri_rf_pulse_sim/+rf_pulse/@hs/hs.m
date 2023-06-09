@@ -23,14 +23,11 @@ classdef hs < mri_rf_pulse_sim.rf_pulse.base
 
         % constructor
         function self = hs()
-            self.A0          = mri_rf_pulse_sim.ui_prop.scalar('A0'  ,  100 * 1e-6, 'µT'  , 1e6);
-            self.beta        = mri_rf_pulse_sim.ui_prop.scalar('beta', 5000                    );
-            self.mu          = mri_rf_pulse_sim.ui_prop.scalar('mu'  ,    0.5                  );
-            self.gz          = mri_rf_pulse_sim.ui_prop.scalar('gz'  ,   20 * 1e-3, 'mT/m', 1e3);
-            self.A0  .parent = self;
-            self.beta.parent = self;
-            self.mu  .parent = self;
-            self.gz  .parent = self;
+            self.n_points.value = 512; % we need more points, otherwise the numerical model will not be accurate for extrem dZ
+            self.A0   = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='A0'  , value= 100 * 1e-6, unit='µT'  , scale=1e6);
+            self.beta = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='beta', value=5000                               );
+            self.mu   = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='mu'  , value=   0.5                             );
+            self.gz   = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='gz'  , value=  20 * 1e-3, unit='mT/m', scale=1e3);
             self.generate();
         end % fcn
 

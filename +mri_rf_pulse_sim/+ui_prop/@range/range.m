@@ -12,9 +12,11 @@ classdef range < mri_rf_pulse_sim.base_class
     end % props
 
     properties(GetAccess = public, SetAccess = public, Dependent)
-        vect         (1,:) double
-        middle_idx   (1,1) double
-        middle_value (1,1) double
+        vect           (1,:) double
+        middle_idx     (1,1) double
+        middle_value   (1,1) double
+        selected_idx   (1,1) double
+        selected_value (1,1) double
     end % props
 
     properties (GetAccess = public, SetAccess = public)
@@ -34,9 +36,15 @@ classdef range < mri_rf_pulse_sim.base_class
         function value = get.middle_idx(self)
             value = round(self.N/2);
         end % fcn
-
         function value = get.middle_value(self)
             value = self.vect(self.middle_idx);
+        end % fcn
+
+        function value = get.selected_idx(self)
+            value = find(self.vect == self.select);
+        end % fcn
+        function value = get.selected_value(self)
+            value = self.vect(self.selected_idx);
         end % fcn
 
         function set.vect(self,value)
@@ -45,7 +53,7 @@ classdef range < mri_rf_pulse_sim.base_class
             self.N      = length(value);
             self.select =        value(round(self.N/2));
         end
-        
+
         function out = get(self)
             out = self.vect;
         end % fcn
@@ -62,7 +70,7 @@ classdef range < mri_rf_pulse_sim.base_class
                 args.scale
                 args.parent
             end % args
-            
+
             if length(fieldnames(args)) < 1
                 self = mri_rf_pulse_sim.ui_prop.range.demo();
                 return
