@@ -8,6 +8,16 @@ classdef sinc < mri_rf_pulse_sim.rf_pulse.base
 
     end % props
 
+    properties (GetAccess = public, SetAccess = protected, Dependent)
+        bandwidth (1,1) double                                             % Hz
+    end % props
+    
+    methods % no attribute for dependent properies
+        function value = get.bandwidth(self)
+            value = (2*self.n_lobs) / self.duration;
+        end% % fcn
+    end % meths
+    
     methods (Access = public)
 
         % constructor
@@ -24,7 +34,7 @@ classdef sinc < mri_rf_pulse_sim.rf_pulse.base
 
             self.time = linspace(-self.duration/2, +self.duration/2, self.n_points.get());
 
-            lob_size = self.duration / (2*self.n_lobs);
+            lob_size = 1/self.bandwidth;
 
             self.amplitude_modulation = sinc(self.time/lob_size); % base shape
             self.amplitude_modulation = self.amplitude_modulation / trapz(self.time, self.amplitude_modulation); % normalize integral

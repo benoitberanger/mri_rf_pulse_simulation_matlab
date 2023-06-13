@@ -13,8 +13,9 @@ classdef base < mri_rf_pulse_sim.base_class
     end % props
 
     properties (GetAccess = public, SetAccess = protected, Dependent)
-        B1__max                                                            % [T]   max value of amplitude_modulation(t)
-        Gz__max                                                            % [T/m] max value of  gradient_modulation(t)
+        B1__max               (1,1) double                                 % [T]   max value of amplitude_modulation(t)
+        Gz__max               (1,1) double                                 % [T/m] max value of  gradient_modulation(t)
+        tbwp                  (1,1) double                                 % []    time-bandwidth product
     end % props
 
     methods % no attribute for dependent properies
@@ -23,6 +24,10 @@ classdef base < mri_rf_pulse_sim.base_class
         end % fcn
         function value = get.Gz__max(self)
             value = max(self.gradient_modulation);
+        end % fcn
+        function value = get.tbwp(self)
+            % bandwidth must depends in the pulse itself: its GET must be defined in the subclass
+            value = self.duration * self.bandwidth;
         end % fcn
     end % meths
 
