@@ -49,19 +49,28 @@ classdef base < mri_rf_pulse_sim.base_class
             end
 
             a(1) = subplot(6,1,[1 2],'Parent',container);
-            plot(a(1), self.time*1e3, self.amplitude_modulation*1e6)
+            hold(a(1), 'on')
+            plot(a(1), self.time*1e3, self.amplitude_modulation*1e6, 'LineStyle','-', 'LineWidth',2)
             a(1).XTickLabel = {};
             a(1).YLabel.String = 'a.m. (µT)';
-
+            plot(a(1), [self.time(1) self.time(end)]*1e3, [0 0], 'LineStyle',':', 'LineWidth',0.5, 'Color', [0.5 0.5 0.5])
+            axis(a(1),'tight')
+            
             a(2) = subplot(6,1,[3 4],'Parent',container);
-            plot(a(2), self.time*1e3, self.frequency_modulation)
+            hold(a(2), 'on')
+            plot(a(2), self.time*1e3, self.frequency_modulation, 'LineStyle','-', 'LineWidth',2)
             a(2).XTickLabel = {};
             a(2).YLabel.String = 'f.m. (Hz)';
-
+            plot(a(2), [self.time(1) self.time(end)]*1e3, [0 0], 'LineStyle',':', 'LineWidth',0.5, 'Color', [0.5 0.5 0.5])
+            axis(a(2),'tight')
+            
             a(3) = subplot(6,1,[5 6],'Parent',container);
-            plot(a(3), self.time*1e3, self.gradient_modulation*1e3)
+            hold(a(3), 'on')
+            plot(a(3), self.time*1e3, self.gradient_modulation*1e3, 'LineStyle','-', 'LineWidth',2)
             a(3).XLabel.String = 'time (ms)';
             a(3).YLabel.String = 'g.m. (mT/m)';
+            plot(a(3), [self.time(1) self.time(end)]*1e3, [0 0], 'LineStyle',':', 'LineWidth',0.5, 'Color', [0.5 0.5 0.5])
+            axis(a(3),'tight')
         end
 
         function callback_update(self, ~, ~)

@@ -125,6 +125,7 @@ classdef pulse_definition < mri_rf_pulse_sim.base_class
         function callback_update(self, ~, ~)
             self.rf_pulse.generate();
             handles = guidata(self.fig);
+            delete(handles.uipanel_plot.Children)
             self.rf_pulse.plot(handles.uipanel_plot);
             drawnow();
             notify(self.app, 'update_pulse');
