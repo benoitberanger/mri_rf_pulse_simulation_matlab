@@ -5,20 +5,22 @@ classdef simulation_results < mri_rf_pulse_sim.base_class
 
         fig matlab.ui.Figure
 
-        axes_Mxyz matlab.graphics.axis.Axes
-        line_Mx matlab.graphics.chart.primitive.Line
-        line_My matlab.graphics.chart.primitive.Line
-        line_Mz matlab.graphics.chart.primitive.Line
+        axes_Mxyz  matlab.graphics.axis.Axes
+        line_Mx    matlab.graphics.chart.primitive.Line
+        line_My    matlab.graphics.chart.primitive.Line
+        line_Mz    matlab.graphics.chart.primitive.Line
+        line_Mup   matlab.graphics.chart.primitive.Line
+        line_Mmid  matlab.graphics.chart.primitive.Line
+        line_Mdown matlab.graphics.chart.primitive.Line
 
-        axes_Sphere matlab.graphics.axis.Axes
+        axes_Sphere    matlab.graphics.axis.Axes
         surface_Sphere matlab.graphics.chart.primitive.Surface
-        line3_Mxyz matlab.graphics.chart.primitive.Line
-        q3_Mxyz_end matlab.graphics.chart.primitive.Quiver
-        
-        axes_SliceProfile matlab.graphics.axis.Axes
-        line_Mpara matlab.graphics.chart.primitive.Line
-        line_Mperp matlab.graphics.chart.primitive.Line
+        line3_Mxyz     matlab.graphics.chart.primitive.Line
+        q3_Mxyz_end    matlab.graphics.chart.primitive.Quiver
 
+        axes_SliceProfile matlab.graphics.axis.Axes
+        line_Mpara        matlab.graphics.chart.primitive.Line
+        line_Mperp        matlab.graphics.chart.primitive.Line
     end % props
 
     methods (Access = public)
@@ -92,16 +94,23 @@ classdef simulation_results < mri_rf_pulse_sim.base_class
                 'Position',[0 0.4 1 0.4],...
                 'BackgroundColor',figureBGcolor);
 
+            time = self.app.pulse_definition.rf_pulse.time;
+
             handles.axes_Mxyz = axes(handles.uipanel_Mxyz,...
                 'OuterPosition',[0 0 0.7 1]);
             self.axes_Mxyz = handles.axes_Mxyz;
             hold(handles.axes_Mxyz, 'on');
-            self.line_Mx = plot(handles.axes_Mxyz, 0, NaN, 'Color',[230 030 030]/255, 'LineStyle','-', 'LineWidth',2, 'DisplayName', 'Mx');
-            self.line_My = plot(handles.axes_Mxyz, 0, NaN, 'Color',[030 170 230]/255, 'LineStyle','-', 'LineWidth',2, 'DisplayName', 'My');
-            self.line_Mz = plot(handles.axes_Mxyz, 0, NaN, 'Color',[030 230 030]/255, 'LineStyle','-', 'LineWidth',2, 'DisplayName', 'Mz');
+            self.line_Mx = plot(handles.axes_Mxyz, 0, NaN, 'Color',[230 030 030]/255, 'LineStyle','-', 'LineWidth',2);
+            self.line_My = plot(handles.axes_Mxyz, 0, NaN, 'Color',[030 170 230]/255, 'LineStyle','-', 'LineWidth',2);
+            self.line_Mz = plot(handles.axes_Mxyz, 0, NaN, 'Color',[030 230 030]/255, 'LineStyle','-', 'LineWidth',2);
+            self.line_Mup   = plot(handles.axes_Mxyz, [time(1) time(end)], [+1 +1], 'LineStyle',':', 'LineWidth',0.5, 'Color', [0.5 0.5 0.5]);
+            self.line_Mmid  = plot(handles.axes_Mxyz, [time(1) time(end)], [ 0  0], 'LineStyle',':', 'LineWidth',0.5, 'Color', [0.5 0.5 0.5]);
+            self.line_Mdown = plot(handles.axes_Mxyz, [time(1) time(end)], [-1 -1], 'LineStyle',':', 'LineWidth',0.5, 'Color', [0.5 0.5 0.5]);
+            legend(handles.axes_Mxyz, {'Mx', 'My', 'Mz'})
+            axis(handles.axes_Mxyz, 'tight')
             xlabel(handles.axes_Mxyz, 'time (ms)');
             ylabel(handles.axes_Mxyz, 'Mxyz');
-            legend(handles.axes_Mxyz)
+            ylim(handles.axes_Mxyz, [-1.2 +1.2])
 
             handles.axes_Sphere = axes(handles.uipanel_Mxyz,...
                 'Position',[0.7 0 0.3 1]);
@@ -136,6 +145,8 @@ classdef simulation_results < mri_rf_pulse_sim.base_class
             xlabel(handles.axes_SliceProfile, 'dZ [mm]');
             ylabel(handles.axes_SliceProfile, 'final Mxyz');
             legend(handles.axes_SliceProfile)
+            ylim(handles.axes_SliceProfile, [-1.2 +1.2])
+
 
             % IMPORTANT
             guidata(figHandle,handles)
