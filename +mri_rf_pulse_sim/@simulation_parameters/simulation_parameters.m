@@ -83,7 +83,15 @@ classdef simulation_parameters < mri_rf_pulse_sim.base_class
                 'Position',[0 0.4 1 0.6],...
                 'BackgroundColor',figureBGcolor);
 
-            self.auto_simplot.add_uicontrol(handles.uipanel_controls)
+            self.auto_simplot.add_uicontrol(handles.uipanel_controls,[0.1 0.8 0.2 0.1])
+
+            handles.pushbutton_simplot = uicontrol(handles.uipanel_controls, ...
+                'Style', 'pushbutton', ...
+                'String', 'simulate + plot', ...
+                'Units','Normalized',...
+                'Position',[0.1 0.6 0.2 0.2],...
+                'BackgroundColor',buttonBGcolor,...
+                'Callback',@self.callback_simplot);
 
             % IMPORTANT
             guidata(figHandle,handles)
@@ -106,6 +114,10 @@ classdef simulation_parameters < mri_rf_pulse_sim.base_class
     end % meths
 
     methods(Access = protected)
+
+        function callback_simplot(self,~,~)
+            self.app.simplot();
+        end
 
         function callback_cleanup(self,varargin)
             delete(self.fig)
