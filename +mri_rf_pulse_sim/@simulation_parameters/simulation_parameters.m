@@ -15,7 +15,7 @@ classdef simulation_parameters < mri_rf_pulse_sim.base_class
 
         function self = simulation_parameters(varargin)
 
-            self.dZ  = mri_rf_pulse_sim.ui_prop.range(parent=self, name='dZ' , vect=linspace(-30,30,101)/1e3, scale=1e3);
+            self.dZ  = mri_rf_pulse_sim.ui_prop.range(parent=self, name='dZ' , vect=linspace(-10,10,101)/1e3, scale=1e3);
             self.dB0 = mri_rf_pulse_sim.ui_prop.range(parent=self, name='dB0', vect=linspace(-10,10,  3)/1e6, scale=1e6);
 
             self.auto_simplot = mri_rf_pulse_sim.ui_prop.bool(parent=self, name='auto_simplot', text='auto_simplot', value=true);

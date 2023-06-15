@@ -6,27 +6,31 @@ classdef simulation_results < mri_rf_pulse_sim.base_class
         fig matlab.ui.Figure
 
         axes_Mxyz  matlab.graphics.axis.Axes
-        line_Mx    matlab.graphics.chart.primitive.Line
-        line_My    matlab.graphics.chart.primitive.Line
-        line_Mz    matlab.graphics.chart.primitive.Line
-        line_Mup   matlab.graphics.chart.primitive.Line
-        line_Mmid  matlab.graphics.chart.primitive.Line
-        line_Mdown matlab.graphics.chart.primitive.Line
+        line_M_x    matlab.graphics.chart.primitive.Line
+        line_M_y    matlab.graphics.chart.primitive.Line
+        line_M_z    matlab.graphics.chart.primitive.Line
+        line_M_up   matlab.graphics.chart.primitive.Line
+        line_M_mid  matlab.graphics.chart.primitive.Line
+        line_M_down matlab.graphics.chart.primitive.Line
 
         axes_Sphere    matlab.graphics.axis.Axes
         surface_Sphere matlab.graphics.chart.primitive.Surface
         line3_Mxyz     matlab.graphics.chart.primitive.Line
         q3_Mxyz_end    matlab.graphics.chart.primitive.Quiver
 
-        axes_SliceProfile matlab.graphics.axis.Axes
-        line_Mpara        matlab.graphics.chart.primitive.Line
-        line_Mperp        matlab.graphics.chart.primitive.Line
-        line_Sup          matlab.graphics.chart.primitive.Line
-        line_Smid         matlab.graphics.chart.primitive.Line
-        line_Sdown        matlab.graphics.chart.primitive.Line
+        axes_SliceProfile  matlab.graphics.axis.Axes
+        line_S_Mpara       matlab.graphics.chart.primitive.Line
+        line_S_Mperp       matlab.graphics.chart.primitive.Line
+        line_S_up          matlab.graphics.chart.primitive.Line
+        line_S_mid         matlab.graphics.chart.primitive.Line
+        line_S_down        matlab.graphics.chart.primitive.Line
 
         axes_ChemicalShift matlab.graphics.axis.Axes
-        line_CS            matlab.graphics.chart.primitive.Line
+        line_C_Mpara       matlab.graphics.chart.primitive.Line
+        line_C_Mperp       matlab.graphics.chart.primitive.Line
+        line_C_up          matlab.graphics.chart.primitive.Line
+        line_C_mid         matlab.graphics.chart.primitive.Line
+        line_C_down        matlab.graphics.chart.primitive.Line
     end % props
 
     methods (Access = public)
@@ -88,10 +92,12 @@ classdef simulation_results < mri_rf_pulse_sim.base_class
                 'Position',[0 0.90 1 0.05],...
                 'BackgroundColor',figureBGcolor);
 
-            self.app.simulation_parameters.dZ .add_uicontrol_select(handles.uipanel_dZ )
-            self.app.simulation_parameters.dB0.add_uicontrol_select(handles.uipanel_dB0)
-            self.app.simulation_parameters.dZ .app = self.app;
-            self.app.simulation_parameters.dB0.app = self.app;
+            dZ  = self.app.simulation_parameters.dZ ;
+            dB0 = self.app.simulation_parameters.dB0;
+            dZ. add_uicontrol_select(handles.uipanel_dZ );
+            dB0.add_uicontrol_select(handles.uipanel_dB0)
+            dZ .app = self.app;
+            dB0.app = self.app;
 
             %--------------------------------------------------------------
             % Mxyz
@@ -108,12 +114,12 @@ classdef simulation_results < mri_rf_pulse_sim.base_class
                 'OuterPosition',[0 0 0.7 1]);
             self.axes_Mxyz = handles.axes_Mxyz;
             hold(handles.axes_Mxyz, 'on');
-            self.line_Mx = plot(handles.axes_Mxyz, 0, NaN, 'Color',[230 030 030]/255, 'LineStyle','-', 'LineWidth',2);
-            self.line_My = plot(handles.axes_Mxyz, 0, NaN, 'Color',[030 170 230]/255, 'LineStyle','-', 'LineWidth',2);
-            self.line_Mz = plot(handles.axes_Mxyz, 0, NaN, 'Color',[030 230 030]/255, 'LineStyle','-', 'LineWidth',2);
-            self.line_Mup   = plot(handles.axes_Mxyz, [time(1) time(end)], [+1 +1], 'LineStyle',':', 'LineWidth',0.5, 'Color', [0.5 0.5 0.5]);
-            self.line_Mmid  = plot(handles.axes_Mxyz, [time(1) time(end)], [ 0  0], 'LineStyle',':', 'LineWidth',0.5, 'Color', [0.5 0.5 0.5]);
-            self.line_Mdown = plot(handles.axes_Mxyz, [time(1) time(end)], [-1 -1], 'LineStyle',':', 'LineWidth',0.5, 'Color', [0.5 0.5 0.5]);
+            self.line_M_x = plot(handles.axes_Mxyz, 0, NaN, 'Color',[230 030 030]/255, 'LineStyle','-', 'LineWidth',2);
+            self.line_M_y = plot(handles.axes_Mxyz, 0, NaN, 'Color',[030 170 230]/255, 'LineStyle','-', 'LineWidth',2);
+            self.line_M_z = plot(handles.axes_Mxyz, 0, NaN, 'Color',[030 230 030]/255, 'LineStyle','-', 'LineWidth',2);
+            self.line_M_up   = plot(handles.axes_Mxyz, [time(1) time(end)], [+1 +1], 'LineStyle',':', 'LineWidth',0.5, 'Color', [0.5 0.5 0.5]);
+            self.line_M_mid  = plot(handles.axes_Mxyz, [time(1) time(end)], [ 0  0], 'LineStyle',':', 'LineWidth',0.5, 'Color', [0.5 0.5 0.5]);
+            self.line_M_down = plot(handles.axes_Mxyz, [time(1) time(end)], [-1 -1], 'LineStyle',':', 'LineWidth',0.5, 'Color', [0.5 0.5 0.5]);
             legend(handles.axes_Mxyz, {'Mx', 'My', 'Mz'})
             axis(handles.axes_Mxyz, 'tight')
             xlabel(handles.axes_Mxyz, 'time (ms)');
@@ -148,19 +154,18 @@ classdef simulation_results < mri_rf_pulse_sim.base_class
             handles.axes_SliceProfile = axes(handles.uipanel_SliceProfile);
             self.axes_SliceProfile = handles.axes_SliceProfile;
             hold(handles.axes_SliceProfile, 'on')
-            self.line_Mperp = plot(handles.axes_SliceProfile, 0, NaN, 'Color',[230 030 210]/255, 'LineStyle','-', 'LineWidth',2);
-            self.line_Mpara = plot(handles.axes_SliceProfile, 0, NaN, 'Color',[030 230 030]/255, 'LineStyle','-', 'LineWidth',2);
-            self.line_Sup   = plot(handles.axes_SliceProfile, [time(1) time(end)], [+1 +1], 'LineStyle',':', 'LineWidth',0.5, 'Color', [0.5 0.5 0.5]);
-            self.line_Smid  = plot(handles.axes_SliceProfile, [time(1) time(end)], [ 0  0], 'LineStyle',':', 'LineWidth',0.5, 'Color', [0.5 0.5 0.5]);
-            self.line_Sdown = plot(handles.axes_SliceProfile, [time(1) time(end)], [-1 -1], 'LineStyle',':', 'LineWidth',0.5, 'Color', [0.5 0.5 0.5]);
+            self.line_S_Mperp = plot(handles.axes_SliceProfile, 0, NaN, 'Color',[230 030 210]/255, 'LineStyle','-', 'LineWidth',2);
+            self.line_S_Mpara = plot(handles.axes_SliceProfile, 0, NaN, 'Color',[030 230 030]/255, 'LineStyle','-', 'LineWidth',2);
+            self.line_S_up   = plot(handles.axes_SliceProfile, [time(1) time(end)], [+1 +1], 'LineStyle',':', 'LineWidth',0.5, 'Color', [0.5 0.5 0.5]);
+            self.line_S_mid  = plot(handles.axes_SliceProfile, [time(1) time(end)], [ 0  0], 'LineStyle',':', 'LineWidth',0.5, 'Color', [0.5 0.5 0.5]);
+            self.line_S_down = plot(handles.axes_SliceProfile, [time(1) time(end)], [-1 -1], 'LineStyle',':', 'LineWidth',0.5, 'Color', [0.5 0.5 0.5]);
             legend(handles.axes_SliceProfile, {'M\perp', 'M\mid\mid'})
             xlabel(handles.axes_SliceProfile, 'dZ [mm]');
             ylabel(handles.axes_SliceProfile, 'final Mxyz');
-            legend(handles.axes_SliceProfile)
-            ylim(handles.axes_SliceProfile, [-1.2 +1.2])
+            ylim  (handles.axes_SliceProfile, [-1.2 +1.2])
 
             %--------------------------------------------------------------
-            % SliceProfile
+            % ChemicalShift
             handles.uipanel_ChemicalShift = uipanel(figHandle,...
                 'Title','ChemicalShift(ppm)',...
                 'Units','Normalized',...
@@ -169,6 +174,15 @@ classdef simulation_results < mri_rf_pulse_sim.base_class
             handles.axes_ChemicalShift = axes(handles.uipanel_ChemicalShift);
             self.axes_ChemicalShift = handles.axes_ChemicalShift;
             hold(handles.axes_ChemicalShift, 'on')
+            self.line_C_Mperp = plot(handles.axes_ChemicalShift, 0, NaN, 'Color',[230 030 210]/255, 'LineStyle','-', 'LineWidth',2);
+            self.line_C_Mpara = plot(handles.axes_ChemicalShift, 0, NaN, 'Color',[030 230 030]/255, 'LineStyle','-', 'LineWidth',2);
+            self.line_C_up    = plot(handles.axes_ChemicalShift, [time(1) time(end)], [+1 +1], 'LineStyle',':', 'LineWidth',0.5, 'Color', [0.5 0.5 0.5]);
+            self.line_C_mid   = plot(handles.axes_ChemicalShift, [time(1) time(end)], [ 0  0], 'LineStyle',':', 'LineWidth',0.5, 'Color', [0.5 0.5 0.5]);
+            self.line_C_down  = plot(handles.axes_ChemicalShift, [time(1) time(end)], [-1 -1], 'LineStyle',':', 'LineWidth',0.5, 'Color', [0.5 0.5 0.5]);
+            legend(handles.axes_ChemicalShift, {'M\perp', 'M\mid\mid'})
+            xlabel(handles.axes_ChemicalShift, 'dB0 [ppm]');
+            ylabel(handles.axes_ChemicalShift, 'final Mxyz');
+            ylim  (handles.axes_ChemicalShift, [-1.2 +1.2])
 
             % IMPORTANT
             guidata(figHandle,handles)
