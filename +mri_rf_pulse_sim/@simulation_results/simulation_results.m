@@ -21,6 +21,9 @@ classdef simulation_results < mri_rf_pulse_sim.base_class
         axes_SliceProfile matlab.graphics.axis.Axes
         line_Mpara        matlab.graphics.chart.primitive.Line
         line_Mperp        matlab.graphics.chart.primitive.Line
+        line_Sup          matlab.graphics.chart.primitive.Line
+        line_Smid         matlab.graphics.chart.primitive.Line
+        line_Sdown        matlab.graphics.chart.primitive.Line
     end % props
 
     methods (Access = public)
@@ -110,7 +113,7 @@ classdef simulation_results < mri_rf_pulse_sim.base_class
             axis(handles.axes_Mxyz, 'tight')
             xlabel(handles.axes_Mxyz, 'time (ms)');
             ylabel(handles.axes_Mxyz, 'Mxyz');
-            ylim(handles.axes_Mxyz, [-1.2 +1.2])
+            ylim(handles.axes_Mxyz, [-1.1 +1.1])
 
             handles.axes_Sphere = axes(handles.uipanel_Mxyz,...
                 'Position',[0.7 0 0.3 1]);
@@ -140,8 +143,12 @@ classdef simulation_results < mri_rf_pulse_sim.base_class
             handles.axes_SliceProfile = axes(handles.uipanel_SliceProfile);
             self.axes_SliceProfile = handles.axes_SliceProfile;
             hold(handles.axes_SliceProfile, 'on')
-            self.line_Mperp = plot(handles.axes_SliceProfile, 0, NaN, 'Color',[230 030 210]/255, 'LineStyle','-', 'LineWidth',2, 'DisplayName', 'M\perp');
-            self.line_Mpara = plot(handles.axes_SliceProfile, 0, NaN, 'Color',[030 230 030]/255, 'LineStyle','-', 'LineWidth',2, 'DisplayName', 'M\mid\mid');
+            self.line_Mperp = plot(handles.axes_SliceProfile, 0, NaN, 'Color',[230 030 210]/255, 'LineStyle','-', 'LineWidth',2);
+            self.line_Mpara = plot(handles.axes_SliceProfile, 0, NaN, 'Color',[030 230 030]/255, 'LineStyle','-', 'LineWidth',2);
+            self.line_Sup   = plot(handles.axes_SliceProfile, [time(1) time(end)], [+1 +1], 'LineStyle',':', 'LineWidth',0.5, 'Color', [0.5 0.5 0.5]);
+            self.line_Smid  = plot(handles.axes_SliceProfile, [time(1) time(end)], [ 0  0], 'LineStyle',':', 'LineWidth',0.5, 'Color', [0.5 0.5 0.5]);
+            self.line_Sdown = plot(handles.axes_SliceProfile, [time(1) time(end)], [-1 -1], 'LineStyle',':', 'LineWidth',0.5, 'Color', [0.5 0.5 0.5]);
+            legend(handles.axes_SliceProfile, {'M\perp', 'M\mid\mid'})
             xlabel(handles.axes_SliceProfile, 'dZ [mm]');
             ylabel(handles.axes_SliceProfile, 'final Mxyz');
             legend(handles.axes_SliceProfile)
