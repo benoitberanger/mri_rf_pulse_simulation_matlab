@@ -15,8 +15,8 @@ classdef simulation_parameters < mri_rf_pulse_sim.base_class
 
         function self = simulation_parameters(varargin)
 
-            self.dZ  = mri_rf_pulse_sim.ui_prop.range(parent=self, name='dZ' , vect=linspace(-10,10,201)/1e3, scale=1e3);
-            self.dB0 = mri_rf_pulse_sim.ui_prop.range(parent=self, name='dB0', vect=linspace(0,0,1)                    );
+            self.dZ  = mri_rf_pulse_sim.ui_prop.range(parent=self, name='dZ' , vect=linspace(-30,30,101)/1e3, scale=1e3);
+            self.dB0 = mri_rf_pulse_sim.ui_prop.range(parent=self, name='dB0', vect=linspace(-10,10,  3)/1e6, scale=1e6);
 
             self.auto_simplot = mri_rf_pulse_sim.ui_prop.bool(parent=self, name='auto_simplot', text='auto_simplot', value=true);
 
@@ -39,14 +39,16 @@ classdef simulation_parameters < mri_rf_pulse_sim.base_class
 
         function open_gui(self)
 
+            fig_pos = mri_rf_pulse_sim.ui_prop.get_fig_pos();
+
             % Create a figure
             figHandle = figure( ...
                 'MenuBar'         , 'none'                   , ...
                 'Toolbar'         , 'none'                   , ...
                 'Name'            , 'Simulation parameters'  , ...
                 'NumberTitle'     , 'off'                    , ...
-                'Units'           , 'Pixels'                 , ...
-                'Position'        , [500, 50, 300, 350]      , ...
+                'Units'           , 'normalized'             , ...
+                'Position'        , fig_pos.(mfilename)      , ...
                 'CloseRequestFcn' , @self.callback_cleanup   );
 
             figureBGcolor = [0.9 0.9 0.9]; set(figHandle,'Color',figureBGcolor);
