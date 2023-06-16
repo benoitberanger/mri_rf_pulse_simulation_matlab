@@ -1,6 +1,6 @@
 classdef hs < mri_rf_pulse_sim.rf_pulse.base
 
-    properties (GetAccess = public, SetAccess = public, SetObservable, AbortSet)
+    properties (GetAccess = public, SetAccess = public)
 
         A0   mri_rf_pulse_sim.ui_prop.scalar                               % [T] B1max
         beta mri_rf_pulse_sim.ui_prop.scalar                               % ?

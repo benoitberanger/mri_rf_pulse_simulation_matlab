@@ -55,7 +55,7 @@ classdef base < mri_rf_pulse_sim.base_class
             a(1).YLabel.String = 'a.m. (µT)';
             plot(a(1), [self.time(1) self.time(end)]*1e3, [0 0], 'LineStyle',':', 'LineWidth',0.5, 'Color', [0.5 0.5 0.5])
             axis(a(1),'tight')
-            
+
             a(2) = subplot(6,1,[3 4],'Parent',container);
             hold(a(2), 'on')
             plot(a(2), self.time*1e3, self.frequency_modulation, 'LineStyle','-', 'LineWidth',2)
@@ -63,7 +63,7 @@ classdef base < mri_rf_pulse_sim.base_class
             a(2).YLabel.String = 'f.m. (Hz)';
             plot(a(2), [self.time(1) self.time(end)]*1e3, [0 0], 'LineStyle',':', 'LineWidth',0.5, 'Color', [0.5 0.5 0.5])
             axis(a(2),'tight')
-            
+
             a(3) = subplot(6,1,[5 6],'Parent',container);
             hold(a(3), 'on')
             plot(a(3), self.time*1e3, self.gradient_modulation*1e3, 'LineStyle','-', 'LineWidth',2)

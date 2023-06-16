@@ -1,6 +1,6 @@
-function pulse_list = get_list_rf_pulse()
+function pulse_list = get_list()
 
-base_path = which(class(mri_rf_pulse_sim.rf_pulse.base));
+base_path = which(class(mri_rf_pulse_sim.window.base));
 package_path = fileparts(fileparts(base_path));
 d = dir(fullfile(package_path, '@*'));
 pulse_list = {d.name};
