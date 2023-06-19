@@ -76,11 +76,8 @@ classdef scalar < mri_rf_pulse_sim.base_class
                 rect = [0 0 1 1];
             end
 
-            pos_text_raw = [0   0 0.5 1];
-            pos_edit_raw = [0.5 0 0.5 1];
-
-            pos_text = [pos_text_raw(1)+rect(1) pos_text_raw(2)+rect(2) pos_text_raw(3)*rect(3) pos_text_raw(4)*rect(4)];
-            pos_edit = [pos_edit_raw(1)+rect(1) pos_edit_raw(2)+rect(2) pos_edit_raw(3)*rect(3) pos_edit_raw(4)*rect(4)];
+            pos_text = mri_rf_pulse_sim.ui_prop.compose_rect([0.0  0.0  0.5  1.0], rect);
+            pos_edit = mri_rf_pulse_sim.ui_prop.compose_rect([0.5  0.0  0.5  1.0], rect);
 
             if self.unit
                 txt = sprintf('%s (%s)', self.name, self.unit);
@@ -178,12 +175,16 @@ classdef scalar < mri_rf_pulse_sim.base_class
 
         end % fcn
 
-        function add_uicontrol_multi_scalar(container,scalars)
+        function add_uicontrol_multi_scalar(container,scalars, rect)
+            if nargin < 3
+                rect = [0 0 1 1];
+            end
+            
             scalars = fliplr(scalars);
             spacing = 1/numel(scalars);
             for s = 1 : length(scalars)
-                rect = [0 (s-1)*spacing 1 spacing];
-                scalars(s).add_uicontrol(container, rect);
+                pos = mri_rf_pulse_sim.ui_prop.compose_rect([0 (s-1)*spacing 1 spacing],rect);
+                scalars(s).add_uicontrol(container, pos);
             end
         end % fcn
 

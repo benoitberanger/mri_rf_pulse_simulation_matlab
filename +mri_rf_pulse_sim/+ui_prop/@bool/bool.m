@@ -53,11 +53,8 @@ classdef bool < mri_rf_pulse_sim.base_class
                 rect = [0 0 1 1];
             end
 
-            pos_chk_raw = [0   0 0.2 1];
-            pos_txt_raw = [0.2 0 0.8 1];
-
-            pos_chk = [pos_chk_raw(1)*rect(3)+rect(1) pos_chk_raw(2)*rect(4)+rect(2) pos_chk_raw(3)*rect(3) pos_chk_raw(4)*rect(4)];
-            pos_txt = [pos_txt_raw(1)*rect(3)+rect(1) pos_txt_raw(2)*rect(4)+rect(2) pos_txt_raw(3)*rect(3) pos_txt_raw(4)*rect(4)];
+            pos_chk = mri_rf_pulse_sim.ui_prop.compose_rect([0.0  0.0  0.2  1.0],rect);
+            pos_txt = mri_rf_pulse_sim.ui_prop.compose_rect([0.2  0.0  0.8  1.0],rect);
 
             self.checkbox = uicontrol(container,...
                 'Style'          , 'checkbox'                 ,...
