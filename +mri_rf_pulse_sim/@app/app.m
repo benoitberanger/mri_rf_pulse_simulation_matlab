@@ -156,14 +156,12 @@ classdef app < handle
         end % fcn
 
         function callback__update_select(self, ~, ~)
-            if self.simulation_parameters.auto_simplot.get()
-                self.plot();
-            end
+            self.plot();
         end % fcn
 
         function callback__update_window(self, ~, ~)
             if ishandle(self.window_definition.fig) % fig is opened
-                
+
                 % fetch
                 handles = guidata(self.window_definition.fig);
                 rf_pulse = self.pulse_definition.rf_pulse;
@@ -178,7 +176,7 @@ classdef app < handle
                 self.pulse_definition.callback_update();
 
             else % deleted window
-                
+
                 % fetch
                 rf_pulse = self.pulse_definition.rf_pulse;
 

@@ -86,7 +86,7 @@ classdef window_definition < mri_rf_pulse_sim.base_class
             idx_hanning = find(strcmp(handles.listbox_window.String,'hanning'));
             handles.listbox_window.Value = idx_hanning;
             self.set_window('hanning');
-            
+
         end % fcn
 
         function callback_update(self,varargin) % update comes from the @window
@@ -95,7 +95,7 @@ classdef window_definition < mri_rf_pulse_sim.base_class
             self.window.plot(handles.uipanel_plot);
             notify(self.app, 'update_window');
         end % fcn
-        
+
     end % meths
 
     methods (Access = protected)
@@ -118,7 +118,7 @@ classdef window_definition < mri_rf_pulse_sim.base_class
                     self.window = win;
             end
             self.window.parent = self;
-            
+
             self.window.init_gui(handles.uipanel_settings)
         end % fcn
 

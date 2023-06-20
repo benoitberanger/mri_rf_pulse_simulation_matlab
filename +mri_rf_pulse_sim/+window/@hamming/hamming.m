@@ -2,18 +2,18 @@ classdef hamming < mri_rf_pulse_sim.window.hanning
 
     methods (Access = public)
 
-        
+
         function self = hamming(args)
-             arguments
+            arguments
                 args.rf_pulse
             end % args
-            
+
             % default paramters
             self@mri_rf_pulse_sim.window.hanning()
             self.name = mfilename;
             self.a0.set(0.53836)
             self.a1.set(0.46164)
-            
+
             if length(fieldnames(args)) < 1
                 return
             end
@@ -26,7 +26,7 @@ classdef hamming < mri_rf_pulse_sim.window.hanning
             txt = sprintf('%s window : a0=%g  a1=%g',...
                 self.name, self.a0.get(), self.a1.get());
         end % fcn
-        
+
     end % meths
 
 end % class
