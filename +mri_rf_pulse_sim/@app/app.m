@@ -4,14 +4,7 @@ classdef app < handle
         pulse_definition      mri_rf_pulse_sim.pulse_definition
         simulation_parameters mri_rf_pulse_sim.simulation_parameters
         simulation_results    mri_rf_pulse_sim.simulation_results
-    end % props
-
-    properties (GetAccess = public,  SetAccess = protected, Hidden)
-        listener__update_pulse  event.listener
-        listener__update_setup  event.listener
-        listener__update_select event.listener
-
-        listener__cleanup       event.listener
+        window_definition     mri_rf_pulse_sim.window_definition
     end % props
 
     events
@@ -20,7 +13,18 @@ classdef app < handle
         update_select
 
         cleanup
+
+        update_window
     end
+    properties (GetAccess = public,  SetAccess = protected, Hidden)
+        listener__update_pulse  event.listener
+        listener__update_setup  event.listener
+        listener__update_select event.listener
+
+        listener__cleanup       event.listener
+
+        listener__update_window event.listener
+    end % props
 
     methods (Access = public)
 
@@ -118,6 +122,11 @@ classdef app < handle
             self.plot();
         end % fcn
 
+        function open_window_gui(self)
+            self.window_definition = mri_rf_pulse_sim.window_definition('open_gui', self);
+            notify(self, 'update_window');
+        end % fcn
+
     end % meths
 
     methods (Access = protected)
@@ -130,6 +139,8 @@ classdef app < handle
             self.listener__update_pulse  = addlistener(self, 'update_pulse' , @self.callback__update_pulse );
             self.listener__update_setup  = addlistener(self, 'update_setup' , @self.callback__update_setup );
             self.listener__update_select = addlistener(self, 'update_select', @self.callback__update_select);
+
+            self.listener__update_window = addlistener(self, 'update_window', @self.callback__update_window);
         end % fcn
 
         function callback__update_pulse(self, ~, ~)
@@ -150,13 +161,48 @@ classdef app < handle
             end
         end % fcn
 
+        function callback__update_window(self, ~, ~)
+            if ishandle(self.window_definition.fig) % fig is opened
+                
+                % fetch
+                handles = guidata(self.window_definition.fig);
+                rf_pulse = self.pulse_definition.rf_pulse;
+                window = self.window_definition.window;
+
+                % link
+                rf_pulse.window = window;
+                window.rf_pulse = rf_pulse;
+
+                % generate & plot
+                rf_pulse.window.plot(handles.uipanel_plot);
+                self.pulse_definition.callback_update();
+
+            else % deleted window
+                
+                % fetch
+                rf_pulse = self.pulse_definition.rf_pulse;
+
+                % link
+                rf_pulse.window = mri_rf_pulse_sim.window.base.empty;
+
+                % generate & plot
+                self.pulse_definition.callback_update();
+            end
+        end % fcn
+
     end % meths
 
-    methods(Access = {?mri_rf_pulse_sim.pulse_definition, ?mri_rf_pulse_sim.simulation_parameters, ?mri_rf_pulse_sim.simulation_results})
+    methods(Access = { ...
+            ?mri_rf_pulse_sim.pulse_definition, ...
+            ?mri_rf_pulse_sim.simulation_parameters, ...
+            ?mri_rf_pulse_sim.simulation_results, ...
+            ?mri_rf_pulse_sim.window_definition ...
+            })
 
         function callback_cleanup(self, ~, ~)
             fprintf('[app]: cleanup() ... ')
             tic
+            try delete(self.window_definition    .fig); catch, end
             try delete(self.pulse_definition     .fig); catch, end
             try delete(self.simulation_parameters.fig); catch, end
             try delete(self.simulation_results   .fig); catch, end

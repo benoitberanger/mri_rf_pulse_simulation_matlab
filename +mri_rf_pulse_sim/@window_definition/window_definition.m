@@ -1,8 +1,8 @@
-classdef pulse_definition < mri_rf_pulse_sim.base_class
+classdef window_definition < mri_rf_pulse_sim.base_class
 
     properties (GetAccess = public,  SetAccess = ?mri_rf_pulse_sim.app)
 
-        rf_pulse mri_rf_pulse_sim.rf_pulse.base
+        window mri_rf_pulse_sim.window.base
 
         fig matlab.ui.Figure
 
@@ -10,7 +10,7 @@ classdef pulse_definition < mri_rf_pulse_sim.base_class
 
     methods (Access = public)
 
-        function self = pulse_definition(varargin)
+        function self = window_definition(varargin)
             if nargin < 1
                 return
             end
@@ -29,16 +29,13 @@ classdef pulse_definition < mri_rf_pulse_sim.base_class
 
         function open_gui(self)
 
-            fig_pos = mri_rf_pulse_sim.ui_prop.get_fig_pos();
-
             % Create a figure
             figHandle = figure( ...
                 'MenuBar'         , 'none'                   , ...
                 'Toolbar'         , 'none'                   , ...
-                'Name'            , 'Pulse definition'       , ...
+                'Name'            , 'Pulse window'           , ...
                 'NumberTitle'     , 'off'                    , ...
                 'Units'           , 'normalized'             , ...
-                'Position'        , fig_pos.(mfilename)      , ...
                 'CloseRequestFcn' , @self.callback_cleanup   );
 
             figureBGcolor = [0.9 0.9 0.9]; set(figHandle,'Color',figureBGcolor);
@@ -70,24 +67,12 @@ classdef pulse_definition < mri_rf_pulse_sim.base_class
                 'Position',[0.4 0.7 0.6 0.3],...
                 'BackgroundColor',figureBGcolor);
 
-            handles.listbox_rf_pulse = uicontrol(handles.uipanel_selection,...
+            handles.listbox_window = uicontrol(handles.uipanel_selection,...
                 'Style','listbox',...
                 'Units','Normalized',...
                 'Position',[0 0 1 1],...
-                'String',mri_rf_pulse_sim.rf_pulse.get_list(),...
-                'Callback',@self.callback_set_rf_pulse);
-
-            handles.uipanel_settings_specific = uipanel(handles.uipanel_settings,...
-                'Title','Pulse specific',...
-                'Units','Normalized',...
-                'Position',[0 0 1 0.7],...
-                'BackgroundColor',figureBGcolor);
-
-            handles.uipanel_settings_base = uipanel(handles.uipanel_settings,...
-                'Title', 'Base',...
-                'Units','Normalized',...
-                'Position',[0 0.7 1 0.3],...
-                'BackgroundColor',figureBGcolor);
+                'String',mri_rf_pulse_sim.window.get_list(),...
+                'Callback',@self.callback_set_window);
 
             % IMPORTANT
             guidata(figHandle,handles)
@@ -98,54 +83,47 @@ classdef pulse_definition < mri_rf_pulse_sim.base_class
             self.fig = figHandle;
 
             % initialize with default values
-            idx_sinc = find(strcmp(handles.listbox_rf_pulse.String,'sinc'));
-            handles.listbox_rf_pulse.Value = idx_sinc;
-            self.callback_set_rf_pulse(handles.listbox_rf_pulse);
+            idx_hanning = find(strcmp(handles.listbox_window.String,'hanning'));
+            handles.listbox_window.Value = idx_hanning;
+            self.callback_set_window(handles.listbox_window);
 
         end % fcn
 
-        function set_rf_pulse(self, pulse)
-            handles = guidata(self.fig);
-            delete(handles.uipanel_settings_base    .Children)
-            delete(handles.uipanel_settings_specific.Children)
-            delete(handles.uipanel_plot             .Children)
-
-            switch class(pulse)
-                case 'char'
-                    self.rf_pulse = eval(sprintf('mri_rf_pulse_sim.rf_pulse.%s', pulse));
-                otherwise
-                    self.rf_pulse = pulse;
-            end
-            self.rf_pulse.parent = self;
-            self.rf_pulse.app    = self.app;
-
-            self.rf_pulse.init_base_gui    (handles.uipanel_settings_base    );
-            self.rf_pulse.init_specific_gui(handles.uipanel_settings_specific);
-            self.rf_pulse.plot(handles.uipanel_plot);
-            notify(self.app, 'update_pulse');
-        end % fcn
-
-        function callback_update(self, ~, ~)
-            self.rf_pulse.generate();
+        function callback_update(self,varargin)
             handles = guidata(self.fig);
             delete(handles.uipanel_plot.Children)
-            self.rf_pulse.plot(handles.uipanel_plot);
-            drawnow();
-            notify(self.app, 'update_pulse');
+            self.window.plot(handles.uipanel_plot);
+            notify(self.app, 'update_window');
         end % fcn
-
+        
     end % meths
 
-    methods(Access = protected)
+    methods (Access = protected)
 
-        function callback_set_rf_pulse(self,hObject,~)
-            new_pulse_name = hObject.String{hObject.Value};
-            self.set_rf_pulse(new_pulse_name);
+        function callback_set_window(self,hObject,~)
+            new_window_name = hObject.String{hObject.Value};
+            self.set_window(new_window_name);
+        end % fcn
+
+        function set_window(self, win)
+            handles = guidata(self.fig);
+            delete(handles.uipanel_settings.Children)
+            delete(handles.uipanel_plot    .Children)
+
+            switch class(win)
+                case 'char'
+                    self.window = eval(sprintf('mri_rf_pulse_sim.window.%s', win));
+                otherwise
+                    self.window = win;
+            end
+            self.window.parent = self;
+            
+            self.window.init_gui(handles.uipanel_settings)
         end % fcn
 
         function callback_cleanup(self,varargin)
             delete(self.fig)
-            notify(self.app,'cleanup')
+            notify(self.app,'update_window')
         end % fcn
 
     end % meths
