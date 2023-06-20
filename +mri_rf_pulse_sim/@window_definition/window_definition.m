@@ -85,11 +85,11 @@ classdef window_definition < mri_rf_pulse_sim.base_class
             % initialize with default values
             idx_hanning = find(strcmp(handles.listbox_window.String,'hanning'));
             handles.listbox_window.Value = idx_hanning;
-            self.callback_set_window(handles.listbox_window);
-
+            self.set_window('hanning');
+            
         end % fcn
 
-        function callback_update(self,varargin)
+        function callback_update(self,varargin) % update comes from the @window
             handles = guidata(self.fig);
             delete(handles.uipanel_plot.Children)
             self.window.plot(handles.uipanel_plot);
@@ -103,6 +103,7 @@ classdef window_definition < mri_rf_pulse_sim.base_class
         function callback_set_window(self,hObject,~)
             new_window_name = hObject.String{hObject.Value};
             self.set_window(new_window_name);
+            notify(self.app, 'update_window');
         end % fcn
 
         function set_window(self, win)
