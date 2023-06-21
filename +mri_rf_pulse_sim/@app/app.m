@@ -63,21 +63,17 @@ classdef app < handle
             % get stuff
             dZ  = self.simulation_parameters.dZ ;
             dB0 = self.simulation_parameters.dB0;
-            time = self.pulse_definition.rf_pulse.time;
+            time = self.pulse_definition.rf_pulse.time * 1e3;
+            M = self.simulation_results.M;
 
             % plot Mxyz
-            set(self.simulation_results.line_M_up  ,'XData', [time(1) time(end)] * 1e3, 'YData', [+1 +1]);
-            set(self.simulation_results.line_M_mid ,'XData', [time(1) time(end)] * 1e3, 'YData', [ 0  0]);
-            set(self.simulation_results.line_M_down,'XData', [time(1) time(end)] * 1e3, 'YData', [-1 -1]);
-            set(self.simulation_results.line_M_x,...
-                'XData', time * 1e3,...
-                'YData', self.simulation_results.M(1,:,dZ.selected_idx,dB0.selected_idx));
-            set(self.simulation_results.line_M_y,...
-                'XData', time * 1e3,...
-                'YData', self.simulation_results.M(2,:,dZ.selected_idx,dB0.selected_idx));
-            set(self.simulation_results.line_M_z,...
-                'XData', time * 1e3,...
-                'YData', self.simulation_results.M(3,:,dZ.selected_idx,dB0.selected_idx));
+            set(self.simulation_results.line_M_up  ,'XData', [time(1) time(end)], 'YData', [+1 +1]);
+            set(self.simulation_results.line_M_mid ,'XData', [time(1) time(end)], 'YData', [ 0  0]);
+            set(self.simulation_results.line_M_down,'XData', [time(1) time(end)], 'YData', [-1 -1]);
+            set(self.simulation_results.line_M_x,   'XData',                time, 'YData', M(1,:,dZ.selected_idx,dB0.selected_idx));
+            set(self.simulation_results.line_M_y,   'XData',                time, 'YData', M(2,:,dZ.selected_idx,dB0.selected_idx));
+            set(self.simulation_results.line_M_para,'XData',                time, 'YData', M(3,:,dZ.selected_idx,dB0.selected_idx));
+            set(self.simulation_results.line_M_perp,'XData',                time, 'YData', sqrt(M(1,:,dZ.selected_idx,dB0.selected_idx).^2 + M(2,:,dZ.selected_idx,dB0.selected_idx).^2));
 
             % plot line 3D
             set(self.simulation_results.line3_Mxyz,...
@@ -93,27 +89,23 @@ classdef app < handle
 
             % plot slice profile
             dz = dZ.vect * dZ.scale;
-            set(self.simulation_results.line_S_up  ,'XData', [dz(1) dz(end)], 'YData', [+1 +1]);
-            set(self.simulation_results.line_S_mid ,'XData', [dz(1) dz(end)], 'YData', [ 0  0]);
-            set(self.simulation_results.line_S_down,'XData', [dz(1) dz(end)], 'YData', [-1 -1]);
-            set(self.simulation_results.line_S_Mperp,...
-                'XData', dz,...
-                'YData', sqrt(self.simulation_results.M(1,end,:,dB0.selected_idx).^2+self.simulation_results.M(2,end,:,dB0.selected_idx).^2));
-            set(self.simulation_results.line_S_Mpara,...
-                'XData', dz,...
-                'YData', self.simulation_results.M(3,end,:,dB0.selected_idx));
+            set(self.simulation_results.line_S_up   ,'XData', [dz(1) dz(end)], 'YData', [+1 +1]);
+            set(self.simulation_results.line_S_mid  ,'XData', [dz(1) dz(end)], 'YData', [ 0  0]);
+            set(self.simulation_results.line_S_down ,'XData', [dz(1) dz(end)], 'YData', [-1 -1]);
+            set(self.simulation_results.line_S_Mx   ,'XData',              dz, 'YData', M(1,end,:,dB0.selected_idx));
+            set(self.simulation_results.line_S_My   ,'XData',              dz, 'YData', M(2,end,:,dB0.selected_idx));
+            set(self.simulation_results.line_S_Mpara,'XData',              dz, 'YData', M(3,end,:,dB0.selected_idx));
+            set(self.simulation_results.line_S_Mperp,'XData',              dz, 'YData', sqrt(M(1,end,:,dB0.selected_idx).^2+M(2,end,:,dB0.selected_idx).^2));
 
             % plot chemical shift
             db0 = dB0.vect * dB0.scale;
-            set(self.simulation_results.line_C_up  ,'XData', [db0(1) db0(end)], 'YData', [+1 +1]);
-            set(self.simulation_results.line_C_mid ,'XData', [db0(1) db0(end)], 'YData', [ 0  0]);
-            set(self.simulation_results.line_C_down,'XData', [db0(1) db0(end)], 'YData', [-1 -1]);
-            set(self.simulation_results.line_C_Mperp,...
-                'XData', db0,...
-                'YData', sqrt(self.simulation_results.M(1,end,dZ.selected_idx,:).^2+self.simulation_results.M(2,end,dZ.selected_idx,:).^2));
-            set(self.simulation_results.line_C_Mpara,...
-                'XData', db0,...
-                'YData', self.simulation_results.M(3,end,dZ.selected_idx,:));
+            set(self.simulation_results.line_C_up   ,'XData', [db0(1) db0(end)], 'YData', [+1 +1]);
+            set(self.simulation_results.line_C_mid  ,'XData', [db0(1) db0(end)], 'YData', [ 0  0]);
+            set(self.simulation_results.line_C_down ,'XData', [db0(1) db0(end)], 'YData', [-1 -1]);
+            set(self.simulation_results.line_C_Mx   ,'XData',               db0, 'YData', M(1,end,dZ.selected_idx,:));
+            set(self.simulation_results.line_C_My   ,'XData',               db0, 'YData', M(1,end,dZ.selected_idx,:));
+            set(self.simulation_results.line_C_Mpara,'XData',               db0, 'YData', M(3,end,dZ.selected_idx,:));
+            set(self.simulation_results.line_C_Mperp,'XData',               db0, 'YData', sqrt(M(1,end,dZ.selected_idx,:).^2+M(2,end,dZ.selected_idx,:).^2));
 
         end % fcn
 
