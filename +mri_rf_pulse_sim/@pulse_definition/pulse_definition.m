@@ -105,6 +105,10 @@ classdef pulse_definition < mri_rf_pulse_sim.base_class
         end % fcn
 
         function set_rf_pulse(self, pulse)
+            if ~isempty(self.app.window_definition) && ~isempty(self.app.window_definition.fig)
+                delete(self.app.window_definition.fig);
+            end
+
             handles = guidata(self.fig);
             delete(handles.uipanel_settings_base    .Children)
             delete(handles.uipanel_settings_specific.Children)
