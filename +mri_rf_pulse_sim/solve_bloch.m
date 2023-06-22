@@ -3,7 +3,7 @@ function M = solve_bloch(Time, AmplitideModulation, FrequencyModulation, Gradien
 % Define the time vector for simulation
 dt = mean(diff(Time));
 
-method = 'expm';
+method = 'euler';
 
 switch method
 
