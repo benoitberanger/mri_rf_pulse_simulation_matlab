@@ -13,7 +13,7 @@ switch method
         M0 = [0; 0; 1];
 
         % Preallocate variables for the magnetization vectors in ROTATING FRAME
-        result = zeros(3,length(Time),length(SpatialPosition),length(DeltaB0));
+        M = zeros(3,length(Time),length(SpatialPosition),length(DeltaB0));
 
         Sigma_x = [
             0 0 0;
@@ -33,7 +33,6 @@ switch method
             0 0 0;
             ];
 
-
         for b = 1 : length(DeltaB0)
             dB0 = DeltaB0(b);
 
@@ -41,23 +40,21 @@ switch method
                 dZ = SpatialPosition(p);
 
                 % Loop through time and solve the Bloch equations numerically
-                M = zeros(3,length(Time));
-                M(:,1) = M0;
+                m = zeros(3,length(Time));
+                m(:,1) = M0;
                 for t = 2:length(Time)
 
-                    dM =...
+                    dm =...
                         Sigma_z * (dZ * GradientModulation(t-1) + dB0 ) * gamma + ...
                         gamma * AmplitideModulation(t-1) * (cos(2*pi*FrequencyModulation(t-1)*Time(t-1)) * Sigma_x + sin(2*pi*FrequencyModulation(t-1)*Time(t-1)) * Sigma_y) ;
-                    M(:,t) = expm(dM*dt)*M(:,t-1);
+                    m(:,t) = expm(dm*dt)*m(:,t-1);
 
                 end % Time
-                result(:,:,p,b) = M;
+                M(:,:,p,b) = m;
 
             end % SpatialPosition
 
         end % DeltaB0
-
-        M = result;
 
     case 'euler'
 
@@ -118,6 +115,6 @@ switch method
         M = reshape(M, [length(DeltaB0) length(SpatialPosition) 3 length(Time)]);
         M = permute(M, [3 4 2 1]);
 
-end
+end % switch::method
 
 end % function
