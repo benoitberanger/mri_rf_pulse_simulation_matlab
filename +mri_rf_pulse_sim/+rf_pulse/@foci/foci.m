@@ -13,11 +13,8 @@ classdef foci < mri_rf_pulse_sim.rf_pulse.hs
         function  value = get.A(self)
             value = 10 * ones(size(self.time));
 
-            cond1 = sech(self.beta*self.time) >  0.1;
-            value(cond1) = 1 ./ sech(self.beta*self.time(cond1));
-
-            cond2 = cosh(self.beta*self.time) < 10.0;
-            value(cond2) = cosh(self.beta*self.time(cond2));
+            conditon = cosh(self.beta*self.time) < 10.0;
+            value(conditon) = cosh(self.beta*self.time(conditon));
         end % fcn
 
     end % meths

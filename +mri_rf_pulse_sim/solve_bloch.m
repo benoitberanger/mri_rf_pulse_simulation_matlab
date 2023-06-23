@@ -1,4 +1,4 @@
-function M = solve_bloch(Time, AmplitideModulation, FrequencyModulation, GradientModulation, SpatialPosition, DeltaB0, gamma)
+function M = solve_bloch(Time, AmplitideModulation, FrequencyModulation, GradientModulation, SpatialPosition, DeltaB0, gamma, B0)
 
 % Define the time vector for simulation
 dt = mean(diff(Time));
@@ -45,7 +45,7 @@ switch method
                 for t = 2:length(Time)
 
                     dm =...
-                        Sigma_z * (dZ * GradientModulation(t-1) + dB0 ) * gamma + ...
+                        Sigma_z * (dZ * GradientModulation(t-1) + dB0*B0 ) * gamma + ...
                         gamma * AmplitideModulation(t-1) * (cos(2*pi*FrequencyModulation(t-1)*Time(t-1)) * Sigma_x + sin(2*pi*FrequencyModulation(t-1)*Time(t-1)) * Sigma_y) ;
                     m(:,t) = expm(dm*dt)*m(:,t-1);
 
@@ -70,7 +70,7 @@ switch method
 
         for t = 2:length(Time)
 
-            Uz = (Z * GradientModulation(t-1) + B ) * gamma;
+            Uz = (Z * GradientModulation(t-1) + B*B0 ) * gamma;
             Ux = gamma * AmplitideModulation(t-1) * cos(2*pi*FrequencyModulation(t-1)*Time(t-1));
             Uy = gamma * AmplitideModulation(t-1) * sin(2*pi*FrequencyModulation(t-1)*Time(t-1));
 

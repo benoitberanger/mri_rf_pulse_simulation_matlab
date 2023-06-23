@@ -3,6 +3,7 @@ classdef simulation_parameters < mri_rf_pulse_sim.base_class
     properties(GetAccess = public, SetAccess = public)
         dZ  mri_rf_pulse_sim.ui_prop.range                                 % [m] slice (spin) position
         dB0 mri_rf_pulse_sim.ui_prop.range                                 % [ppm] off-resonance vector
+        B0  mri_rf_pulse_sim.ui_prop.scalar                                % [T] static magnetic field strength
 
         auto_simplot mri_rf_pulse_sim.ui_prop.bool                         % state of the GUI checkbox
     end % props
@@ -15,8 +16,9 @@ classdef simulation_parameters < mri_rf_pulse_sim.base_class
 
         function self = simulation_parameters(varargin)
 
-            self.dZ  = mri_rf_pulse_sim.ui_prop.range(parent=self, name='dZ' , vect=linspace(-010,010,201)/1e3, scale=1e3);
-            self.dB0 = mri_rf_pulse_sim.ui_prop.range(parent=self, name='dB0', vect=linspace(-100,100,201)/1e6, scale=1e6);
+            self.dZ  = mri_rf_pulse_sim.ui_prop.range (parent=self, name='dZ' , vect=linspace(-010,010,201)/1e3, scale=1e3);
+            self.dB0 = mri_rf_pulse_sim.ui_prop.range (parent=self, name='dB0', vect=linspace(-100,100,201)/1e6, scale=1e6);
+            self.B0  = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='B0' , value=2.89, unit='T');
 
             self.auto_simplot = mri_rf_pulse_sim.ui_prop.bool(parent=self, name='auto_simplot', text='auto_simplot', value=true);
 
@@ -93,6 +95,8 @@ classdef simulation_parameters < mri_rf_pulse_sim.base_class
                 'BackgroundColor',buttonBGcolor,...
                 'Callback',@self.callback_simplot);
 
+            self.B0.add_uicontrol(handles.uipanel_controls, [0.5 0 0.5 1])
+            
             % IMPORTANT
             guidata(figHandle,handles)
             % After creating the figure, dont forget the line
