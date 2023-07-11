@@ -1,5 +1,6 @@
 classdef foci < mri_rf_pulse_sim.rf_pulse.hs
-
+    % Frequency Offset Corrected Inversion
+    
     % Payne GS, Leach MO. Implementation and evaluation of frequency offset
     % corrected inversion (FOCI) pulses on a clinical MR system. Magn Reson
     % Med. 1997 Nov;38(5):828-33. doi: 10.1002/mrm.1910380520. PMID: 9358458.
@@ -27,7 +28,7 @@ classdef foci < mri_rf_pulse_sim.rf_pulse.hs
             % set parameters like in the article
             self.n_points.value = 4096;
             self.duration.value = 7.68 * 1e-3;
-            self.A0.value = 100 * 1e-6; % this B1max is not in the article, but I still need to set it with reasonable value
+            self.Amax.value = 100 * 1e-6; % this B1max is not in the article, but I still need to set it with reasonable value
             self.beta.value = 1618;
             BW = 2000; % Hz
             self.mu.value = BW * pi / self.beta;
@@ -44,7 +45,7 @@ classdef foci < mri_rf_pulse_sim.rf_pulse.hs
             self.generate_hs();
             self.amplitude_modulation = self.A .* self.amplitude_modulation;
             self.frequency_modulation = self.A .* self.frequency_modulation;
-            self. gradient_modulation = self.A .* self. gradient_modulation / 10; % self.gz is gz_max
+            self. gradient_modulation = self.A .* self. gradient_modulation / 10; % self.gz is "gz_max"
         end % fcn
 
 

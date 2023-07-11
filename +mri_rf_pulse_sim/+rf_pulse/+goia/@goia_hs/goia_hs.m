@@ -1,4 +1,11 @@
 classdef goia_hs < mri_rf_pulse_sim.rf_pulse.foci
+    % Gradient Offset Independent Adiabaticity
+
+    % Andronesi OC, Ramadan S, Ratai EM, Jennings D, Mountford CE, Sorensen AG.
+    % Spectroscopic imaging with improved gradient modulated constant
+    % adiabaticity pulses on high-field clinical scanners. J Magn Reson. 2010
+    % Apr;203(2):283-93. doi: 10.1016/j.jmr.2010.01.010. Epub 2010 Jan 28.
+    % PMID: 20163975; PMCID: PMC3214007.
 
     properties (GetAccess = public, SetAccess = public)
 
@@ -11,10 +18,10 @@ classdef goia_hs < mri_rf_pulse_sim.rf_pulse.foci
     methods (Access = public)
 
         function self = goia_hs()
-            self@mri_rf_pulse_sim.rf_pulse.foci(); % call HS constructor
+            self@mri_rf_pulse_sim.rf_pulse.foci(); % call FOCI constructor
             self.f = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='f', value=0.9);
-            self.n = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='n', value=4);
-            self.m = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='m', value=2);
+            self.n = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='n', value=8);
+            self.m = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='m', value=4);
             self.n_points.value = 512;
             self.beta.value = 5;
             self.mu.value = 2000;
@@ -30,7 +37,7 @@ classdef goia_hs < mri_rf_pulse_sim.rf_pulse.foci
 
             T = (2*self.time / self.duration) - 1;
 
-            self.amplitude_modulation = self.A0       * sech(self.beta * T.^self.n.value);
+            self.amplitude_modulation = self.Amax     * sech(self.beta * T.^self.n.value);
             self. gradient_modulation = self.gz       * (1 - self.f * sech(self.beta * T.^self.m.value));
             self.frequency_modulation = cumsum(self.amplitude_modulation.^2 ./ self.gradient_modulation) * self.duration / self.n_points;
             self.frequency_modulation = self.frequency_modulation - self.frequency_modulation(round(end/2));
@@ -41,7 +48,7 @@ classdef goia_hs < mri_rf_pulse_sim.rf_pulse.foci
         function init_specific_gui(self, container)
             mri_rf_pulse_sim.ui_prop.scalar.add_uicontrol_multi_scalar(...
                 container,...
-                [self.A0, self.beta, self.mu, self.f self.gz self.n self.m]...
+                [self.Amax, self.beta, self.mu, self.f, self.gz, self.n, self.m]...
                 );
         end % fcn
 
