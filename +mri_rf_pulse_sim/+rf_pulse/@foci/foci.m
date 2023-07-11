@@ -31,7 +31,7 @@ classdef foci < mri_rf_pulse_sim.rf_pulse.hs
             self.beta.value = 1618;
             BW = 2000; % Hz
             self.mu.value = BW * pi / self.beta;
-            self.gz.value = 2.5 * 1e-3;
+            self.gz.value = 25 * 1e-3;
 
             self.generate_foci();
         end % fcn
@@ -44,7 +44,7 @@ classdef foci < mri_rf_pulse_sim.rf_pulse.hs
             self.generate_hs();
             self.amplitude_modulation = self.A .* self.amplitude_modulation;
             self.frequency_modulation = self.A .* self.frequency_modulation;
-            self. gradient_modulation = self.A .* self. gradient_modulation;
+            self. gradient_modulation = self.A .* self. gradient_modulation / 10; % self.gz is gz_max
         end % fcn
 
 
