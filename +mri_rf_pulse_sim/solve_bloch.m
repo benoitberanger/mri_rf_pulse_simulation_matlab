@@ -1,8 +1,5 @@
 function M = solve_bloch(Time, AmplitideModulation, FrequencyModulation, GradientModulation, SpatialPosition, DeltaB0, gamma, B0)
 
-% Define the time vector for simulation
-dt = mean(diff(Time));
-
 method = 'euler';
 
 switch method
@@ -43,7 +40,8 @@ switch method
                 m = zeros(3,length(Time));
                 m(:,1) = M0;
                 for t = 2:length(Time)
-
+                    
+                    dt = Time(t) - Time(t-1);
                     dm =...
                         Sigma_z * (dZ * GradientModulation(t-1) + dB0*B0 ) * gamma + ...
                         gamma * AmplitideModulation(t-1) * (cos(2*pi*FrequencyModulation(t-1)*Time(t-1)) * Sigma_x + sin(2*pi*FrequencyModulation(t-1)*Time(t-1)) * Sigma_y) ;
@@ -70,6 +68,8 @@ switch method
 
         for t = 2:length(Time)
 
+            dt = Time(t) - Time(t-1);
+            
             Uz = (Z * GradientModulation(t-1) + B*B0 ) * gamma;
             Ux = gamma * AmplitideModulation(t-1) * cos(2*pi*FrequencyModulation(t-1)*Time(t-1));
             Uy = gamma * AmplitideModulation(t-1) * sin(2*pi*FrequencyModulation(t-1)*Time(t-1));
