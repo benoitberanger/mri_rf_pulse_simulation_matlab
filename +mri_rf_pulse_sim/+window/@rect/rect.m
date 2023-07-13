@@ -1,7 +1,7 @@
-classdef rect < mri_rf_pulse_sim.window.base
+classdef rect < mri_rf_pulse_sim.backend.window.abstract
 
-    properties (GetAccess = public, SetAccess = public)
-        shape (1,:) double                                                 % shape of the window
+    properties (GetAccess = public, SetAccess = public, Dependent)
+        shape
     end % props
 
     methods % no attribute for dependent properies

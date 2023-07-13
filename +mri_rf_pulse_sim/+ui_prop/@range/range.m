@@ -1,4 +1,4 @@
-classdef range < mri_rf_pulse_sim.base_class
+classdef range < mri_rf_pulse_sim.backend.base_class
 
     properties(GetAccess = public, SetAccess = public, SetObservable, AbortSet)
         name   (1,:) char
@@ -72,7 +72,6 @@ classdef range < mri_rf_pulse_sim.base_class
             end % args
 
             if length(fieldnames(args)) < 1
-                self = mri_rf_pulse_sim.ui_prop.range.demo();
                 return
             end
 
@@ -164,57 +163,6 @@ classdef range < mri_rf_pulse_sim.base_class
             displayRep = widthConstrainedDataRepresentation(self,displayConfiguration,width,...
                 StringArray=txt,AllowTruncatedDisplayForScalar=true);
         end % dcn
-
-    end % meths
-
-    methods (Static)
-
-        function self = demo()
-
-            self = mri_rf_pulse_sim.ui_prop.range('demo_range', linspace(-10,10,11)/1000, 1000);
-
-            % Create a figure
-            figHandle = figure( ...
-                'MenuBar'         , 'none'                   , ...
-                'Toolbar'         , 'none'                   , ...
-                'Name'            , sprintf('%s.demo()',mfilename)  , ...
-                'NumberTitle'     , 'off'                    , ...
-                'Units'           , 'Pixels'                 , ...
-                'Position'        , [50, 50, 450, 350]       );
-
-            figureBGcolor = [0.9 0.9 0.9]; set(figHandle,'Color',figureBGcolor);
-            buttonBGcolor = figureBGcolor - 0.1;
-            editBGcolor   = [1.0 1.0 1.0];
-
-            % Create GUI handles : pointers to access the graphic objects
-            handles               = guihandles(figHandle);
-            handles.fig           = figHandle;
-            handles.figureBGcolor = figureBGcolor;
-            handles.buttonBGcolor = buttonBGcolor;
-            handles.editBGcolor   = editBGcolor  ;
-
-            handles.uipanel_setup = uipanel(figHandle,...
-                'Title','Setup',...
-                'BackgroundColor',figureBGcolor,...
-                'Units','normalized',...
-                'Position',[0 0.5 1 0.5]);
-
-            handles.uipanel_select = uipanel(figHandle,...
-                'Title','Interact',...
-                'BackgroundColor',figureBGcolor,...
-                'Units','normalized',...
-                'Position',[0 0 1 0.5]);
-
-            % IMPORTANT
-            guidata(figHandle,handles)
-            % After creating the figure, dont forget the line
-            % guidata(figHandle,handles) . It allows smart retrive like
-            % handles=guidata(hObject)
-
-            self.add_uicontrol_setup (handles.uipanel_setup );
-            self.add_uicontrol_select(handles.uipanel_select);
-
-        end % fcn
 
     end % meths
 

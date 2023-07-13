@@ -1,7 +1,7 @@
-classdef hanning < mri_rf_pulse_sim.window.base
+classdef hanning < mri_rf_pulse_sim.backend.window.abstract
 
     properties (GetAccess = public, SetAccess = public)
-        shape (1,:) double                                                 % shape of the window
+        shape
 
         a0    mri_rf_pulse_sim.ui_prop.scalar
         a1    mri_rf_pulse_sim.ui_prop.scalar

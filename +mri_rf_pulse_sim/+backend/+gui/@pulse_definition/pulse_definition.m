@@ -1,12 +1,19 @@
-classdef pulse_definition < mri_rf_pulse_sim.base_class
+classdef pulse_definition < mri_rf_pulse_sim.backend.base_class
 
     properties (GetAccess = public,  SetAccess = ?mri_rf_pulse_sim.app)
 
-        rf_pulse mri_rf_pulse_sim.rf_pulse.base
+        rf_pulse
 
         fig matlab.ui.Figure
 
     end % props
+
+    methods
+        function set.rf_pulse(self,value)
+            assert(isa(value,'mri_rf_pulse_sim.backend.rf_pulse.abstract'))
+            self.rf_pulse = value;
+        end
+    end
 
     methods (Access = public)
 
@@ -29,7 +36,7 @@ classdef pulse_definition < mri_rf_pulse_sim.base_class
 
         function open_gui(self)
 
-            fig_pos = mri_rf_pulse_sim.ui_prop.get_fig_pos();
+            fig_pos = mri_rf_pulse_sim.backend.gui.get_fig_pos();
 
             % Create a figure
             figHandle = figure( ...
@@ -74,7 +81,7 @@ classdef pulse_definition < mri_rf_pulse_sim.base_class
                 'Style','listbox',...
                 'Units','Normalized',...
                 'Position',[0 0 1 1],...
-                'String',mri_rf_pulse_sim.rf_pulse.get_list(),...
+                'String',mri_rf_pulse_sim.backend.rf_pulse.get_list(),...
                 'Callback',@self.callback_set_rf_pulse);
 
             handles.uipanel_settings_specific = uipanel(handles.uipanel_settings,...

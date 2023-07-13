@@ -1,10 +1,21 @@
-classdef base < mri_rf_pulse_sim.base_class
+classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
 
     properties (GetAccess = public, SetAccess = public)
         name     (1,:) char
-        rf_pulse       mri_rf_pulse_sim.rf_pulse.base
+        rf_pulse
     end % props
 
+    properties (GetAccess = public, SetAccess = public, Abstract)
+        shape    (1,:) double                                              % shape of the window
+    end % props
+
+    methods
+        function set.rf_pulse(self,value)
+            assert(isa(value,'mri_rf_pulse_sim.backend.rf_pulse.abstract'))
+            self.rf_pulse = value;
+        end
+    end
+    
     methods (Access = public)
 
         function plot(self, container)
@@ -31,5 +42,9 @@ classdef base < mri_rf_pulse_sim.base_class
         end
 
     end % meths
+
+    methods(Abstract)
+        summary
+    end
 
 end % class

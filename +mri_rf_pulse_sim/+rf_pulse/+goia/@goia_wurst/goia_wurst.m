@@ -1,4 +1,4 @@
-classdef goia_wurst < mri_rf_pulse_sim.rf_pulse.base
+classdef goia_wurst < mri_rf_pulse_sim.backend.rf_pulse.duration_based
     % Gradient Offset Independent Adiabaticity
 
     % Andronesi OC, Ramadan S, Ratai EM, Jennings D, Mountford CE, Sorensen AG.
@@ -47,6 +47,12 @@ classdef goia_wurst < mri_rf_pulse_sim.rf_pulse.base
             self.frequency_modulation = self.frequency_modulation - self.frequency_modulation(round(end/2));
             self.frequency_modulation = self.frequency_modulation .* self.gradient_modulation;
             self.frequency_modulation = self.frequency_modulation / max(abs(self.frequency_modulation)) * self.mu / 2;
+        end % fcn
+        
+         % synthesis text
+        function txt = summary(self)
+            txt = sprintf('goia_hs : Amax=%gµT  mu=%g  gz=%gmT/m  f=%g  n=%d  m=%d',...
+                self.Amax.get(), self.mu.get(), self.gz.get(), self.f.get(), self.n.get(), self.m.get());
         end % fcn
 
         function init_specific_gui(self, container)

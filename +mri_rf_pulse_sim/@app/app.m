@@ -1,10 +1,10 @@
 classdef app < handle
 
     properties (GetAccess = public,  SetAccess = protected)
-        pulse_definition      mri_rf_pulse_sim.pulse_definition
-        simulation_parameters mri_rf_pulse_sim.simulation_parameters
-        simulation_results    mri_rf_pulse_sim.simulation_results
-        window_definition     mri_rf_pulse_sim.window_definition
+        pulse_definition      mri_rf_pulse_sim.backend.gui.pulse_definition
+        simulation_parameters mri_rf_pulse_sim.backend.gui.simulation_parameters
+        simulation_results    mri_rf_pulse_sim.backend.gui.simulation_results
+        window_definition     mri_rf_pulse_sim.backend.gui.window_definition
     end % props
 
     events
@@ -116,7 +116,7 @@ classdef app < handle
         end % fcn
 
         function open_window_gui(self)
-            self.window_definition = mri_rf_pulse_sim.window_definition('open_gui', self);
+            self.window_definition = mri_rf_pulse_sim.backend.gui.window_definition('open_gui', self);
             notify(self, 'update_window');
         end % fcn
 
@@ -125,9 +125,9 @@ classdef app < handle
     methods (Access = protected)
 
         function open_gui(self)
-            self.pulse_definition      = mri_rf_pulse_sim.pulse_definition     ('open_gui', self);
-            self.simulation_parameters = mri_rf_pulse_sim.simulation_parameters('open_gui', self);
-            self.simulation_results    = mri_rf_pulse_sim.simulation_results   ('open_gui', self);
+            self.pulse_definition      = mri_rf_pulse_sim.backend.gui.pulse_definition     ('open_gui', self);
+            self.simulation_parameters = mri_rf_pulse_sim.backend.gui.simulation_parameters('open_gui', self);
+            self.simulation_results    = mri_rf_pulse_sim.backend.gui.simulation_results   ('open_gui', self);
 
             self.listener__update_pulse  = addlistener(self, 'update_pulse' , @self.callback__update_pulse );
             self.listener__update_setup  = addlistener(self, 'update_setup' , @self.callback__update_setup );
@@ -174,7 +174,7 @@ classdef app < handle
                 rf_pulse = self.pulse_definition.rf_pulse;
 
                 % link
-                rf_pulse.window = mri_rf_pulse_sim.window.base.empty;
+                delete(rf_pulse.window);
 
                 % generate & plot
                 self.pulse_definition.callback_update();

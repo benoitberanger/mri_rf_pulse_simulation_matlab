@@ -45,6 +45,12 @@ classdef goia_hs < mri_rf_pulse_sim.rf_pulse.foci
             self.frequency_modulation = self.frequency_modulation / max(abs(self.frequency_modulation)) * self.mu / 2;
         end % fcn
 
+        % synthesis text
+        function txt = summary(self)
+            txt = sprintf('goia_hs : BW=%gHz  Amax=%gµT  beta=%g  mu=%g  gz=%gmT/m  f=%g  n=%d  m=%d',...
+                self.bandwidth, self.Amax.get(), self.beta.get(), self.mu.get(), self.gz.get(), self.f.get(), self.n.get(), self.m.get());
+        end % fcn
+        
         function init_specific_gui(self, container)
             mri_rf_pulse_sim.ui_prop.scalar.add_uicontrol_multi_scalar(...
                 container,...

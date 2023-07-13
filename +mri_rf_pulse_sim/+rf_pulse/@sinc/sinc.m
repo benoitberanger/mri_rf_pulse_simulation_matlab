@@ -1,11 +1,11 @@
-classdef sinc < mri_rf_pulse_sim.rf_pulse.base
+classdef sinc < mri_rf_pulse_sim.backend.rf_pulse.duration_based
 
     properties (GetAccess = public, SetAccess = public)
         n_lobs     mri_rf_pulse_sim.ui_prop.scalar                         % [] number of lobs, from 1 to +Inf
         flip_angle mri_rf_pulse_sim.ui_prop.scalar                         % [deg] flip angle
         gz         mri_rf_pulse_sim.ui_prop.scalar                         % [T/m] slice/slab selection gradient
 
-        window     mri_rf_pulse_sim.window.base                            % window object
+        window                                                             % window object
     end % props
 
     properties (GetAccess = public, SetAccess = protected, Dependent)
@@ -16,6 +16,11 @@ classdef sinc < mri_rf_pulse_sim.rf_pulse.base
         function value = get.bandwidth(self)
             value = (2*self.n_lobs) / self.duration;
         end% % fcn
+
+        function set.window(self,value)
+            assert(isa(value,'mri_rf_pulse_sim.backend.window.abstract'))
+            self.window = value;
+        end
     end % meths
 
     methods (Access = public)
@@ -31,7 +36,7 @@ classdef sinc < mri_rf_pulse_sim.rf_pulse.base
         function generate(self)
             self.generate_sinc();
         end % fcn
-        
+
         % generate time, AM, FM, GM
         function generate_sinc(self)
             self.assert_nonempty_prop({'n_points', 'duration', 'n_lobs'})
@@ -41,7 +46,7 @@ classdef sinc < mri_rf_pulse_sim.rf_pulse.base
             lob_size = 1/self.bandwidth;
 
             self.amplitude_modulation = sinc(self.time/lob_size); % base shape
-            if ~isempty(self.window)
+            if ~isempty(self.window) && isvalid(self.window)
                 self.amplitude_modulation = self.amplitude_modulation .* self.window.shape; % windowing
             end
             self.amplitude_modulation = self.amplitude_modulation / trapz(self.time, self.amplitude_modulation); % normalize integral
@@ -72,10 +77,6 @@ classdef sinc < mri_rf_pulse_sim.rf_pulse.base
             end
             self.generate();
         end % fcn
-
-    end % meths
-
-    methods (Access = {?mri_rf_pulse_sim.pulse_definition})
 
         function init_specific_gui(self, container)
             mri_rf_pulse_sim.ui_prop.scalar.add_uicontrol_multi_scalar(...

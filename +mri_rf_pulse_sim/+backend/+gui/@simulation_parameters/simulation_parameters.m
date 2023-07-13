@@ -1,4 +1,4 @@
-classdef simulation_parameters < mri_rf_pulse_sim.base_class
+classdef simulation_parameters < mri_rf_pulse_sim.backend.base_class
 
     properties(GetAccess = public, SetAccess = public)
         dZ  mri_rf_pulse_sim.ui_prop.range                                 % [m] slice (spin) position
@@ -41,7 +41,7 @@ classdef simulation_parameters < mri_rf_pulse_sim.base_class
 
         function open_gui(self)
 
-            fig_pos = mri_rf_pulse_sim.ui_prop.get_fig_pos();
+            fig_pos = mri_rf_pulse_sim.backend.gui.get_fig_pos();
 
             % Create a figure
             figHandle = figure( ...

@@ -1,4 +1,4 @@
-classdef simulation_results < mri_rf_pulse_sim.base_class
+classdef simulation_results < mri_rf_pulse_sim.backend.base_class
 
     properties(GetAccess = public, SetAccess = ?mri_rf_pulse_sim.app)
         M (:,:,:,:) double
@@ -83,7 +83,7 @@ classdef simulation_results < mri_rf_pulse_sim.base_class
             linewidth.perp = 2.0;
             linewidth.ref  = 0.5;
 
-            fig_pos = mri_rf_pulse_sim.ui_prop.get_fig_pos();
+            fig_pos = mri_rf_pulse_sim.backend.gui.get_fig_pos();
 
             % Create a figure
             figHandle = figure( ...

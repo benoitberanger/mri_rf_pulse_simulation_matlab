@@ -1,9 +1,9 @@
-classdef hs < mri_rf_pulse_sim.rf_pulse.base
+classdef hs < mri_rf_pulse_sim.backend.rf_pulse.duration_based
     % Hyperbolic Secant
 
     properties (GetAccess = public, SetAccess = public)
 
-        Amax   mri_rf_pulse_sim.ui_prop.scalar                               % [T] B1max
+        Amax mri_rf_pulse_sim.ui_prop.scalar                               % [T] B1max
         beta mri_rf_pulse_sim.ui_prop.scalar                               % [rad/s]
         mu   mri_rf_pulse_sim.ui_prop.scalar                               % [] frequency sweep factor
         gz   mri_rf_pulse_sim.ui_prop.scalar                               % [T/m] slice/slab selection gradient

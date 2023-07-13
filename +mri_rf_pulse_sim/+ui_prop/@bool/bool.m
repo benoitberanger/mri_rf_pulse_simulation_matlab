@@ -1,4 +1,4 @@
-classdef bool < mri_rf_pulse_sim.base_class
+classdef bool < mri_rf_pulse_sim.backend.base_class
 
     properties(GetAccess = public, SetAccess = public, SetObservable, AbortSet)
         name   (1,:) char
@@ -22,7 +22,6 @@ classdef bool < mri_rf_pulse_sim.base_class
             end % args
 
             if length(fieldnames(args)) < 1
-                self = mri_rf_pulse_sim.ui_prop.bool.demo();
                 return
             end
 
@@ -53,8 +52,8 @@ classdef bool < mri_rf_pulse_sim.base_class
                 rect = [0 0 1 1];
             end
 
-            pos_chk = mri_rf_pulse_sim.ui_prop.compose_rect([0.0  0.0  0.2  1.0],rect);
-            pos_txt = mri_rf_pulse_sim.ui_prop.compose_rect([0.2  0.0  0.8  1.0],rect);
+            pos_chk = mri_rf_pulse_sim.backend.gui.compose_rect([0.0  0.0  0.2  1.0],rect);
+            pos_txt = mri_rf_pulse_sim.backend.gui.compose_rect([0.2  0.0  0.8  1.0],rect);
 
             self.checkbox = uicontrol(container,...
                 'Style'          , 'checkbox'                 ,...
@@ -83,50 +82,6 @@ classdef bool < mri_rf_pulse_sim.base_class
             displayRep = widthConstrainedDataRepresentation(self,displayConfiguration,width,...
                 StringArray=txt,AllowTruncatedDisplayForScalar=true);
         end % dcn
-
-    end % meths
-
-    methods (Static)
-
-        function check = demo()
-
-            check = mri_rf_pulse_sim.ui_prop.bool(name='my_bool', text='demo for a boolean', value=true);
-
-            % Create a figure
-            figHandle = figure( ...
-                'MenuBar'         , 'none'                   , ...
-                'Toolbar'         , 'none'                   , ...
-                'Name'            , sprintf('%s.demo()',mfilename)  , ...
-                'NumberTitle'     , 'off'                    , ...
-                'Units'           , 'Pixels'                 , ...
-                'Position'        , [50, 50, 450, 350]       );
-
-            figureBGcolor = [0.9 0.9 0.9]; set(figHandle,'Color',figureBGcolor);
-            buttonBGcolor = figureBGcolor - 0.1;
-            editBGcolor   = [1.0 1.0 1.0];
-
-            % Create GUI handles : pointers to access the graphic objects
-            handles               = guihandles(figHandle);
-            handles.fig           = figHandle;
-            handles.figureBGcolor = figureBGcolor;
-            handles.buttonBGcolor = buttonBGcolor;
-            handles.editBGcolor   = editBGcolor  ;
-
-            handles.uipanel_demo = uipanel(figHandle,...
-                'Title','demo panel',...
-                'BackgroundColor',figureBGcolor,...
-                'Units','normalized',...
-                'Position',[0.2 0.2 0.4 0.2]);
-
-            % IMPORTANT
-            guidata(figHandle,handles)
-            % After creating the figure, dont forget the line
-            % guidata(figHandle,handles) . It allows smart retrive like
-            % handles=guidata(hObject)
-
-            check.add_uicontrol(handles.uipanel_demo);
-
-        end % fcn
 
     end % meths
 

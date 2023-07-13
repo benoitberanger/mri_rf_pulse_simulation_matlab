@@ -1,8 +1,7 @@
-classdef base < mri_rf_pulse_sim.base_class
+classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
 
     properties (GetAccess = public, SetAccess = public)
         n_points mri_rf_pulse_sim.ui_prop.scalar                           % []  number of points defining the pulse
-        duration mri_rf_pulse_sim.ui_prop.scalar                           % [s] pulse duration
 
         time                  (1,:) double                                 % [s] time vector
         amplitude_modulation  (1,:) double                                 % [T]
@@ -12,10 +11,9 @@ classdef base < mri_rf_pulse_sim.base_class
         gamma                 (1,1) double {mustBePositive} = mri_rf_pulse_sim.get_gamma('1H') % [rad/T/s] gyromagnetic ration
     end % props
 
-    properties (GetAccess = public, SetAccess = protected, Dependent)
+    properties (GetAccess = public, SetAccess = protected)
         B1__max               (1,1) double                                 % [T]   max value of amplitude_modulation(t)
         Gz__max               (1,1) double                                 % [T/m] max value of  gradient_modulation(t)
-        tbwp                  (1,1) double                                 % []    time-bandwidth product
     end % props
 
     methods % no attribute for dependent properies
@@ -25,18 +23,13 @@ classdef base < mri_rf_pulse_sim.base_class
         function value = get.Gz__max(self)
             value = max(self.gradient_modulation);
         end % fcn
-        function value = get.tbwp(self)
-            % bandwidth must depends in the pulse itself: its GET must be defined in the subclass
-            value = self.duration * self.bandwidth;
-        end % fcn
     end % meths
 
     methods (Access = public)
 
         % constructor
-        function self = base(varargin)
-            self.n_points = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='n_points', value=256                             );
-            self.duration = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='duration', value=  5 * 1e-3, unit='ms', scale=1e3);
+        function self = abstract(varargin)
+            self.n_points = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='n_points', value=256);
         end
 
         % plot the shape of the pulse : AM, FM, GM
@@ -91,14 +84,10 @@ classdef base < mri_rf_pulse_sim.base_class
 
     end % meths
 
-    methods (Access = {?mri_rf_pulse_sim.pulse_definition})
+    methods (Abstract)
 
-        function init_base_gui(self, container)
-            mri_rf_pulse_sim.ui_prop.scalar.add_uicontrol_multi_scalar( ...
-                container, ...
-                [self.n_points, self.duration] ...
-                );
-        end % fcn
+        summary
+        init_base_gui
 
     end % meths
 

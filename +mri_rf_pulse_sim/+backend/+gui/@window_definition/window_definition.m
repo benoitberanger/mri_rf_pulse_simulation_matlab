@@ -1,13 +1,20 @@
-classdef window_definition < mri_rf_pulse_sim.base_class
+classdef window_definition < mri_rf_pulse_sim.backend.base_class
 
     properties (GetAccess = public,  SetAccess = ?mri_rf_pulse_sim.app)
 
-        window mri_rf_pulse_sim.window.base
+        window
 
         fig matlab.ui.Figure
 
     end % props
 
+    methods
+        function set.window(self,value)
+            assert(isa(value,'mri_rf_pulse_sim.backend.window.abstract'))
+            self.window = value;
+        end
+    end
+    
     methods (Access = public)
 
         function self = window_definition(varargin)
@@ -71,7 +78,7 @@ classdef window_definition < mri_rf_pulse_sim.base_class
                 'Style','listbox',...
                 'Units','Normalized',...
                 'Position',[0 0 1 1],...
-                'String',mri_rf_pulse_sim.window.get_list(),...
+                'String',mri_rf_pulse_sim.backend.window.get_list(),...
                 'Callback',@self.callback_set_window);
 
             % IMPORTANT
