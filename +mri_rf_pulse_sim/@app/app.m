@@ -97,6 +97,7 @@ classdef app < handle
             set(self.simulation_results.line_S_My   ,'XData',              dz, 'YData', M(2,end,:,dB0.selected_idx));
             set(self.simulation_results.line_S_Mpara,'XData',              dz, 'YData', M(3,end,:,dB0.selected_idx));
             set(self.simulation_results.line_S_Mperp,'XData',              dz, 'YData', sqrt(M(1,end,:,dB0.selected_idx).^2+M(2,end,:,dB0.selected_idx).^2));
+            set(self.simulation_results.line_S_vert ,'XData', [dZ.selected_value dZ.selected_value].*dZ.scale);
 
             % plot chemical shift
             db0 = dB0.vect * dB0.scale;
@@ -107,6 +108,7 @@ classdef app < handle
             set(self.simulation_results.line_C_My   ,'XData',               db0, 'YData', M(1,end,dZ.selected_idx,:));
             set(self.simulation_results.line_C_Mpara,'XData',               db0, 'YData', M(3,end,dZ.selected_idx,:));
             set(self.simulation_results.line_C_Mperp,'XData',               db0, 'YData', sqrt(M(1,end,dZ.selected_idx,:).^2+M(2,end,dZ.selected_idx,:).^2));
+            set(self.simulation_results.line_C_vert ,'XData', [dB0.selected_value dB0.selected_value].*dB0.scale);
 
         end % fcn
 
