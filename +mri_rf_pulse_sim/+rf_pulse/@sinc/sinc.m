@@ -9,14 +9,17 @@ classdef sinc < mri_rf_pulse_sim.backend.rf_pulse.duration_based
     end % props
 
     properties (GetAccess = public, SetAccess = protected, Dependent)
-        bandwidth (1,1) double                                             % Hz
+        bandwidth       (1,1) double                                       % Hz
+        slice_thickness (1,1) double                                       % [m]
     end % props
 
     methods % no attribute for dependent properies
         function value = get.bandwidth(self)
             value = (2*self.n_lobs) / self.duration;
         end% % fcn
-
+        function value = get.slice_thickness(self)
+            value = 2*pi * self.bandwidth / (self.gamma * self.Gz__max);
+        end % fcn
         function set.window(self,value)
             assert(isa(value,'mri_rf_pulse_sim.backend.window.abstract'))
             self.window = value;

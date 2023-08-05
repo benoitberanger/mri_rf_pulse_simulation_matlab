@@ -6,13 +6,17 @@ classdef rect < mri_rf_pulse_sim.backend.rf_pulse.duration_based
     end % props
 
     properties (GetAccess = public, SetAccess = protected, Dependent)
-        bandwidth (1,1) double                                             % Hz
+        bandwidth       (1,1) double                                       % Hz
+        slice_thickness (1,1) double                                       % [m]
     end % props
 
     methods % no attribute for dependent properies
         function value = get.bandwidth(self)
             value = 1 / self.duration;
         end% % fcn
+        function value = get.slice_thickness(self)
+            value = 2*pi * self.bandwidth / (self.gamma * self.Gz__max);
+        end % fcn
     end % meths
 
     methods (Access = public)
