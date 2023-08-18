@@ -48,7 +48,18 @@ classdef hs < mri_rf_pulse_sim.backend.rf_pulse.duration_based
             self.time = linspace(-self.duration/2, +self.duration/2, self.n_points);
 
             magnitude = self.Amax*sech(self.beta * self.time);
+
+            % some articles define the HS using frequency modulation :
+            % freq = - self.mu * self.beta * tanh(self.beta * self.time);
+            % phase = cumtrapz(self.time,freq); % for integration
+            % other define phase analyticaly (faster?) :
+            % phase = self.mu * log( sech(self.beta * self.time) ) + self.mu * self.Amax;
+
+            % the 2 computation methods only differ by the phase constat, at the origin
+            % but it does not affect the slice profile in this simulation
+
             phase = self.mu * log( sech(self.beta * self.time) ) + self.mu * self.Amax;
+
             self.B1 = magnitude .* exp(1j * phase);
             self.GZ = ones(size(self.time)) * self.gz;
         end % fcn
