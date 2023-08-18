@@ -11,13 +11,17 @@ classdef hs < mri_rf_pulse_sim.backend.rf_pulse.duration_based
     end % props
 
     properties (GetAccess = public, SetAccess = protected, Dependent)
-        bandwidth (1,1) double                                             % Hz
+        bandwidth           (1,1) double                                   % [Hz]
+        adiabatic_condition (1,1) double                                   % [T] B1max (Amax) minimal to be adiabatic
     end % props
 
     methods % no attribute for dependent properies
         function value = get.bandwidth(self)
             value = self.beta * self.mu  / pi;
         end% % fcn
+        function value = get.adiabatic_condition(self)
+            value = sqrt(self.mu.value) * self.beta / self.gamma;
+        end % fcl
     end % meths
 
     methods (Access = public)
