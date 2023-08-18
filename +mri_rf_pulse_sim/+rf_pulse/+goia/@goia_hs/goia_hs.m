@@ -18,11 +18,9 @@ classdef goia_hs < mri_rf_pulse_sim.rf_pulse.foci
     methods (Access = public)
 
         function self = goia_hs()
-            self@mri_rf_pulse_sim.rf_pulse.foci(); % call FOCI constructor
             self.f = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='f', value=0.9);
             self.n = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='n', value=8);
             self.m = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='m', value=4);
-            self.n_points.value = 512;
             self.beta.value = 5;
             self.mu.value = 2000;
             self.generate_goia_hs();
@@ -37,12 +35,16 @@ classdef goia_hs < mri_rf_pulse_sim.rf_pulse.foci
 
             T = (2*self.time / self.duration) - 1;
 
-            self.amplitude_modulation = self.Amax     * sech(self.beta * T.^self.n.value);
-            self. gradient_modulation = self.gz       * (1 - self.f * sech(self.beta * T.^self.m.value));
-            self.frequency_modulation = cumsum(self.amplitude_modulation.^2 ./ self.gradient_modulation) * self.duration / self.n_points;
-            self.frequency_modulation = self.frequency_modulation - self.frequency_modulation(round(end/2));
-            self.frequency_modulation = self.frequency_modulation .* self.gradient_modulation;
-            self.frequency_modulation = self.frequency_modulation / max(abs(self.frequency_modulation)) * self.mu / 2;
+            magnitude = self.Amax     * sech(self.beta * T.^self.n.value);
+            gradient  = self.gz       * (1 - self.f * sech(self.beta * T.^self.m.value));
+            freq      = cumsum(magnitude.^2 ./ gradient) * self.duration / self.n_points;
+            freq      = freq - freq(round(end/2));
+            freq      = freq .* gradient;
+            freq      = freq / max(abs(freq)) * self.mu / 2;
+            phase     = self.freq2phase(freq);
+
+            self.B1 = magnitude .* exp(1j * phase);
+            self.GZ = gradient;
         end % fcn
 
         % synthesis text
@@ -50,7 +52,7 @@ classdef goia_hs < mri_rf_pulse_sim.rf_pulse.foci
             txt = sprintf('goia_hs : BW=%gHz  Amax=%gµT  beta=%g  mu=%g  gz=%gmT/m  f=%g  n=%d  m=%d',...
                 self.bandwidth, self.Amax.get(), self.beta.get(), self.mu.get(), self.gz.get(), self.f.get(), self.n.get(), self.m.get());
         end % fcn
-        
+
         function init_specific_gui(self, container)
             mri_rf_pulse_sim.ui_prop.scalar.add_uicontrol_multi_scalar(...
                 container,...

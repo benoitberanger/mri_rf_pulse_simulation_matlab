@@ -18,6 +18,20 @@ classdef goia_wurst < mri_rf_pulse_sim.backend.rf_pulse.duration_based
 
     end % props
 
+    properties (GetAccess = public, SetAccess = protected, Dependent)
+        bandwidth                                                          % [Hz]
+        adiabatic_condition (1,1) double                                   % [T] B1max (Amax) minimal to be adiabatic
+    end % props
+
+    methods % no attribute for dependent properies
+        function value = get.bandwidth(self)
+            value = self.beta * self.mu  / pi;
+        end% % fcn
+        function value = get.adiabatic_condition(self)
+            value = sqrt(self.mu.value) * self.beta / self.gamma;
+        end % fcl
+    end % meths
+
     methods (Access = public)
 
         function self = goia_wurst()
@@ -27,7 +41,6 @@ classdef goia_wurst < mri_rf_pulse_sim.backend.rf_pulse.duration_based
             self.f    = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='f'   , value=   0.9                             );
             self.n    = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='n'   , value=  16                               );
             self.m    = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='m'   , value=   4                               );
-            self.n_points.value = 512;
             self.duration.value = 7.68 * 1e-3;
             self.generate_goia_wurst();
         end % fcn
@@ -41,15 +54,19 @@ classdef goia_wurst < mri_rf_pulse_sim.backend.rf_pulse.duration_based
 
             T = (2*self.time / self.duration) - 1;
 
-            self.amplitude_modulation = self.Amax *                    (1 - abs(sin(pi/2 * T)).^self.n.value);
-            self. gradient_modulation = self.gz   * (1 - self.f +    self.f*abs(sin(pi/2 * T)).^self.m.value);
-            self.frequency_modulation = cumsum(self.amplitude_modulation.^2 ./ self.gradient_modulation) * self.duration / self.n_points;
-            self.frequency_modulation = self.frequency_modulation - self.frequency_modulation(round(end/2));
-            self.frequency_modulation = self.frequency_modulation .* self.gradient_modulation;
-            self.frequency_modulation = self.frequency_modulation / max(abs(self.frequency_modulation)) * self.mu / 2;
+            magnitude = self.Amax *                    (1 - abs(sin(pi/2 * T)).^self.n.value);
+            gradient  = self.gz   * (1 - self.f +    self.f*abs(sin(pi/2 * T)).^self.m.value);
+            freq      = cumsum(magnitude.^2 ./ gradient) * self.duration / self.n_points;
+            freq      = freq - freq(round(end/2));
+            freq      = freq .* gradient;
+            freq      = freq / max(abs(freq)) * self.mu / 2;
+            phase     = self.freq2phase(freq);
+
+            self.B1 = magnitude .* exp(1j * phase);
+            self.GZ = gradient;
         end % fcn
-        
-         % synthesis text
+
+        % synthesis text
         function txt = summary(self)
             txt = sprintf('goia_hs : Amax=%gµT  mu=%g  gz=%gmT/m  f=%g  n=%d  m=%d',...
                 self.Amax.get(), self.mu.get(), self.gz.get(), self.f.get(), self.n.get(), self.m.get());

@@ -51,7 +51,7 @@ classdef hs < mri_rf_pulse_sim.backend.rf_pulse.duration_based
 
             % some articles define the HS using frequency modulation :
             % freq = - self.mu * self.beta * tanh(self.beta * self.time);
-            % phase = cumtrapz(self.time,freq); % for integration
+            % phase = self.freq2phase(freq); % for integration
             % other define phase analyticaly (faster?) :
             % phase = self.mu * log( sech(self.beta * self.time) ) + self.mu * self.Amax;
 

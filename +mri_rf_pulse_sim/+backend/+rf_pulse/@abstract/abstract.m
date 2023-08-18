@@ -107,6 +107,10 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
             self.notify_parent();
         end
 
+        function phase = freq2phase(self, freq)
+            phase = cumtrapz(self.time, freq);
+        end % fcn
+
     end % meths
 
     methods (Access = protected)
