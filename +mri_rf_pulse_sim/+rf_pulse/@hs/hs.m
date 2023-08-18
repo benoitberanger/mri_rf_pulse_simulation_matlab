@@ -11,7 +11,7 @@ classdef hs < mri_rf_pulse_sim.backend.rf_pulse.duration_based
     end % props
 
     properties (GetAccess = public, SetAccess = protected, Dependent)
-        bandwidth           (1,1) double                                   % [Hz]
+        bandwidth                                                          % [Hz]
         adiabatic_condition (1,1) double                                   % [T] B1max (Amax) minimal to be adiabatic
     end % props
 
@@ -28,9 +28,8 @@ classdef hs < mri_rf_pulse_sim.backend.rf_pulse.duration_based
 
         % constructor
         function self = hs()
-            self.n_points.value = 512; % we need more points, otherwise the numerical model will not be accurate for extrem dZ
             self.duration.value = 7.68 * 1e-3;
-            self.Amax = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='Amax'  , value= 100 * 1e-6, unit='µT', scale=1e6);
+            self.Amax = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='Amax'  , value= 20 * 1e-6, unit='µT', scale=1e6);
             self.beta = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='beta', value=1618                               );
             BW = 2000; % Hz
             self.mu   = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='mu'  , value=BW*pi/self.beta                    );
@@ -48,9 +47,10 @@ classdef hs < mri_rf_pulse_sim.backend.rf_pulse.duration_based
 
             self.time = linspace(-self.duration/2, +self.duration/2, self.n_points);
 
-            self.amplitude_modulation = self.Amax*sech(self.beta * self.time);
-            self.frequency_modulation = -self.mu * self.beta * tanh(self.beta * self.time);
-            self. gradient_modulation = ones(size(self.time)) * self.gz;
+            magnitude = self.Amax*sech(self.beta * self.time);
+            phase = self.mu * log( sech(self.beta * self.time) ) + self.mu * self.Amax;
+            self.B1 = magnitude .* exp(1j * phase);
+            self.GZ = ones(size(self.time)) * self.gz;
         end % fcn
 
         % synthesis text

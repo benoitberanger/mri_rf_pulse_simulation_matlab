@@ -6,17 +6,11 @@ classdef rect < mri_rf_pulse_sim.backend.rf_pulse.duration_based
     end % props
 
     properties (GetAccess = public, SetAccess = protected, Dependent)
-        bandwidth       (1,1) double                                       % Hz
-        slice_thickness (1,1) double                                       % [m]
+        bandwidth                                                          % Hz
     end % props
 
     methods % no attribute for dependent properies
-        function value = get.bandwidth(self)
-            value = 1 / self.duration;
-        end% % fcn
-        function value = get.slice_thickness(self)
-            value = 2*pi * self.bandwidth / (self.gamma * self.Gz__max);
-        end % fcn
+        function value = get.bandwidth(self); value = 1 / self.duration; end
     end % meths
 
     methods (Access = public)
@@ -40,11 +34,11 @@ classdef rect < mri_rf_pulse_sim.backend.rf_pulse.duration_based
 
             self.time = linspace(-self.duration/2, +self.duration/2, self.n_points.get());
 
-            self.amplitude_modulation = ones(size(self.time)); % base shape
-            self.amplitude_modulation = self.amplitude_modulation / trapz(self.time, self.amplitude_modulation); % normalize integral
-            self.amplitude_modulation = self.amplitude_modulation * deg2rad(self.flip_angle.get()) / self.gamma; % scale integrale with flip angle
-            self.frequency_modulation = zeros(size(self.time));
-            self.gradient_modulation  = ones(size(self.time)) * self.gz;
+            waveform = ones(size(self.time)); % base shape
+            waveform = waveform / trapz(self.time, waveform); % normalize integral
+            waveform = waveform * deg2rad(self.flip_angle.get()) / self.gamma; % scale integrale with flip angle
+            self.B1  = waveform;
+            self.GZ  = ones(size(self.time)) * self.gz;
         end % fcn
 
         % synthesis text
