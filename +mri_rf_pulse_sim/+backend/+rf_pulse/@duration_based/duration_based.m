@@ -4,17 +4,6 @@ classdef (Abstract) duration_based < mri_rf_pulse_sim.backend.rf_pulse.abstract
         duration mri_rf_pulse_sim.ui_prop.scalar                           % [s] pulse duration
     end % props
 
-    properties (GetAccess = public, SetAccess = protected, Dependent)
-        tbwp (1,1) double                                                  % []    time-bandwidth product
-    end % props
-
-    methods % no attribute for dependent properies
-        function value = get.tbwp(self)
-            % bandwidth must depends in the pulse itself: its GET must be defined in the subclass
-            value = self.duration * self.bandwidth;
-        end % fcn
-    end % meths
-
     methods (Access = public)
 
         % constructor
@@ -28,7 +17,7 @@ classdef (Abstract) duration_based < mri_rf_pulse_sim.backend.rf_pulse.abstract
                 [self.n_points, self.duration] ...
                 );
         end % fcn
-        
+
     end % meths
 
 end % class

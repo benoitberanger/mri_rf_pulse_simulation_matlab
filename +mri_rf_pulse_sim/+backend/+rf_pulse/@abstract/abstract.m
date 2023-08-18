@@ -2,27 +2,26 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
 
     properties (GetAccess = public, SetAccess = public)
         n_points mri_rf_pulse_sim.ui_prop.scalar                           % []  number of points defining the pulse
-
-        time                  (1,:) double                                 % [s] time vector
-        amplitude_modulation  (1,:) double                                 % [T]
-        frequency_modulation  (1,:) double                                 % [Hz]
-        gradient_modulation   (1,:) double                                 % [T/m]
-
-        gamma                 (1,1) double {mustBePositive} = mri_rf_pulse_sim.get_gamma('1H') % [rad/T/s] gyromagnetic ration
+        time           (1,:) double                                        % [s] time vector
+        B1             (1,:) double                                        % [T] complex waveform of the pulse
+        GZ             (1,:) double                                        % [T/m] slice gradient
+        gamma          (1,1) double {mustBePositive} = mri_rf_pulse_sim.get_gamma('1H') % [rad/T/s] gyromagnetic ration
     end % props
 
     properties (GetAccess = public, SetAccess = protected)
-        B1__max               (1,1) double                                 % [T]   max value of amplitude_modulation(t)
-        Gz__max               (1,1) double                                 % [T/m] max value of  gradient_modulation(t)
+        FM              (1,:) double                                       % [Hz]  frequency modulation
+        B1max           (1,1) double                                       % [T]   max value of amplitude_modulation(t)
+        GZmax           (1,1) double                                       % [T/m] max value of  gradient_modulation(t)
+        slice_thickness (1,1) double                                       % [m]
+        tbwp            (1,1) double                                       % []    time-bandwidth product
     end % props
 
     methods % no attribute for dependent properies
-        function value = get.B1__max(self)
-            value = max(self.amplitude_modulation);
-        end % fcn
-        function value = get.Gz__max(self)
-            value = max(self.gradient_modulation);
-        end % fcn
+        function value = get.B1max(self);           value = max(abs(self.B1)); end
+        function value = get.GZmax(self);           value = max(abs(self.GZ)); end
+        function value = get.FM(self);              value = gradient(self.phase()) ./ gradient(self.time) / (2*pi); end
+        function value = get.slice_thickness(self); value = 2*pi * self.bandwidth / (self.gamma * self.GZmax); end
+        function value = get.tbwp(self);            value = self.duration * self.bandwidth; end
     end % meths
 
     methods (Access = public)
@@ -32,38 +31,76 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
             self.n_points = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='n_points', value=256);
         end
 
-        % plot the shape of the pulse : AM, FM, GM
+        % EZ maths
+        function out = real     (self); out = real (self.B1); end
+        function out = imag     (self); out = imag (self.B1); end
+        function out = abs      (self); out = abs  (self.B1); end
+        function out = angle    (self); out = unwrap(angle(self.B1)); end
+        % EZ maths aliases
+        function out = mag      (self); out = self.abs()    ; end
+        function out = magnitude(self); out = self.abs()    ; end
+        function out = pha      (self); out = self.angle()  ; end
+        function out = phase    (self); out = self.angle()  ; end
+
+        % plot the shape of the pulse : real, imag, abs, angle, FM, GZ
         % it will be plotted in a new figure or a pre-opened figure/uipanel
         function plot(self, container)
-            self.assert_nonempty_prop({'time', 'amplitude_modulation', 'frequency_modulation', 'gradient_modulation'})
+            self.assert_nonempty_prop({'time', 'B1', 'GZ'})
 
             if ~exist('container','var')
                 container = figure('NumberTitle','off','Name',self.summary());
             end
 
-            a(1) = subplot(6,1,[1 2],'Parent',container);
+            lineprop_B1  = {                                          'LineStyle','-', 'LineWidth',2.0                        };
+            lineprop_ref = {[self.time(1) self.time(end)]*1e3, [0 0], 'LineStyle',':', 'LineWidth',0.5, 'Color', [0.5 0.5 0.5]};
+
+            a(1) = subplot(6,1,1,'Parent',container);
             hold(a(1), 'on')
-            plot(a(1), self.time*1e3, self.amplitude_modulation*1e6, 'LineStyle','-', 'LineWidth',2)
+            plot(a(1), self.time*1e3, self.real()*1e6, lineprop_B1{:})
             a(1).XTickLabel = {};
-            a(1).YLabel.String = 'a.m. (µT)';
-            plot(a(1), [self.time(1) self.time(end)]*1e3, [0 0], 'LineStyle',':', 'LineWidth',0.5, 'Color', [0.5 0.5 0.5])
+            a(1).YLabel.String = 'real (µT)';
+            plot(a(1), lineprop_ref{:})
             axis(a(1),'tight')
 
-            a(2) = subplot(6,1,[3 4],'Parent',container);
+            a(2) = subplot(6,1,2,'Parent',container);
             hold(a(2), 'on')
-            plot(a(2), self.time*1e3, self.frequency_modulation, 'LineStyle','-', 'LineWidth',2)
+            plot(a(2), self.time*1e3, self.imag()*1e6, lineprop_B1{:})
             a(2).XTickLabel = {};
-            a(2).YLabel.String = 'f.m. (Hz)';
-            plot(a(2), [self.time(1) self.time(end)]*1e3, [0 0], 'LineStyle',':', 'LineWidth',0.5, 'Color', [0.5 0.5 0.5])
+            a(2).YLabel.String = 'imag (µT)';
+            plot(a(2), lineprop_ref{:})
             axis(a(2),'tight')
 
-            a(3) = subplot(6,1,[5 6],'Parent',container);
+            a(3) = subplot(6,1,3,'Parent',container);
             hold(a(3), 'on')
-            plot(a(3), self.time*1e3, self.gradient_modulation*1e3, 'LineStyle','-', 'LineWidth',2)
-            a(3).XLabel.String = 'time (ms)';
-            a(3).YLabel.String = 'g.m. (mT/m)';
-            plot(a(3), [self.time(1) self.time(end)]*1e3, [0 0], 'LineStyle',':', 'LineWidth',0.5, 'Color', [0.5 0.5 0.5])
+            plot(a(3), self.time*1e3, self.abs()*1e6, lineprop_B1{:})
+            a(3).XTickLabel = {};
+            a(3).YLabel.String = 'magnitude (µT)';
+            plot(a(3), lineprop_ref{:})
             axis(a(3),'tight')
+
+            a(4) = subplot(6,1,4,'Parent',container);
+            hold(a(4), 'on')
+            plot(a(4), self.time*1e3, self.angle(), lineprop_B1{:})
+            a(4).XTickLabel = {};
+            a(4).YLabel.String = 'phase (radian)';
+            plot(a(4), lineprop_ref{:})
+            axis(a(4),'tight')
+
+            a(5) = subplot(6,1,5,'Parent',container);
+            hold(a(5), 'on')
+            plot(a(5), self.time*1e3, self.FM(), lineprop_B1{:})
+            a(5).XTickLabel = {};
+            a(5).YLabel.String = 'FM (Hz)';
+            plot(a(5), lineprop_ref{:})
+            axis(a(5),'tight')
+
+            a(6) = subplot(6,1,6,'Parent',container);
+            hold(a(6), 'on')
+            plot(a(6), self.time*1e3, self.GZ*1e3, lineprop_B1{:})
+            a(6).XLabel.String = 'time (ms)';
+            a(6).YLabel.String = 'GZ (mT/m)';
+            plot(a(6), lineprop_ref{:})
+            axis(a(6),'tight')
         end
 
         function callback_update(self, ~, ~)
@@ -84,11 +121,16 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
 
     end % meths
 
-    methods (Abstract)
+    % =====================================================================
+    % ABSTRACT stuff : need to be implemented in subclass
 
+    properties (Abstract, GetAccess = public, SetAccess = protected, Dependent)
+        bandwidth (1,1) double
+    end % props
+
+    methods (Abstract)
         summary
         init_base_gui
-
     end % meths
 
 end % class

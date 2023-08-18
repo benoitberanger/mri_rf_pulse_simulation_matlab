@@ -9,17 +9,13 @@ classdef sinc < mri_rf_pulse_sim.backend.rf_pulse.duration_based
     end % props
 
     properties (GetAccess = public, SetAccess = protected, Dependent)
-        bandwidth       (1,1) double                                       % Hz
-        slice_thickness (1,1) double                                       % [m]
+        bandwidth                                                          % Hz
     end % props
 
     methods % no attribute for dependent properies
         function value = get.bandwidth(self)
             value = (2*self.n_lobs) / self.duration;
         end% % fcn
-        function value = get.slice_thickness(self)
-            value = 2*pi * self.bandwidth / (self.gamma * self.Gz__max);
-        end % fcn
         function set.window(self,value)
             assert(isa(value,'mri_rf_pulse_sim.backend.window.abstract'))
             self.window = value;
@@ -48,14 +44,14 @@ classdef sinc < mri_rf_pulse_sim.backend.rf_pulse.duration_based
 
             lob_size = 1/self.bandwidth;
 
-            self.amplitude_modulation = sinc(self.time/lob_size); % base shape
+            waveform = sinc(self.time/lob_size); % base shape
             if ~isempty(self.window) && isvalid(self.window)
-                self.amplitude_modulation = self.amplitude_modulation .* self.window.shape; % windowing
+                waveform = waveform .* self.window.shape; % windowing
             end
-            self.amplitude_modulation = self.amplitude_modulation / trapz(self.time, self.amplitude_modulation); % normalize integral
-            self.amplitude_modulation = self.amplitude_modulation * deg2rad(self.flip_angle.get()) / self.gamma; % scale integrale with flip angle
-            self.frequency_modulation = zeros(size(self.time));
-            self.gradient_modulation  = ones(size(self.time)) * self.gz;
+            waveform = waveform / trapz(self.time, waveform); % normalize integral
+            waveform = waveform * deg2rad(self.flip_angle.get()) / self.gamma; % scale integrale with flip angle
+            self.B1  = waveform;
+            self.GZ  = ones(size(self.time)) * self.gz;
         end % fcn
 
         % synthesis text

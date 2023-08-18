@@ -1,4 +1,4 @@
-function M = solve_bloch(Time, AmplitideModulation, FrequencyModulation, GradientModulation, SpatialPosition, DeltaB0, gamma, B0)
+function M = solve_bloch(Time, B1, GZ, SpatialPosition, DeltaB0, gamma, B0)
 
 method = 'euler';
 
@@ -56,23 +56,26 @@ switch method
 
     case 'euler'
 
-        [Z , B] = meshgrid(SpatialPosition, DeltaB0);
+        [Zgrid , Bgrid] = meshgrid(SpatialPosition, DeltaB0);
 
-        Z = Z(:);
-        B = B(:);
+        Zgrid = Zgrid(:);
+        Bgrid = Bgrid(:);
 
-        grid_size = length(Z);
+        grid_size = length(Zgrid);
 
         M = zeros(grid_size,3,length(Time));
         M(:,3,1) = 1;
+
+        B1mag = abs  (B1);
+        B1pha = angle(B1);
 
         for t = 2:length(Time)
 
             dt = Time(t) - Time(t-1);
             
-            Uz = (Z * GradientModulation(t-1) + B*B0 ) * gamma;
-            Ux = gamma * AmplitideModulation(t-1) * cos(2*pi*FrequencyModulation(t-1)*Time(t-1));
-            Uy = gamma * AmplitideModulation(t-1) * sin(2*pi*FrequencyModulation(t-1)*Time(t-1));
+            Uz = (Zgrid * GZ(t-1) + Bgrid*B0 ) * gamma;
+            Ux = gamma * B1mag(t-1) * cos(B1pha(t-1));
+            Uy = gamma * B1mag(t-1) * sin(B1pha(t-1));
 
             phy = atan2(               Uy , Ux);
             the = atan2(sqrt(Ux.^2+Uy.^2) , Uz);
