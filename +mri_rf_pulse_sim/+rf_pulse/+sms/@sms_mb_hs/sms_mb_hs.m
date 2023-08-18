@@ -1,4 +1,4 @@
-classdef sms_mb_sinc < mri_rf_pulse_sim.rf_pulse.sinc
+classdef sms_mb_hs < mri_rf_pulse_sim.rf_pulse.hs
     % Barth M, Breuer F, Koopmans PJ, Norris DG, Poser BA. Simultaneous
     % multislice (SMS) imaging techniques. Magn Reson Med. 2016
     % Jan;75(1):63-81. doi: 10.1002/mrm.25897. Epub 2015 Aug 26. PMID:
@@ -22,21 +22,20 @@ classdef sms_mb_sinc < mri_rf_pulse_sim.rf_pulse.sinc
     methods (Access = public)
 
         % constructor
-        function self = sms_mb_sinc()
+        function self = sms_mb_hs()
             self.n_slice        = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='n_slice'       , value=3                               );
             self.slice_distance = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='slice_distance', value= 5 * 1e-3, unit='mm', scale=1e3);
-            self.n_lobs.value = 3;
-            self.generate_sms_mb_sinc();
+            self.generate_sms_mb_hs();
         end % fcn
 
         function generate(self)
-            self.generate_sms_mb_sinc();
+            self.generate_sms_mb_hs();
         end % fcn
 
-        function generate_sms_mb_sinc(self)
+        function generate_sms_mb_hs(self)
 
             % generate SINC pulse : this is SingleBand pulse waveform
-            self.generate_sinc();
+            self.generate_hs();
 
             % prepare slice offcet vector : integer number "representing" the slice index.
             if mod(self.n_slice.get(),2) == 0
@@ -60,25 +59,16 @@ classdef sms_mb_sinc < mri_rf_pulse_sim.rf_pulse.sinc
 
         % synthesis text
         function txt = summary(self)
-            txt = sprintf('sinc : n_slice=%d  slice_distance=%d  n_lobs=%d  flip_angle=%d°  gz=%gmT/m',...
-                self.n_slice.get(), self.slice_distance.get(), self.n_lobs.get(), self.flip_angle.get(), self.gz.get());
+            txt = sprintf('sinc : n_slice=%d  slice_distance=%d  BW=%gHz  Amax=%gµT  beta=%g  mu=%g  gz=%gmT/m',...
+                self.n_slice.get(), self.slice_distance.get(), self.bandwidth, self.Amax.get(), self.beta.get(), self.mu.get(), self.gz.get());
         end % fcn
 
         function init_specific_gui(self, container)
             mri_rf_pulse_sim.ui_prop.scalar.add_uicontrol_multi_scalar(...
                 container,...
-                [self.n_slice self.slice_distance self.n_lobs, self.flip_angle, self.gz],...
-                [0 0.2 1 0.8]...
+                [self.n_slice self.slice_distance self.Amax, self.beta, self.mu, self.gz]...
                 );
 
-            handles = guidata(container);
-            uicontrol(container,...
-                'Style'          ,'pushbutton'                  ,...
-                'String'         ,'Windowing'                   ,...
-                'Units'          ,'normalized'                  ,...
-                'Position'       ,[0 0 1 0.2]                   ,...
-                'BackgroundColor',handles.buttonBGcolor         ,...
-                'Callback'       ,@self.callback_open_window_gui)
         end % fcn
 
     end % meths
