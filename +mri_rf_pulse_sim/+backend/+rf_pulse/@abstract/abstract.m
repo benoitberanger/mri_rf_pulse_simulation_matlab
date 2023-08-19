@@ -9,9 +9,9 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
     end % props
 
     properties (GetAccess = public, SetAccess = protected)
-        FM              (1,:) double                                       % [Hz]  frequency modulation
-        B1max           (1,1) double                                       % [T]   max value of amplitude_modulation(t)
-        GZmax           (1,1) double                                       % [T/m] max value of  gradient_modulation(t)
+        FM              (1,:) double                                       % [Hz]  frequency modulation -> its the derivation of the phase(t)
+        B1max           (1,1) double                                       % [T]   max value of magnitude(t)
+        GZmax           (1,1) double                                       % [T/m] max value of  gradient(t)
         slice_thickness (1,1) double                                       % [m]
         tbwp            (1,1) double                                       % []    time-bandwidth product
     end % props
@@ -103,13 +103,9 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
             axis(a(6),'tight')
         end
 
-        function callback_update(self, ~, ~)
-            self.notify_parent();
-        end
+        function callback_update(self, ~, ~); self.notify_parent(); end
 
-        function phase = freq2phase(self, freq)
-            phase = cumtrapz(self.time, freq);
-        end % fcn
+        function phase = freq2phase(self, freq); phase = cumtrapz(self.time, freq); end
 
     end % meths
 
@@ -129,12 +125,12 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
     % ABSTRACT stuff : need to be implemented in subclass
 
     properties (Abstract, GetAccess = public, SetAccess = protected, Dependent)
-        bandwidth (1,1) double
+        bandwidth (1,1) double                                             % [Hz]
     end % props
 
     methods (Abstract)
-        summary
-        init_base_gui
+        summary                                                            % print summary text
+        init_base_gui                                                      % initialize base gui part
     end % meths
 
 end % class
