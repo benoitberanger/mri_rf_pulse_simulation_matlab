@@ -23,8 +23,8 @@ classdef sms_mb_hs < mri_rf_pulse_sim.rf_pulse.hs
 
         % constructor
         function self = sms_mb_hs()
-            self.n_slice        = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='n_slice'       , value=3                               );
-            self.slice_distance = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='slice_distance', value= 5 * 1e-3, unit='mm', scale=1e3);
+            self.n_slice        = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='n_slice'       , value=3                             );
+            self.slice_distance = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='slice_distance', value=6 * 1e-3, unit='mm', scale=1e3);
             self.generate_sms_mb_hs();
         end % fcn
 
@@ -59,14 +59,14 @@ classdef sms_mb_hs < mri_rf_pulse_sim.rf_pulse.hs
 
         % synthesis text
         function txt = summary(self)
-            txt = sprintf('sinc : n_slice=%d  slice_distance=%d  BW=%gHz  Amax=%gµT  beta=%g  mu=%g  gz=%gmT/m',...
-                self.n_slice.get(), self.slice_distance.get(), self.bandwidth, self.Amax.get(), self.beta.get(), self.mu.get(), self.gz.get());
+            txt = sprintf('sinc : n_slice=%d  slice_distance=%d  BW=%gHz  Amax=%gµT  beta=%g  mu=%g',...
+                self.n_slice.get(), self.slice_distance.get(), self.bandwidth, self.Amax.get(), self.beta.get(), self.mu.get());
         end % fcn
 
         function init_specific_gui(self, container)
             mri_rf_pulse_sim.ui_prop.scalar.add_uicontrol_multi_scalar(...
                 container,...
-                [self.n_slice self.slice_distance self.Amax, self.beta, self.mu, self.gz]...
+                [self.n_slice self.slice_distance self.Amax, self.beta, self.mu]...
                 );
 
         end % fcn

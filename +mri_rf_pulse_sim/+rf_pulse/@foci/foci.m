@@ -38,7 +38,7 @@ classdef foci < mri_rf_pulse_sim.rf_pulse.hs
             freqmod_Cshaped = self.A .* self.FM;
             phase_from_freqmod_Cshaped = self.freq2phase(freqmod_Cshaped);
             self.B1 = magnitude_Cshaped .* exp(1j * phase_from_freqmod_Cshaped);
-            self.GZ = self.A .* self.GZ / 10; % self.gz is "GZmax"
+            self.GZ = self.GZavg / mean(self.A) * self.A;
         end % fcn
 
     end % meths

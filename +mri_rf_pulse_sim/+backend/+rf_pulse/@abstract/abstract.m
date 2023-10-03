@@ -1,7 +1,9 @@
 classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
 
     properties (GetAccess = public, SetAccess = public)
-        n_points mri_rf_pulse_sim.ui_prop.scalar                           % []  number of points defining the pulse
+        n_points        mri_rf_pulse_sim.ui_prop.scalar                    % []  number of points defining the pulse
+        duration        mri_rf_pulse_sim.ui_prop.scalar                    % [s] pulse duration
+        slice_thickness mri_rf_pulse_sim.ui_prop.scalar                    % [m] slice width
         time           (1,:) double                                        % [s] time vector
         B1             (1,:) double                                        % [T] complex waveform of the pulse
         GZ             (1,:) double                                        % [T/m] slice gradient
@@ -12,15 +14,15 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
         FM              (1,:) double                                       % [Hz]  frequency modulation -> its the derivation of the phase(t)
         B1max           (1,1) double                                       % [T]   max value of magnitude(t)
         GZmax           (1,1) double                                       % [T/m] max value of  gradient(t)
-        slice_thickness (1,1) double                                       % [m]
+        GZavg           (1,1) double                                       % [T/m] average value of gradient(t) -> used for slice thickness
         tbwp            (1,1) double                                       % []    time-bandwidth product
     end % props
 
     methods % no attribute for dependent properies
-        function value = get.B1max(self);           value = max(abs(self.B1)); end
-        function value = get.GZmax(self);           value = max(abs(self.GZ)); end
-        function value = get.FM(self);              value = gradient(self.phase()) ./ gradient(self.time) / (2*pi); end
-        function value = get.slice_thickness(self); value = 2*pi * self.bandwidth / (self.gamma * self.GZmax); end
+        function value = get.B1max(self);           value = max (abs(self.B1)); end
+        function value = get.GZmax(self);           value = max (abs(self.GZ)); end
+        function value = get.GZavg(self);           value = 2*pi*self.bandwidth / (self.gamma*self.slice_thickness); end
+        function value = get.FM(self);              value = gradient(self.phase) ./ gradient(self.time) / (2*pi); end
         function value = get.tbwp(self);            value = self.duration * self.bandwidth; end
     end % meths
 
@@ -28,7 +30,9 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
 
         % constructor
         function self = abstract(varargin)
-            self.n_points = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='n_points', value=256);
+            self.n_points        = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='n_points'       , value=256                             );
+            self.duration        = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='duration'       , value=  5 * 1e-3, unit='ms', scale=1e3);
+            self.slice_thickness = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='slice_thickness', value=  4 * 1e-3, unit='mm', scale=1e3);
         end
 
         % EZ maths
@@ -103,10 +107,21 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
             axis(a(6),'tight')
         end
 
-        function callback_update(self, ~, ~); self.notify_parent(); end
+        function callback_update(self, ~, ~)
+            self.notify_parent();
+        end
 
-        function phase = freq2phase(self, freq); phase = cumtrapz(self.time, freq); end
+        function phase = freq2phase(self, freq)
+            phase = cumtrapz(self.time, freq);
+        end
 
+        function init_base_gui(self, container)
+            mri_rf_pulse_sim.ui_prop.scalar.add_uicontrol_multi_scalar( ...
+                container, ...
+                [self.n_points, self.duration self.slice_thickness] ...
+                );
+        end % fcn
+        
     end % meths
 
     methods (Access = protected)
@@ -130,7 +145,6 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
 
     methods (Abstract)
         summary                                                            % print summary text
-        init_base_gui                                                      % initialize base gui part
     end % meths
 
 end % class

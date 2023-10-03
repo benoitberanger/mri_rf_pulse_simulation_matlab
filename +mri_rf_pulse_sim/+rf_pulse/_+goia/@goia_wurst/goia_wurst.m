@@ -1,4 +1,4 @@
-classdef goia_wurst < mri_rf_pulse_sim.backend.rf_pulse.duration_based
+classdef goia_wurst < mri_rf_pulse_sim.backend.rf_pulse.abstract
     % Gradient Offset Independent Adiabaticity
 
     % Andronesi OC, Ramadan S, Ratai EM, Jennings D, Mountford CE, Sorensen AG.
@@ -9,9 +9,8 @@ classdef goia_wurst < mri_rf_pulse_sim.backend.rf_pulse.duration_based
 
     properties (GetAccess = public, SetAccess = public)
 
-        Amax  mri_rf_pulse_sim.ui_prop.scalar                               % [T] B1max
-        gz  mri_rf_pulse_sim.ui_prop.scalar                               % [T/m] slice/slab selection gradient
-        mu  mri_rf_pulse_sim.ui_prop.scalar                               % [Hz] bandwidth of the frequency sweep
+        Amax  mri_rf_pulse_sim.ui_prop.scalar                              % [T] B1max
+        mu  mri_rf_pulse_sim.ui_prop.scalar                                % [Hz] bandwidth of the frequency sweep
         f   mri_rf_pulse_sim.ui_prop.scalar
         n   mri_rf_pulse_sim.ui_prop.scalar
         m   mri_rf_pulse_sim.ui_prop.scalar
@@ -36,7 +35,6 @@ classdef goia_wurst < mri_rf_pulse_sim.backend.rf_pulse.duration_based
 
         function self = goia_wurst()
             self.Amax = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='Amax', value= 100 * 1e-6, unit='µT'  , scale=1e6);
-            self.gz   = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='gz'  , value=  25 * 1e-3, unit='mT/m', scale=1e3);
             self.mu   = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='mu'  , value=2000       , unit='Hz'             );
             self.f    = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='f'   , value=   0.9                             );
             self.n    = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='n'   , value=  16                               );
@@ -55,7 +53,7 @@ classdef goia_wurst < mri_rf_pulse_sim.backend.rf_pulse.duration_based
             T = (2*self.time / self.duration) - 1;
 
             magnitude = self.Amax *                    (1 - abs(sin(pi/2 * T)).^self.n.value);
-            gradient  = self.gz   * (1 - self.f +    self.f*abs(sin(pi/2 * T)).^self.m.value);
+            gradient  = self.GZavg   * (1 - self.f +    self.f*abs(sin(pi/2 * T)).^self.m.value);
             freq      = cumsum(magnitude.^2 ./ gradient) * self.duration / self.n_points;
             freq      = freq - freq(round(end/2));
             freq      = freq .* gradient;
