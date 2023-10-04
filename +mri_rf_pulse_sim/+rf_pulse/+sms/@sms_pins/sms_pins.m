@@ -9,6 +9,7 @@ classdef sms_pins < mri_rf_pulse_sim.backend.rf_pulse.abstract
         N                 mri_rf_pulse_sim.ui_prop.scalar                  % [] number of subpulse in each SINC lob
         M                 mri_rf_pulse_sim.ui_prop.scalar                  % [] number of subpulse on each side (left right)
         subpulse_duration mri_rf_pulse_sim.ui_prop.scalar                  % [s] duration of each RECT subpluse
+        use_blip          mri_rf_pulse_sim.ui_prop.bool                    % use blip gradients between subpulse, or sue continuous slice gradient
     end % props
 
     properties (GetAccess = public, SetAccess = protected, Dependent)
@@ -42,10 +43,11 @@ classdef sms_pins < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
         % constructor
         function self = sms_pins()
-            self.flip_angle        = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle'       , value= 90       , unit='°'              );
-            self.N                 = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='N'                , value=  2                               );
-            self.M                 = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='M'                , value= 10                               );
-            self.subpulse_duration = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='subpulse_duration', value=100 * 1e-6, unit='us'  , scale=1e6);
+            self.flip_angle        = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle'       , value= 90       , unit='°'                  );
+            self.N                 = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='N'                , value=  2                                   );
+            self.M                 = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='M'                , value= 10                                   );
+            self.subpulse_duration = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='subpulse_duration', value=100 * 1e-6, unit='us'      , scale=1e6);
+            self.use_blip          = mri_rf_pulse_sim.ui_prop.bool  (parent=self, name='use_blip'         , value=true      , text='use_blip'           );
             self.generate_PINS();
         end % fcn
 
@@ -71,13 +73,16 @@ classdef sms_pins < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
             self.B1  = waveform;
 
-            gradientshape = zeros(size(self.time));
-            for m = 1 : self.M.get()
-                signal = (self.blip(-(m-0.5)/self.M*self.duration/2) + self.blip(+(m-0.5)/self.M*self.duration/2));
-                gradientshape = gradientshape + signal;
+            if self.use_blip.get()
+                gradientshape = zeros(size(self.time));
+                for m = 1 : self.M.get()
+                    signal = (self.blip(-(m-0.5)/self.M*self.duration/2) + self.blip(+(m-0.5)/self.M*self.duration/2));
+                    gradientshape = gradientshape + signal;
+                end
+                self.GZ = self.GZavg / mean(gradientshape) * gradientshape; % scale gradient -> for slice thickness
+            else
+                self.GZ = ones(size(self.time)) * self.GZavg; % scale gradient -> for slice thickness
             end
-            self.GZ = self.GZavg / mean(gradientshape) * gradientshape; % scale gradient -> for slice thickness
-            % self.GZ = ones(size(self.time)) * self.GZavg; % uncomment if you want to use continuous slice gradient => slice profile is disgusting
 
         end % fcn
 
@@ -88,10 +93,14 @@ classdef sms_pins < mri_rf_pulse_sim.backend.rf_pulse.abstract
         end % fcn
 
         function init_specific_gui(self, container)
+            self.use_blip.add_uicontrol(...
+                container,...
+                [0.0 0.0 1.0 0.2]...
+                );
             mri_rf_pulse_sim.ui_prop.scalar.add_uicontrol_multi_scalar(...
                 container,...
                 [self.flip_angle self.N self.M self.subpulse_duration],...
-                [0 0 1 1]...
+                [0.0 0.2 1.0 0.8]...
                 );
         end % fcn
 
