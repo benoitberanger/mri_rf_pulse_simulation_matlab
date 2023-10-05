@@ -23,8 +23,8 @@ classdef sms_mb_sinc < mri_rf_pulse_sim.rf_pulse.sinc
 
         % constructor
         function self = sms_mb_sinc()
-            self.n_slice        = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='n_slice'       , value=3                               );
-            self.slice_distance = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='slice_distance', value= 5 * 1e-3, unit='mm', scale=1e3);
+            self.n_slice        = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='n_slice'       , value=3                             );
+            self.slice_distance = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='slice_distance', value=6 * 1e-3, unit='mm', scale=1e3);
             self.n_lobs.value = 3;
             self.generate_sms_mb_sinc();
         end % fcn
@@ -60,14 +60,14 @@ classdef sms_mb_sinc < mri_rf_pulse_sim.rf_pulse.sinc
 
         % synthesis text
         function txt = summary(self)
-            txt = sprintf('sinc : n_slice=%d  slice_distance=%d  n_lobs=%d  flip_angle=%d°  gz=%gmT/m',...
-                self.n_slice.get(), self.slice_distance.get(), self.n_lobs.get(), self.flip_angle.get(), self.gz.get());
+            txt = sprintf('sinc : n_slice=%d  slice_distance=%d  n_lobs=%d  flip_angle=%d°',...
+                self.n_slice.get(), self.slice_distance.get(), self.n_lobs.get(), self.flip_angle.get());
         end % fcn
 
         function init_specific_gui(self, container)
             mri_rf_pulse_sim.ui_prop.scalar.add_uicontrol_multi_scalar(...
                 container,...
-                [self.n_slice self.slice_distance self.n_lobs, self.flip_angle, self.gz],...
+                [self.n_slice self.slice_distance self.n_lobs, self.flip_angle],...
                 [0 0.2 1 0.8]...
                 );
 

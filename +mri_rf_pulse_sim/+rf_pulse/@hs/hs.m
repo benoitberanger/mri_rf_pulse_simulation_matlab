@@ -1,4 +1,4 @@
-classdef hs < mri_rf_pulse_sim.backend.rf_pulse.duration_based
+classdef hs < mri_rf_pulse_sim.backend.rf_pulse.abstract
     % Hyperbolic Secant
 
     properties (GetAccess = public, SetAccess = public)
@@ -6,7 +6,6 @@ classdef hs < mri_rf_pulse_sim.backend.rf_pulse.duration_based
         Amax mri_rf_pulse_sim.ui_prop.scalar                               % [T] B1max
         beta mri_rf_pulse_sim.ui_prop.scalar                               % [rad/s]
         mu   mri_rf_pulse_sim.ui_prop.scalar                               % [] frequency sweep factor
-        gz   mri_rf_pulse_sim.ui_prop.scalar                               % [T/m] slice/slab selection gradient
 
     end % props
 
@@ -33,7 +32,6 @@ classdef hs < mri_rf_pulse_sim.backend.rf_pulse.duration_based
             self.beta = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='beta', value=1618                               );
             BW = 2000; % Hz
             self.mu   = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='mu'  , value=BW*pi/self.beta                    );
-            self.gz   = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='gz'  , value=  25 * 1e-3, unit='mT/m', scale=1e3);
             self.generate_hs();
         end % fcn
 
@@ -43,7 +41,7 @@ classdef hs < mri_rf_pulse_sim.backend.rf_pulse.duration_based
 
         % generate time, AM, FM, GM
         function generate_hs(self)
-            self.assert_nonempty_prop({'Amax', 'beta', 'mu', 'gz'})
+            self.assert_nonempty_prop({'Amax', 'beta', 'mu'})
 
             self.time = linspace(-self.duration/2, +self.duration/2, self.n_points);
 
@@ -61,19 +59,19 @@ classdef hs < mri_rf_pulse_sim.backend.rf_pulse.duration_based
             phase = self.mu * log( sech(self.beta * self.time) ) + self.mu * self.Amax;
 
             self.B1 = magnitude .* exp(1j * phase);
-            self.GZ = ones(size(self.time)) * self.gz;
+            self.GZ = ones(size(self.time)) * self.GZavg;
         end % fcn
 
         % synthesis text
         function txt = summary(self)
-            txt = sprintf('hs : BW=%gHz  Amax=%gµT  beta=%g  mu=%g  gz=%gmT/m',...
-                self.bandwidth, self.Amax.get(), self.beta.get(), self.mu.get(), self.gz.get());
+            txt = sprintf('hs : BW=%gHz  Amax=%gµT  beta=%g  mu=%g',...
+                self.bandwidth, self.Amax.get(), self.beta.get(), self.mu.get());
         end % fcn
 
         function init_specific_gui(self, container)
             mri_rf_pulse_sim.ui_prop.scalar.add_uicontrol_multi_scalar(...
                 container,...
-                [self.Amax, self.beta, self.mu, self.gz]...
+                [self.Amax, self.beta, self.mu]...
                 );
         end % fcn
 

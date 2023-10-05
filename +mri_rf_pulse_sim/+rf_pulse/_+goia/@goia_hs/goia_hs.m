@@ -36,7 +36,7 @@ classdef goia_hs < mri_rf_pulse_sim.rf_pulse.foci
             T = (2*self.time / self.duration) - 1;
 
             magnitude = self.Amax     * sech(self.beta * T.^self.n.value);
-            gradient  = self.gz       * (1 - self.f * sech(self.beta * T.^self.m.value));
+            gradient  = self.GZavg    * (1 - self.f * sech(self.beta * T.^self.m.value));
             freq      = cumsum(magnitude.^2 ./ gradient) * self.duration / self.n_points;
             freq      = freq - freq(round(end/2));
             freq      = freq .* gradient;
@@ -49,14 +49,14 @@ classdef goia_hs < mri_rf_pulse_sim.rf_pulse.foci
 
         % synthesis text
         function txt = summary(self)
-            txt = sprintf('goia_hs : BW=%gHz  Amax=%gµT  beta=%g  mu=%g  gz=%gmT/m  f=%g  n=%d  m=%d',...
-                self.bandwidth, self.Amax.get(), self.beta.get(), self.mu.get(), self.gz.get(), self.f.get(), self.n.get(), self.m.get());
+            txt = sprintf('goia_hs : BW=%gHz  Amax=%gµT  beta=%g  mu=%g  f=%g  n=%d  m=%d',...
+                self.bandwidth, self.Amax.get(), self.beta.get(), self.mu.get(), self.f.get(), self.n.get(), self.m.get());
         end % fcn
 
         function init_specific_gui(self, container)
             mri_rf_pulse_sim.ui_prop.scalar.add_uicontrol_multi_scalar(...
                 container,...
-                [self.Amax, self.beta, self.mu, self.f, self.gz, self.n, self.m]...
+                [self.Amax, self.beta, self.mu, self.f, self.n, self.m]...
                 );
         end % fcn
 
