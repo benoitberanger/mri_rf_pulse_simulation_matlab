@@ -5,7 +5,8 @@ classdef simulation_parameters < mri_rf_pulse_sim.backend.base_class
         dB0 mri_rf_pulse_sim.ui_prop.range                                 % [ppm] off-resonance vector
         B0  mri_rf_pulse_sim.ui_prop.scalar                                % [T] static magnetic field strength
 
-        auto_simplot mri_rf_pulse_sim.ui_prop.bool                         % state of the GUI checkbox
+        auto_simplot     mri_rf_pulse_sim.ui_prop.bool
+        auto_disp_pulse  mri_rf_pulse_sim.ui_prop.bool
     end % props
 
     properties(GetAccess = public, SetAccess = ?mri_rf_pulse_sim.app)
@@ -20,7 +21,8 @@ classdef simulation_parameters < mri_rf_pulse_sim.backend.base_class
             self.dB0 = mri_rf_pulse_sim.ui_prop.range (parent=self, name='dB0', vect=linspace(-100,100,201)/1e6, scale=1e6);
             self.B0  = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='B0' , value=2.89, unit='T');
 
-            self.auto_simplot = mri_rf_pulse_sim.ui_prop.bool(parent=self, name='auto_simplot', text='auto_simplot', value=true);
+            self.auto_simplot    = mri_rf_pulse_sim.ui_prop.bool(parent=self, name='auto_simplot'   , text='auto_simplot'   , value=true);
+            self.auto_disp_pulse = mri_rf_pulse_sim.ui_prop.bool(parent=self, name='auto_disp_pulse', text='auto_disp_pulse', value=true);
 
             if nargin < 1
                 return
@@ -85,7 +87,8 @@ classdef simulation_parameters < mri_rf_pulse_sim.backend.base_class
                 'Position',[0 0.7 1 0.3],...
                 'BackgroundColor',figureBGcolor);
 
-            self.auto_simplot.add_uicontrol(handles.uipanel_controls,[0.0 0.5 0.2 0.5])
+            self.auto_simplot   .add_uicontrol(handles.uipanel_controls,[0.0 0.5 0.2 0.5])
+            self.auto_disp_pulse.add_uicontrol(handles.uipanel_controls,[0.2 0.5 0.2 0.5])
 
             handles.pushbutton_simplot = uicontrol(handles.uipanel_controls, ...
                 'Style', 'pushbutton', ...
@@ -96,7 +99,7 @@ classdef simulation_parameters < mri_rf_pulse_sim.backend.base_class
                 'Callback',@self.callback_simplot);
 
             self.B0.add_uicontrol(handles.uipanel_controls, [0.5 0 0.5 1])
-            
+
             % IMPORTANT
             guidata(figHandle,handles)
             % After creating the figure, dont forget the line
@@ -110,6 +113,9 @@ classdef simulation_parameters < mri_rf_pulse_sim.backend.base_class
         end % fcn
 
         function callback_update(self, ~, ~)
+            if self.auto_disp_pulse.get()
+                disp(self.app.pulse_definition.rf_pulse)
+            end
             if self.auto_simplot.get()
                 self.app.simplot();
             end
