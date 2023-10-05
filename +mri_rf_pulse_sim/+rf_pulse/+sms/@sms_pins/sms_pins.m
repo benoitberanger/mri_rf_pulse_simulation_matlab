@@ -6,31 +6,31 @@ classdef sms_pins < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
     properties (GetAccess = public, SetAccess = public)
         flip_angle        mri_rf_pulse_sim.ui_prop.scalar                  % [deg] flip angle
-        N                 mri_rf_pulse_sim.ui_prop.scalar                  % [] number of subpulse in each SINC lob
-        M                 mri_rf_pulse_sim.ui_prop.scalar                  % [] number of subpulse on each side (left right)
-        subpulse_duration mri_rf_pulse_sim.ui_prop.scalar                  % [s] duration of each RECT subpluse
-        use_blip          mri_rf_pulse_sim.ui_prop.bool                    % use blip gradients between subpulse, or sue continuous slice gradient
+        slice_distance    mri_rf_pulse_sim.ui_prop.scalar                  % [m] distance between 2 consecutive slices
+        subpulse_number   mri_rf_pulse_sim.ui_prop.scalar                  % [] it affects th TBWP, hence the slice profile
+        subpulse_duration mri_rf_pulse_sim.ui_prop.scalar                  % [s] duration of each RECT subpluse, high subpulse duration means high maximum gradient
+        use_blip          mri_rf_pulse_sim.ui_prop.bool                    % [] use blip gradients between subpulse, or use continuous slice gradient
     end % props
 
     properties (GetAccess = public, SetAccess = protected, Dependent)
-        slice_distance                                                     % [m]
+        N                 mri_rf_pulse_sim.ui_prop.scalar                  % [] number of subpulse in each SINC lob
+        M                 mri_rf_pulse_sim.ui_prop.scalar                  % [] number of subpulse on each side (left right)
         bandwidth                                                          % [Hz]
-        subpulse_number                                                    % []
         blip_duration                                                      % [s]
     end % props
 
     methods % no attribute for dependent properies
 
-        function value = get.slice_distance(self)
-            value = self.N * self.slice_thickness;
+        function value = get.N(self)
+            value = self.slice_distance / self.slice_thickness;
         end
 
         function value = get.bandwidth(self)
             value = self.subpulse_number /(self.N * self.duration);
         end
 
-        function value = get.subpulse_number(self)
-            value = 2 * self.M + 1;
+        function value = get.M(self)
+            value = (self.subpulse_number  - 1) / 2;
         end
 
         function value = get.blip_duration(self)
@@ -44,8 +44,8 @@ classdef sms_pins < mri_rf_pulse_sim.backend.rf_pulse.abstract
         % constructor
         function self = sms_pins()
             self.flip_angle        = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle'       , value= 90       , unit='°'                  );
-            self.N                 = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='N'                , value=  2                                   );
-            self.M                 = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='M'                , value= 10                                   );
+            self.slice_distance    = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='slice_distance'   , value= 10 * 1e-3, unit='mm'      , scale=1e3);
+            self.subpulse_number   = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='subpulse_number'  , value= 21                                   );
             self.subpulse_duration = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='subpulse_duration', value=100 * 1e-6, unit='us'      , scale=1e6);
             self.use_blip          = mri_rf_pulse_sim.ui_prop.bool  (parent=self, name='use_blip'         , value=true      , text='use_blip'           );
             self.generate_PINS();
@@ -62,7 +62,7 @@ classdef sms_pins < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
             % generate waveform
             waveform = (1/self.N)*self.dirac(0);
-            for m = 1 : self.M.get()
+            for m = 1 : self.M
                 signal = 1/(pi*m) * sin(m*pi/self.N) * (self.dirac(-m/self.M*self.duration/2) + self.dirac(+m/self.M*self.duration/2));
                 waveform = waveform + signal;
             end
@@ -70,12 +70,12 @@ classdef sms_pins < mri_rf_pulse_sim.backend.rf_pulse.abstract
             % scale waveform to the desired flip angle
             waveform = waveform / trapz(self.time, waveform); % normalize integral
             waveform = waveform * deg2rad(self.flip_angle.get()) / self.gamma; % scale integrale with flip angle
-
             self.B1  = waveform;
 
+            % generate gradient shape
             if self.use_blip.get()
                 gradientshape = zeros(size(self.time));
-                for m = 1 : self.M.get()
+                for m = 1 : self.M
                     signal = (self.blip(-(m-0.5)/self.M*self.duration/2) + self.blip(+(m-0.5)/self.M*self.duration/2));
                     gradientshape = gradientshape + signal;
                 end
@@ -95,11 +95,11 @@ classdef sms_pins < mri_rf_pulse_sim.backend.rf_pulse.abstract
         function init_specific_gui(self, container)
             self.use_blip.add_uicontrol(...
                 container,...
-                [0.0 0.0 1.0 0.2]...
+                [0.3 0.0 0.5 0.2]...
                 );
             mri_rf_pulse_sim.ui_prop.scalar.add_uicontrol_multi_scalar(...
                 container,...
-                [self.flip_angle self.N self.M self.subpulse_duration],...
+                [self.slice_distance self.subpulse_number self.subpulse_duration self.flip_angle],...
                 [0.0 0.2 1.0 0.8]...
                 );
         end % fcn
