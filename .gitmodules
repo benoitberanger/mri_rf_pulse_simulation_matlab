@@ -1,0 +1,4 @@
+[submodule "submodules/Spectral-Spatial-RF-Pulse-Design"]
+	path = submodules/Spectral-Spatial-RF-Pulse-Design
+	url = https://github.com/LarsonLab/Spectral-Spatial-RF-Pulse-Design.git
+    ignore = untracked  # because of mex files
