@@ -26,7 +26,7 @@ classdef slr < mri_rf_pulse_sim.backend.rf_pulse.abstract
         % constructor
         function self = slr()
             check_slr_dependency();
-            self.n_points.value = 64;
+            self.n_points.value = 128;
             self.d1             = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='d1'         , value=  0.01, unit='from 0 to 1');
             self.d2             = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='d2'         , value=  0.01, unit='from 0 to 1');
             self.TBWP           = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='TBWP'       , value=  8                       );
