@@ -1,5 +1,10 @@
 classdef slr < mri_rf_pulse_sim.backend.rf_pulse.abstract
-    % Shinnar - Le Roux
+    % J. Pauly, P. Le Roux, D. Nishimura and A. Macovski, "Parameter
+    % relations for the Shinnar-Le Roux selective excitation pulse design
+    % algorithm (NMR imaging)," in IEEE Transactions on Medical Imaging,
+    % vol. 10, no. 1, pp. 53-65, March 1991, doi: 10.1109/42.75611.
+    %
+    % dependency : https://github.com/LarsonLab/Spectral-Spatial-RF-Pulse-Design.git
 
     properties (GetAccess = public, SetAccess = public)
 
@@ -42,6 +47,9 @@ classdef slr < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
         % generate time, AM, FM, GM
         function generate_slr(self)
+            
+            MAX_N = 512; % this value comes from the .c file, if the code is run with 512+ points MATLAB crashes
+            assert(self.n_points.get() < MAX_N, 'n_points must be < %d', MAX_N)
 
             self.time = linspace(-self.duration/2, +self.duration/2, self.n_points.get());
             self.GZ = ones(size(self.time)) * self.GZavg;
