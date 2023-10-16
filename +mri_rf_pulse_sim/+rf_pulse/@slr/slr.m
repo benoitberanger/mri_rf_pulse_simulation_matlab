@@ -2,11 +2,12 @@ classdef slr < mri_rf_pulse_sim.backend.rf_pulse.abstract
     % Shinnar - Le Roux
 
     properties (GetAccess = public, SetAccess = public)
-        pulse_type  mri_rf_pulse_sim.enum.slr_pulse_type                   % [enum]
-        filter_type mri_rf_pulse_sim.enum.slr_filter_type                  % [enum]
+
         d1          mri_rf_pulse_sim.ui_prop.scalar                        % [] ripple ratio on the rect top      (from 0 to 1)
         d2          mri_rf_pulse_sim.ui_prop.scalar                        % [] ripple ratio on the rect baseline (from 0 to 1)
         TBWP        mri_rf_pulse_sim.ui_prop.scalar                        % [] TimeBandWidthProduct -> needs to be an input paramter
+        pulse_type  mri_rf_pulse_sim.ui_prop.list
+        filter_type mri_rf_pulse_sim.ui_prop.list
         flip_angle  mri_rf_pulse_sim.ui_prop.scalar                        % [deg] flip angle
     end % props
 
@@ -25,12 +26,13 @@ classdef slr < mri_rf_pulse_sim.backend.rf_pulse.abstract
         % constructor
         function self = slr()
             check_slr_dependency();
-            self.d1         = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='d1'        , value=  0.01, unit='from 0 to 1');
-            self.d2         = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='d2'        , value=  0.01, unit='from 0 to 1');
-            self.TBWP       = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='TBWP'      , value=  8                       );
-            self.flip_angle = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle', value= 90   , unit='°'          );
-            self.pulse_type  = 'ex';
-            self.filter_type = 'pm';
+            self.n_points.value = 64;
+            self.d1             = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='d1'         , value=  0.01, unit='from 0 to 1');
+            self.d2             = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='d2'         , value=  0.01, unit='from 0 to 1');
+            self.TBWP           = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='TBWP'       , value=  8                       );
+            self.pulse_type     = mri_rf_pulse_sim.ui_prop.list  (parent=self, name='pulse_type' , value= 'ex' , items= {'st', 'ex', 'se', 'sat', 'inv'});
+            self.filter_type    = mri_rf_pulse_sim.ui_prop.list  (parent=self, name='filter_type', value= 'min', items= {'ms', 'pm', 'ls', 'min', 'max'});
+            self.flip_angle     = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle' , value= 90   , unit='°'          );
             self.generate_slr();
         end % fcn
 
@@ -45,7 +47,7 @@ classdef slr < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.GZ = ones(size(self.time)) * self.GZavg;
 
             % get waveform : https://github.com/LarsonLab/Spectral-Spatial-RF-Pulse-Design.git
-            waveform = dzrf(self.n_points.get(), self.TBWP.get(), self.pulse_type, self.filter_type, self.d1.get(), self.d2.get());
+            waveform = dzrf(self.n_points.get(), self.TBWP.get(), self.pulse_type.get(), self.filter_type.get(), self.d1.get(), self.d2.get());
 
             % scale waveform
             waveform = waveform / trapz(self.time, waveform); % normalize integral
@@ -56,15 +58,21 @@ classdef slr < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
         % synthesis text
         function txt = summary(self)
-            txt = sprintf('slr : ??=%s',...
-                ' ');
+            txt = sprintf('slr : d1=%g  d2=%g  TBWP=%g  ptype=%s  ftype=%s  FA=%g°',...
+                self.d1.get(), self.d2.get(), self.TBWP.get(), self.pulse_type.get(), self.filter_type.get(), self.flip_angle.get());
         end % fcn
 
         function init_specific_gui(self, container)
+            rect_scalar = [0.0 0.0 0.6 1.0];
+            rect_ptype  = [0.6 0.0 0.2 1.0];
+            rect_ftype  = [0.8 0.0 0.2 1.0];
             mri_rf_pulse_sim.ui_prop.scalar.add_uicontrol_multi_scalar(...
                 container,...
-                [self.d1 self.d2 self.TBWP self.flip_angle]...
+                [self.d1 self.d2 self.TBWP self.flip_angle],...
+                rect_scalar...
                 );
+            self.pulse_type .add_uicontrol(container, rect_ptype);
+            self.filter_type.add_uicontrol(container, rect_ftype);
         end % fcn
 
     end % meths
@@ -99,8 +107,8 @@ end
 % check if submodule is here
 submodule_name = 'Spectral-Spatial-RF-Pulse-Design';
 submodule_path = fullfile(mri_rf_pulse_sim.get_submodules_dir(), submodule_name);
-assert(exist(submodule_path,'dir')>0, ...
-    'submodule (i.e. dependency) is required : %s. Update your git repo with `git submodule init`', ...
+assert(exist(submodule_path,'dir')>0 & exist(fullfile(submodule_path, 'rf_tools'),'dir')>0, ...
+    'submodule (i.e. dependency) is required : %s. Update your git repo with `git submodule update', ...
     submodule_name)
 
 % add in path
