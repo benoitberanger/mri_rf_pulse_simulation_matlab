@@ -88,8 +88,8 @@ classdef sms_pins < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
         % synthesis text
         function txt = summary(self)
-            txt = sprintf('rect : flip_angle=%d°  N=%d  M=%d  subpulse_duration=%gus',...
-                self.flip_angle.get(), self.N.get(), self.M.get(), self.subpulse_duration.get());
+            txt = sprintf('rect : flip_angle=%d° slice_distance=%gmm  subpulse_number=%d  subpulse_duration=%gus',...
+                self.flip_angle.get(), self.slice_distance.get(), self.subpulse_number.get(), self.subpulse_duration.get());
         end % fcn
 
         function init_specific_gui(self, container)
