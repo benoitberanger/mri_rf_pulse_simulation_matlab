@@ -60,7 +60,7 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
 
             a(1) = subplot(6,1,1,'Parent',container);
             hold(a(1), 'on')
-            plot(a(1), self.time*1e3, self.real()*1e6, lineprop_B1{:})
+            plot(a(1), self.time*1e3, self.real()*1e6, lineprop_B1{:}, 'Color', [163 207 244]/255)
             a(1).XTickLabel = {};
             a(1).YLabel.String = 'real (µT)';
             plot(a(1), lineprop_ref{:})
@@ -68,7 +68,7 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
 
             a(2) = subplot(6,1,2,'Parent',container);
             hold(a(2), 'on')
-            plot(a(2), self.time*1e3, self.imag()*1e6, lineprop_B1{:})
+            plot(a(2), self.time*1e3, self.imag()*1e6, lineprop_B1{:}, 'Color', [163 207 244]/255)
             a(2).XTickLabel = {};
             a(2).YLabel.String = 'imag (µT)';
             plot(a(2), lineprop_ref{:})
@@ -76,7 +76,7 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
 
             a(3) = subplot(6,1,3,'Parent',container);
             hold(a(3), 'on')
-            plot(a(3), self.time*1e3, self.abs()*1e6, lineprop_B1{:})
+            plot(a(3), self.time*1e3, self.abs()*1e6, lineprop_B1{:}, 'Color', [100 182 229]/255)
             a(3).XTickLabel = {};
             a(3).YLabel.String = 'magnitude (µT)';
             plot(a(3), lineprop_ref{:})
@@ -84,7 +84,7 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
 
             a(4) = subplot(6,1,4,'Parent',container);
             hold(a(4), 'on')
-            plot(a(4), self.time*1e3, self.angle(), lineprop_B1{:})
+            plot(a(4), self.time*1e3, self.angle(), lineprop_B1{:}, 'Color', [100 182 229]/255)
             a(4).XTickLabel = {};
             a(4).YLabel.String = 'phase (radian)';
             plot(a(4), lineprop_ref{:})
@@ -92,7 +92,7 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
 
             a(5) = subplot(6,1,5,'Parent',container);
             hold(a(5), 'on')
-            plot(a(5), self.time*1e3, self.FM(), lineprop_B1{:})
+            plot(a(5), self.time*1e3, self.FM(), lineprop_B1{:}, 'Color', [115 107 172]/255)
             a(5).XTickLabel = {};
             a(5).YLabel.String = 'FM (Hz)';
             plot(a(5), lineprop_ref{:})
@@ -100,7 +100,7 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
 
             a(6) = subplot(6,1,6,'Parent',container);
             hold(a(6), 'on')
-            plot(a(6), self.time*1e3, self.GZ*1e3, lineprop_B1{:})
+            plot(a(6), self.time*1e3, self.GZ*1e3, lineprop_B1{:}, 'Color', [132 190 99]/255)
             a(6).XLabel.String = 'time (ms)';
             a(6).YLabel.String = 'GZ (mT/m)';
             plot(a(6), lineprop_ref{:})
