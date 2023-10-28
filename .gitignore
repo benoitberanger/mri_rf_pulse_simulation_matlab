@@ -18,3 +18,7 @@ desktop.ini
 ._*
 .Spotlight-V100
 .Trashes
+
+# IDE
+.idea
+.vscode
