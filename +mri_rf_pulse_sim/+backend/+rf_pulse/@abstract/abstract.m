@@ -105,6 +105,8 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
             a(6).YLabel.String = 'GZ (mT/m)';
             plot(a(6), lineprop_ref{:})
             axis(a(6),'tight')
+
+            linkaxes(a,'x');
         end
 
         function callback_update(self, ~, ~)
@@ -118,10 +120,10 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
         function init_base_gui(self, container)
             mri_rf_pulse_sim.ui_prop.scalar.add_uicontrol_multi_scalar( ...
                 container, ...
-                [self.n_points, self.duration self.slice_thickness] ...
+                [self.n_points, self.duration, self.slice_thickness] ...
                 );
         end % fcn
-        
+
     end % meths
 
     methods (Access = protected)
