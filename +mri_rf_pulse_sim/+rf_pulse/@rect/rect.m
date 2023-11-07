@@ -17,7 +17,6 @@ classdef rect < mri_rf_pulse_sim.backend.rf_pulse.abstract
         % constructor
         function self = rect()
             self.n_points.value = 32;
-            self.duration.value = 5 * 1e-3;
             self.flip_angle = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle', value=90, unit='°');
             self.generate_rect();
         end % fcn
