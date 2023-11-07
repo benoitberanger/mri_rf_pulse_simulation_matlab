@@ -13,7 +13,7 @@ for  i = 1 : length(dir_sub)
     dir_sub_current = dir(fullfile(dir_sub(i).folder, dir_sub(i).name, '@*'));
     pulse_list_sub_current = {dir_sub_current.name};
     pulse_list_sub_current = strrep(pulse_list_sub_current, '@', '');
-    pulse_list_sub = [pulse_list_sub pulse_list_sub_current]; %#ok<AGROW> 
+    pulse_list_sub = [pulse_list_sub strcat(dir_sub(i).name(2:end),filesep,pulse_list_sub_current)]; %#ok<AGROW> 
 end
 
 pulse_list = [pulse_list_root pulse_list_sub];

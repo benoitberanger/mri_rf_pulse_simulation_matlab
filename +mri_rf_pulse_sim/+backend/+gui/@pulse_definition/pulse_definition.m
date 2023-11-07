@@ -123,9 +123,9 @@ classdef pulse_definition < mri_rf_pulse_sim.backend.base_class
 
             switch class(pulse)
                 case 'char'
-                    if any(pulse == '_')
-                        split = strsplit(pulse, '_');
-                        self.rf_pulse = eval(sprintf('mri_rf_pulse_sim.rf_pulse.%s.%s', split{1}, pulse));
+                    if any(pulse == filesep)
+                        split = strsplit(pulse, filesep);
+                        self.rf_pulse = eval(sprintf('mri_rf_pulse_sim.rf_pulse.%s.%s', split{1}, split{2}));
                     else
                         self.rf_pulse = eval(sprintf('mri_rf_pulse_sim.rf_pulse.%s', pulse));
                     end
