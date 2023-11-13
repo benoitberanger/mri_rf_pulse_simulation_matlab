@@ -1,12 +1,16 @@
 function pulse_list = get_list()
+% fetch the list pulses in the library
 
+% SINC is the "default" pulse, use it's location as starting point
 base_path = which(class(mri_rf_pulse_sim.rf_pulse.sinc));
 package_path = fileparts(fileparts(base_path));
 
+% fetch all classes in the base_path : they are pulses
 dir_root = dir(fullfile(package_path, '@*'));
 pulse_list_root = {dir_root.name};
 pulse_list_root = strrep(pulse_list_root, '@', '');
 
+% and fetch all sub-package classes : they are pulses
 pulse_list_sub = cell(0);
 dir_sub = dir(fullfile(package_path, '+*'));
 for  i = 1 : length(dir_sub)
@@ -16,6 +20,9 @@ for  i = 1 : length(dir_sub)
     pulse_list_sub = [pulse_list_sub strcat(dir_sub(i).name(2:end),filesep,pulse_list_sub_current)]; %#ok<AGROW> 
 end
 
-pulse_list = [pulse_list_root pulse_list_sub];
+% TODO : use defined pulses
+
+% concatenate all
+pulse_list = [pulse_list_root pulse_list_sub]';
 
 end % fcn
