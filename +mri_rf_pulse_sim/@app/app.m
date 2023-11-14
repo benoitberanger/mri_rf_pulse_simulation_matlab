@@ -193,10 +193,10 @@ classdef app < handle
         end % fcn
 
         function callback__update_pulse(self, ~, ~)
-            if self.simulation_parameters.auto_disp_pulse.get()
+            if self.getAutoDispPulse()
                 disp(self.pulse_definition.rf_pulse)
             end
-            if self.simulation_parameters.auto_simplot.get()
+            if self.getAutoSimPlot()
                 self.simplot();
             end
         end % fcn
