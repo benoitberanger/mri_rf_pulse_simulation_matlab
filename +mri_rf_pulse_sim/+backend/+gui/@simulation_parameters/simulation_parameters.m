@@ -21,8 +21,8 @@ classdef simulation_parameters < mri_rf_pulse_sim.backend.base_class
             self.dB0 = mri_rf_pulse_sim.ui_prop.range (parent=self, name='dB0', vect=linspace(-020,020,201)/1e6, scale=1e6);
             self.B0  = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='B0' , value=2.89, unit='T');
 
-            self.auto_simplot    = mri_rf_pulse_sim.ui_prop.bool(parent=self, name='auto_simplot'   , text='auto_simplot'   , value=true);
-            self.auto_disp_pulse = mri_rf_pulse_sim.ui_prop.bool(parent=self, name='auto_disp_pulse', text='auto_disp_pulse', value=true);
+            self.auto_simplot    = mri_rf_pulse_sim.ui_prop.bool(name='auto_simplot'   , text='auto_simplot'   , value=true);
+            self.auto_disp_pulse = mri_rf_pulse_sim.ui_prop.bool(name='auto_disp_pulse', text='auto_disp_pulse', value=true);
 
             if nargin < 1
                 return
@@ -113,12 +113,7 @@ classdef simulation_parameters < mri_rf_pulse_sim.backend.base_class
         end % fcn
 
         function callback_update(self, ~, ~)
-            if self.auto_disp_pulse.get()
-                disp(self.app.pulse_definition.rf_pulse)
-            end
-            if self.auto_simplot.get()
-                self.app.simplot();
-            end
+            notify(self.app, 'update_setup');
         end % fcn
 
     end % meths
