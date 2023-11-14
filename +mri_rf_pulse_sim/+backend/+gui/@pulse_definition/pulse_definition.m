@@ -111,7 +111,7 @@ classdef pulse_definition < mri_rf_pulse_sim.backend.base_class
 
         end % fcn
 
-        function set_rf_pulse(self, pulse)
+        function pulse_obj = set_rf_pulse(self, pulse)
             if ~isempty(self.app.window_definition) && ~isempty(self.app.window_definition.fig)
                 delete(self.app.window_definition.fig);
             end
@@ -139,6 +139,8 @@ classdef pulse_definition < mri_rf_pulse_sim.backend.base_class
             self.rf_pulse.init_specific_gui(handles.uipanel_settings_specific);
             self.rf_pulse.plot(handles.uipanel_plot);
             notify(self.app, 'update_pulse');
+            
+            pulse_obj = self.rf_pulse;
         end % fcn
 
         function callback_update(self, ~, ~)

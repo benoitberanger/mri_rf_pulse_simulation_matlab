@@ -1,4 +1,13 @@
 classdef app < handle
+% This is the application class. It handles everything. Most of the user actions should be done using this class.
+%
+% START THE APP
+%         mri_rf_pulse_sim.app      % for only GUI operations
+%   app = mri_rf_pulse_sim.app()    % to keep a handle to the application, for later Scripting or CommandWindow operations
+%
+
+
+    %% Public
 
     properties (GetAccess = public,  SetAccess = protected)
         pulse_definition      mri_rf_pulse_sim.backend.gui.pulse_definition
@@ -7,27 +16,12 @@ classdef app < handle
         window_definition     mri_rf_pulse_sim.backend.gui.window_definition
     end % props
 
-    events
-        update_pulse
-        update_setup
-        update_select
-
-        cleanup
-
-        update_window
-    end
-    properties (GetAccess = public,  SetAccess = protected, Hidden)
-        listener__update_pulse  event.listener
-        listener__update_setup  event.listener
-        listener__update_select event.listener
-
-        listener__cleanup       event.listener
-
-        listener__update_window event.listener
-    end % props
-
     methods (Access = public)
 
+        %------------------------------------------------------------------
+        % basic methods
+        %------------------------------------------------------------------
+        
         % contructor
         function self = app(varargin)
             if ~nargin
@@ -43,7 +37,51 @@ classdef app < handle
                 self.simplot();
             end
         end % fcn
+        
+        function simplot(self)
+            self.simulate();
+            self.plot();
+        end % fcn
+        
+        %------------------------------------------------------------------
+        % get/set methods
+        %------------------------------------------------------------------
+        
+        % rf pulse 
+        function value = getPulse(self)
+            value = self.pulse_definition.rf_pulse;
+        end
+        function pulse_obj = setPulse(self,value)
+            pulse_obj = self.pulse_definition.set_rf_pulse(value);
+        end
+        
+        % auto simplot
+        function value = getAutoSimPlot(self)
+            value = self.simulation_parameters.auto_simplot.get();
+        end
+        function setAutoSimPlotTrue(self)
+            self.simulation_parameters.auto_simplot.setTrue();
+        end
+        function setAutoSimPlotFalse(self)
+            self.simulation_parameters.auto_simplot.setFalse();
+        end
+        
+        % auto disp pulse
+        function value = getAutoDispPulse(self)
+            value = self.simulation_parameters.auto_disp_pulse.get();
+        end
+        function setAutoDispPulseTrue(self)
+            self.simulation_parameters.auto_disp_pulse.setTrue();
+        end
+        function setAutoDispPulseFalse(self)
+            self.simulation_parameters.auto_disp_pulse.setFalse();
+        end
 
+
+        %------------------------------------------------------------------
+        % other methods
+        %------------------------------------------------------------------
+        
         function simulate(self)
             fprintf('[app]: simulate() ... ')
             tic;
@@ -110,18 +148,35 @@ classdef app < handle
             set(self.simulation_results.line_C_vert ,'XData', [dB0.selected_value dB0.selected_value].*dB0.scale);
 
         end % fcn
-
-        function simplot(self)
-            self.simulate();
-            self.plot();
-        end % fcn
-
+   
         function open_window_gui(self)
             self.window_definition = mri_rf_pulse_sim.backend.gui.window_definition('open_gui', self);
             notify(self, 'update_window');
         end % fcn
 
     end % meths
+
+
+    %% Private
+
+    events
+        update_pulse
+        update_setup
+        update_select
+
+        cleanup
+
+        update_window
+    end
+    properties (GetAccess = public,  SetAccess = protected, Hidden)
+        listener__update_pulse  event.listener
+        listener__update_setup  event.listener
+        listener__update_select event.listener
+
+        listener__cleanup       event.listener
+
+        listener__update_window event.listener
+    end % props
 
     methods (Access = protected)
 
