@@ -5,10 +5,6 @@ classdef rf_pulse < matlab.unittest.TestCase
         pulse_list        (:,1) cell
     end % props
 
-    properties (TestParameter)
-
-    end % props
-
     methods(TestClassSetup)
 
         function assign_pulse_list(testCase)
@@ -16,7 +12,7 @@ classdef rf_pulse < matlab.unittest.TestCase
             testCase.pulse_list = eval(testCase.get_list_function);
         end
 
-    end
+    end % meths
 
     methods(Test)
 
