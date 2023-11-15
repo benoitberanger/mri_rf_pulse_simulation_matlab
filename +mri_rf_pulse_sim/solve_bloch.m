@@ -30,6 +30,9 @@ switch method
             0 0 0;
             ];
 
+        B1mag = abs  (B1);
+        B1pha = angle(B1);
+
         for b = 1 : length(DeltaB0)
             dB0 = DeltaB0(b);
 
@@ -40,11 +43,11 @@ switch method
                 m = zeros(3,length(Time));
                 m(:,1) = M0;
                 for t = 2:length(Time)
-                    
+
                     dt = Time(t) - Time(t-1);
                     dm =...
-                        Sigma_z * (dZ * GradientModulation(t-1) + dB0*B0 ) * gamma + ...
-                        gamma * AmplitideModulation(t-1) * (cos(2*pi*FrequencyModulation(t-1)*Time(t-1)) * Sigma_x + sin(2*pi*FrequencyModulation(t-1)*Time(t-1)) * Sigma_y) ;
+                        Sigma_z * (dZ * GZ(t-1) + dB0*B0 ) * gamma + ...
+                        gamma * B1mag(t-1) * (cos(B1pha(t-1)*Time(t-1)) * Sigma_x + sin(B1pha(t-1)*Time(t-1)) * Sigma_y) ;
                     m(:,t) = expm(dm*dt)*m(:,t-1);
 
                 end % Time
@@ -72,7 +75,7 @@ switch method
         for t = 2:length(Time)
 
             dt = Time(t) - Time(t-1);
-            
+
             Uz = (Zgrid * GZ(t-1) + Bgrid*B0 ) * gamma;
             Ux = gamma * B1mag(t-1) * cos(B1pha(t-1));
             Uy = gamma * B1mag(t-1) * sin(B1pha(t-1));
