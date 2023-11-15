@@ -10,20 +10,26 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
         gamma          (1,1) double {mustBePositive} = mri_rf_pulse_sim.get_gamma('1H') % [rad/T/s] gyromagnetic ration
     end % props
 
-    properties (GetAccess = public, SetAccess = protected)
-        FM              (1,:) double                                       % [Hz]  frequency modulation -> its the derivation of the phase(t)
-        B1max           (1,1) double                                       % [T]   max value of magnitude(t)
-        GZmax           (1,1) double                                       % [T/m] max value of  gradient(t)
-        GZavg           (1,1) double                                       % [T/m] average value of gradient(t) -> used for slice thickness
-        tbwp            (1,1) double                                       % []    time-bandwidth product
+    properties (GetAccess = public, SetAccess = protected, Dependent)
+        FM              (1,:) double                                       % [Hz]    frequency modulation -> its the derivation of the phase(t)
+        B1max           (1,1) double                                       % [T]     max value of magnitude(t)
+        GZmax           (1,1) double                                       % [T/m]   max value of  gradient(t)
+        GZavg           (1,1) double                                       % [T/m]   average value of gradient(t) -> used for slice thickness
+        tbwp            (1,1) double                                       % []      time-bandwidth product -> in the literature, it represents a "quality" factor
+        power           (1,1) double                                       % [T²s]   power factor !!! not in Watt !!!
+        gradB1max       (1,1) double                                       % [T/s]   max(dB1/dt)
+        gradGZmax       (1,1) double                                       % [T/m/s] max(dGZ/dt)
     end % props
 
     methods % no attribute for dependent properies
-        function value = get.B1max(self);           value = max (abs(self.B1)); end
-        function value = get.GZmax(self);           value = max (abs(self.GZ)); end
-        function value = get.GZavg(self);           value = 2*pi*self.bandwidth / (self.gamma*self.slice_thickness); end
-        function value = get.FM(self);              value = gradient(self.phase) ./ gradient(self.time) / (2*pi); end
-        function value = get.tbwp(self);            value = self.duration * self.bandwidth; end
+        function value = get.B1max    (self); value = max (abs(self.B1));                                      end
+        function value = get.GZmax    (self); value = max (abs(self.GZ));                                      end
+        function value = get.GZavg    (self); value = 2*pi*self.bandwidth / (self.gamma*self.slice_thickness); end
+        function value = get.FM       (self); value = gradient(self.phase,self.time) / (2*pi);                 end
+        function value = get.tbwp     (self); value = self.duration * self.bandwidth;                          end
+        function value = get.power    (self); value = trapz(self.time,self.magnitude.^2);                      end
+        function value = get.gradB1max(self); value = max(gradient(self.magnitude,self.time));                 end
+        function value = get.gradGZmax(self); value = max(gradient(self.GZ       ,self.time));                 end
     end % meths
 
     methods (Access = public)
