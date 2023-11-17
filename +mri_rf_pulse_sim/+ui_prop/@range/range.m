@@ -8,6 +8,7 @@ classdef range < mri_rf_pulse_sim.backend.base_class
         N      (1,1) double {mustBeFinite}
         select (1,1) double {mustBeFinite}
 
+        unit         char
         scale  (1,1) double {mustBeFinite} = 1
     end % props
 
@@ -68,6 +69,7 @@ classdef range < mri_rf_pulse_sim.backend.base_class
                 args.name
                 args.vect
                 args.scale
+                args.unit
                 args.parent
             end % args
 
@@ -80,6 +82,7 @@ classdef range < mri_rf_pulse_sim.backend.base_class
             self.name = args.name;
             self.vect = args.vect;
 
+            if isfield(args, 'unit'  ), self.unit   = args.unit  ; end
             if isfield(args, 'scale' ), self.scale  = args.scale ; end
             if isfield(args, 'parent'), self.parent = args.parent; end
         end % fcn
@@ -158,8 +161,8 @@ classdef range < mri_rf_pulse_sim.backend.base_class
         end % fcn
 
         function displayRep = compactRepresentationForSingleLine(self,displayConfiguration,width)
-            txt = sprintf('linspace(%g,%g,%d)/%g', ...
-                self.min*self.scale, self.max*self.scale, self.N, self.scale);
+            txt = sprintf('linspace(%+g,%+g,%d) %s', ...
+                self.min*self.scale, self.max*self.scale, self.N, self.unit);
             displayRep = widthConstrainedDataRepresentation(self,displayConfiguration,width,...
                 StringArray=txt,AllowTruncatedDisplayForScalar=true);
         end % dcn

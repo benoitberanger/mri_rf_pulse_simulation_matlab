@@ -1,10 +1,10 @@
 classdef app < handle
-% This is the application class. It handles everything. Most of the user actions should be done using this class.
-%
-% START THE APP
-%         mri_rf_pulse_sim.app      % for only GUI operations
-%   app = mri_rf_pulse_sim.app()    % to keep a handle to the application, for later Scripting or CommandWindow operations
-%
+    % This is the application class. It handles everything. Most of the user actions should be done using this class.
+    %
+    % START THE APP
+    %         mri_rf_pulse_sim.app      % for only GUI operations
+    %   app = mri_rf_pulse_sim.app()    % to keep a handle to the application, for later Scripting or CommandWindow operations
+    %
 
 
     %% Public
@@ -14,6 +14,7 @@ classdef app < handle
         simulation_parameters mri_rf_pulse_sim.backend.gui.simulation_parameters
         simulation_results    mri_rf_pulse_sim.backend.gui.simulation_results
         window_definition     mri_rf_pulse_sim.backend.gui.window_definition
+        bloch_solver          mri_rf_pulse_sim.bloch_solver
     end % props
 
     methods (Access = public)
@@ -21,9 +22,10 @@ classdef app < handle
         %------------------------------------------------------------------
         % basic methods
         %------------------------------------------------------------------
-        
+
         % contructor
         function self = app(varargin)
+            self.bloch_solver = mri_rf_pulse_sim.bloch_solver();
             if ~nargin
                 fprintf('[app]: open_gui() ... ')
                 tic
@@ -37,24 +39,24 @@ classdef app < handle
                 self.simplot();
             end
         end % fcn
-        
+
         function simplot(self)
             self.simulate();
             self.plot();
         end % fcn
-        
+
         %------------------------------------------------------------------
         % get/set methods
         %------------------------------------------------------------------
-        
-        % rf pulse 
+
+        % rf pulse
         function value = getPulse(self)
             value = self.pulse_definition.rf_pulse;
         end
         function pulse_obj = setPulse(self,value)
             pulse_obj = self.pulse_definition.set_rf_pulse(value);
         end
-        
+
         % auto simplot
         function value = getAutoSimPlot(self)
             value = self.simulation_parameters.auto_simplot.get();
@@ -65,7 +67,7 @@ classdef app < handle
         function setAutoSimPlotFalse(self)
             self.simulation_parameters.auto_simplot.setFalse();
         end
-        
+
         % auto disp pulse
         function value = getAutoDispPulse(self)
             value = self.simulation_parameters.auto_disp_pulse.get();
@@ -81,18 +83,15 @@ classdef app < handle
         %------------------------------------------------------------------
         % other methods
         %------------------------------------------------------------------
-        
+
         function simulate(self)
             fprintf('[app]: simulate() ... ')
             tic;
-            self.simulation_results.M = mri_rf_pulse_sim.solve_bloch(...
-                self.pulse_definition.rf_pulse.time,...
-                self.pulse_definition.rf_pulse.B1,...
-                self.pulse_definition.rf_pulse.GZ,...
-                self.simulation_parameters.dZ.get(),...
-                self.simulation_parameters.dB0.get(),...
-                self.pulse_definition.rf_pulse.gamma,...
-                self.simulation_parameters.B0.get());
+            self.bloch_solver.setPulse(self.getPulse());
+            self.bloch_solver.setSpatialPosition(self.simulation_parameters.dZ);
+            self.bloch_solver.setDeltaB0(self.simulation_parameters.dB0);
+            self.bloch_solver.setB0(self.simulation_parameters.B0);
+            self.bloch_solver.solve();
             fprintf('done in %.3gs \n', toc)
         end % fcn
 
@@ -102,38 +101,36 @@ classdef app < handle
             dZ  = self.simulation_parameters.dZ ;
             dB0 = self.simulation_parameters.dB0;
             time = self.pulse_definition.rf_pulse.time * 1e3;
-            M = self.simulation_results.M;
 
             % plot Mxyz
             set(self.simulation_results.line_M_up  ,'XData', [time(1) time(end)], 'YData', [+1 +1]);
             set(self.simulation_results.line_M_mid ,'XData', [time(1) time(end)], 'YData', [ 0  0]);
             set(self.simulation_results.line_M_down,'XData', [time(1) time(end)], 'YData', [-1 -1]);
-            set(self.simulation_results.line_M_x,   'XData',                time, 'YData', M(1,:,dZ.selected_idx,dB0.selected_idx));
-            set(self.simulation_results.line_M_y,   'XData',                time, 'YData', M(2,:,dZ.selected_idx,dB0.selected_idx));
-            set(self.simulation_results.line_M_para,'XData',                time, 'YData', M(3,:,dZ.selected_idx,dB0.selected_idx));
-            set(self.simulation_results.line_M_perp,'XData',                time, 'YData', sqrt(M(1,:,dZ.selected_idx,dB0.selected_idx).^2 + M(2,:,dZ.selected_idx,dB0.selected_idx).^2));
+            set(self.simulation_results.line_M_x,   'XData',                time, 'YData', self.bloch_solver.getMx   (dZ.selected_value, dB0.selected_value));
+            set(self.simulation_results.line_M_y,   'XData',                time, 'YData', self.bloch_solver.getMy   (dZ.selected_value, dB0.selected_value));
+            set(self.simulation_results.line_M_para,'XData',                time, 'YData', self.bloch_solver.getMpara(dZ.selected_value, dB0.selected_value));
+            set(self.simulation_results.line_M_perp,'XData',                time, 'YData', self.bloch_solver.getMperp(dZ.selected_value, dB0.selected_value));
 
             % plot line 3D
             set(self.simulation_results.line3_Mxyz,...
-                'XData', self.simulation_results.M(1,:,dZ.selected_idx,dB0.selected_idx),...
-                'YData', self.simulation_results.M(2,:,dZ.selected_idx,dB0.selected_idx),...
-                'ZData', self.simulation_results.M(3,:,dZ.selected_idx,dB0.selected_idx));
+                'XData', self.bloch_solver.getMx(dZ.selected_value, dB0.selected_value),...
+                'YData', self.bloch_solver.getMy(dZ.selected_value, dB0.selected_value),...
+                'ZData', self.bloch_solver.getMz(dZ.selected_value, dB0.selected_value));
             set(self.simulation_results.q3_Mxyz_end,...
                 'XData',0, 'YData',0, 'ZData',0, ...
-                'UData',self.simulation_results.M(1,end,dZ.selected_idx,dB0.selected_idx), ...
-                'VData',self.simulation_results.M(2,end,dZ.selected_idx,dB0.selected_idx), ...
-                'WData',self.simulation_results.M(3,end,dZ.selected_idx,dB0.selected_idx)  ...
-                );
+                'UData',self.simulation_results.line3_Mxyz.XData(end),...
+                'VData',self.simulation_results.line3_Mxyz.YData(end),...
+                'WData',self.simulation_results.line3_Mxyz.ZData(end));
 
             % plot slice profile
             dz = dZ.vect * dZ.scale;
             set(self.simulation_results.line_S_up   ,'XData', [dz(1) dz(end)], 'YData', [+1 +1]);
             set(self.simulation_results.line_S_mid  ,'XData', [dz(1) dz(end)], 'YData', [ 0  0]);
             set(self.simulation_results.line_S_down ,'XData', [dz(1) dz(end)], 'YData', [-1 -1]);
-            set(self.simulation_results.line_S_Mx   ,'XData',              dz, 'YData', M(1,end,:,dB0.selected_idx));
-            set(self.simulation_results.line_S_My   ,'XData',              dz, 'YData', M(2,end,:,dB0.selected_idx));
-            set(self.simulation_results.line_S_Mpara,'XData',              dz, 'YData', M(3,end,:,dB0.selected_idx));
-            set(self.simulation_results.line_S_Mperp,'XData',              dz, 'YData', sqrt(M(1,end,:,dB0.selected_idx).^2+M(2,end,:,dB0.selected_idx).^2));
+            set(self.simulation_results.line_S_Mx   ,'XData',              dz, 'YData', self.bloch_solver.M(end,1,:,dB0.selected_idx));
+            set(self.simulation_results.line_S_My   ,'XData',              dz, 'YData', self.bloch_solver.M(end,2,:,dB0.selected_idx));
+            set(self.simulation_results.line_S_Mpara,'XData',              dz, 'YData', self.bloch_solver.M(end,3,:,dB0.selected_idx));
+            set(self.simulation_results.line_S_Mperp,'XData',              dz, 'YData', sqrt(self.bloch_solver.M(end,1,:,dB0.selected_idx).^2+self.bloch_solver.M(end,2,:,dB0.selected_idx).^2));
             set(self.simulation_results.line_S_vert ,'XData', [dZ.selected_value dZ.selected_value].*dZ.scale);
 
             % plot chemical shift
@@ -141,14 +138,14 @@ classdef app < handle
             set(self.simulation_results.line_C_up   ,'XData', [db0(1) db0(end)], 'YData', [+1 +1]);
             set(self.simulation_results.line_C_mid  ,'XData', [db0(1) db0(end)], 'YData', [ 0  0]);
             set(self.simulation_results.line_C_down ,'XData', [db0(1) db0(end)], 'YData', [-1 -1]);
-            set(self.simulation_results.line_C_Mx   ,'XData',               db0, 'YData', M(1,end,dZ.selected_idx,:));
-            set(self.simulation_results.line_C_My   ,'XData',               db0, 'YData', M(1,end,dZ.selected_idx,:));
-            set(self.simulation_results.line_C_Mpara,'XData',               db0, 'YData', M(3,end,dZ.selected_idx,:));
-            set(self.simulation_results.line_C_Mperp,'XData',               db0, 'YData', sqrt(M(1,end,dZ.selected_idx,:).^2+M(2,end,dZ.selected_idx,:).^2));
+            set(self.simulation_results.line_C_Mx   ,'XData',               db0, 'YData', self.bloch_solver.M(end,1,dZ.selected_idx,:));
+            set(self.simulation_results.line_C_My   ,'XData',               db0, 'YData', self.bloch_solver.M(end,2,dZ.selected_idx,:));
+            set(self.simulation_results.line_C_Mpara,'XData',               db0, 'YData', self.bloch_solver.M(end,3,dZ.selected_idx,:));
+            set(self.simulation_results.line_C_Mperp,'XData',               db0, 'YData', sqrt(self.bloch_solver.M(end,1,dZ.selected_idx,:).^2+self.bloch_solver.M(end,2,dZ.selected_idx,:).^2));
             set(self.simulation_results.line_C_vert ,'XData', [dB0.selected_value dB0.selected_value].*dB0.scale);
 
         end % fcn
-   
+
         function open_window_gui(self)
             self.window_definition = mri_rf_pulse_sim.backend.gui.window_definition('open_gui', self);
             notify(self, 'update_window');
