@@ -10,7 +10,7 @@ pulse = mri_rf_pulse_sim.rf_pulse.hs();
 fprintf('Analytical adiabaticity condition : Amax = %g µT \n', pulse.adiabatic_condition*1e6)
 
 % define spatial evaluation
-dZ_mm = linspace(-pulse.slice_thickness.get(),+pulse.slice_thickness.get(),201); % millimeter
+dZ_mm = linspace(-pulse.slice_thickness.get(),+pulse.slice_thickness.get(),501); % millimeter
 dZ    = dZ_mm * 1e-3;                                                            % meter
 
 % define B0 field inhomogenity
@@ -26,6 +26,8 @@ Amax_vect    = Amax_vect_ut * 1e-6; % tesla
 
 %% Computation (and plot)
 
+solver = mri_rf_pulse_sim.bloch_solver(rf_pulse=pulse, B0=B0, SpatialPosition=dZ, DeltaB0=dB0);
+
 final_Mz = zeros(1,length(Amax_vect));
 
 figure
@@ -37,23 +39,15 @@ for idx = 1 : length(Amax_vect)
     pulse.Amax.value = Amax_vect(idx);
     pulse.generate();
 
-    M = mri_rf_pulse_sim.solve_bloch( ...
-        pulse.time, ...
-        pulse.B1, ...
-        pulse.GZ, ...
-        dZ, ...
-        dB0, ...
-        pulse.gamma, ...
-        B0 ...
-        );
+    solver.solve();
 
     plot( ...
         dZ_mm, ...
-        mri_rf_pulse_sim.sort_solve_bloch_outputs(M=M, select='slice_profile'), ...
+        solver.getSliceProfilePerp(), ...
         'DisplayName', string(Amax_vect_ut(idx)) + " µT" ...
         )
 
-    final_Mz(idx) = mri_rf_pulse_sim.sort_solve_bloch_outputs(M=M, select='slice_middle');
+    final_Mz(idx) = solver.getSliceMiddlePerp();
 
 end
 
@@ -64,12 +58,12 @@ ylabel('Mz')
 
 %%  Display inversion efficieny
 
-efficiency = abs(final_Mz-1)/2; % convert Mz from [-1 to +1] into [0 to +1] (as a ratio)
+efficiency = round(abs(final_Mz-1)/2 *100); % convert Mz from [-1 to +1] into [0% to 100%]
 
 % and now print efficiency in a nice way
 t = array2table(efficiency);
 t.Properties.VariableNames = string(Amax_vect_ut) + " µT";
-t.Properties.RowNames = {'efficiency (from 0 to 1)'};
+t.Properties.RowNames = {'efficiency (%)'};
 disp(t)
 
 

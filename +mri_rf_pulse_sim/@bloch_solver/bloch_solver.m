@@ -17,38 +17,29 @@ classdef bloch_solver < handle & matlab.mixin.CustomCompactDisplayProvider
 
     methods (Access = public)
 
-        % contructor
+        %------------------------------------------------------------------
+        % constructor
+        %------------------------------------------------------------------
         function self = bloch_solver(args)
             arguments
+                args.rf_pulse
                 args.B0
                 args.SpatialPosition
                 args.DeltaB0
                 args.Mxyz0
             end
 
-            if isfield(args, 'B0')
-                self.setB0(args.B0);
-            else
-                self.B0 = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='B0', value=2.89, unit='T');
-            end
+            % do not define .rf_pulse -> let the user do it
+            self.B0              = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='B0'             , value=2.89                               , unit='T'  );
+            self.SpatialPosition = mri_rf_pulse_sim.ui_prop.range (parent=self, name='SpatialPosition', vect=linspace(-10,+10,11)*1e-3, scale=1e3, unit='mm' );
+            self.DeltaB0         = mri_rf_pulse_sim.ui_prop.range (parent=self, name='DelatB0'        , vect=linspace(-10,+10, 3)*1e-6, scale=1e6, unit='ppm');
+            self.Mxyz0           = [0; 0; 1];
 
-            if isfield(args, 'SpatialPosition')
-                self.setSpatialPosition(args.SpatialPosition);
-            else
-                self.SpatialPosition = mri_rf_pulse_sim.ui_prop.range (parent=self, name='SpatialPosition', vect=linspace(-10,+10,11)*1e-3, scale=1e3, unit='mm' );
-            end
-
-            if isfield(args, 'DeltaB0')
-                self.setDeltaB0(args.DeltaB0)
-            else
-                self.DeltaB0 = mri_rf_pulse_sim.ui_prop.range (parent=self, name='DelatB0', vect=linspace(-10,+10, 3)*1e-6, scale=1e6, unit='ppm');
-            end
-
-            if isfield(args, 'Mxyz0')
-                self.Mxyz0 = args.Mxyz0;
-            else
-                self.Mxyz0 = [0; 0; 1];
-            end
+            if isfield(args, 'rf_pulse'       ), self.setPulse          (args.rf_pulse       ); end
+            if isfield(args, 'B0'             ), self.setB0             (args.B0             ); end
+            if isfield(args, 'SpatialPosition'), self.setSpatialPosition(args.SpatialPosition); end
+            if isfield(args, 'DeltaB0'        ), self.setDeltaB0        (args.DeltaB0        ); end
+            if isfield(args, 'Mxyz0'          ), self.setMxyz0          (args.Mxyz0          ); end
 
         end % fcn
 
@@ -99,13 +90,13 @@ classdef bloch_solver < handle & matlab.mixin.CustomCompactDisplayProvider
         % other methods
         %------------------------------------------------------------------
 
+        % getTimeseries
         function value = getTimeseriesX   (self, varargin), value = self.getTimeseries("x"   ,varargin{:}); end
         function value = getTimeseriesY   (self, varargin), value = self.getTimeseries("y"   ,varargin{:}); end
         function value = getTimeseriesZ   (self, varargin), value = self.getTimeseries("z"   ,varargin{:}); end
         function value = getTimeseriesXYZ (self, varargin), value = self.getTimeseries("xyz" ,varargin{:}); end
         function value = getTimeseriesPara(self, varargin), value = self.getTimeseries("para",varargin{:}); end
         function value = getTimeseriesPerp(self, varargin), value = self.getTimeseries("perp",varargin{:}); end
-
         function value = getTimeseries    (self, axis, dZ, dB0)
             arguments
                 self
@@ -113,39 +104,29 @@ classdef bloch_solver < handle & matlab.mixin.CustomCompactDisplayProvider
                 dZ   = []
                 dB0  = []
             end
-
-            switch axis
-                case "x"   , sel = 1;   combine = 0;
-                case "y"   , sel = 2;   combine = 0;
-                case "z"   , sel = 3;   combine = 0;
-                case "xyz" , sel = 1:3; combine = 0;
-                case "para", sel = 1:2; combine = 1;
-                case "perp", sel = 3;   combine = 0;
-            end
-
+            [sel, comb] = axis2selcomb(axis);
             if isempty(dZ)
                 idx_dZ = self.SpatialPosition.middle_idx;
             else
                 idx_dZ = find(self.SpatialPosition.vect == dZ);
             end
-
             if isempty(dB0)
                 idx_dB0 = self.DeltaB0.middle_idx;
             else
                 idx_dB0 = find(self.DeltaB0.vect == dB0);
             end
-
             selection = cell(length(fieldnames(self.dim)), 1);
             selection{self.dim.time} = ':';
             selection{self.dim.XYZ } = sel;
             selection{self.dim.dZ  } = idx_dZ;
             selection{self.dim.dB0 } = idx_dB0;
             value = squeeze(self.M(selection{:}));
-            if combine
+            if comb
                 value = sum(value.^2,2);
             end
         end
 
+        % getSliceProfile
         function value = getSliceProfileX   (self, varargin), value = self.getSliceProfile("x"   ,varargin{:}); end
         function value = getSliceProfileY   (self, varargin), value = self.getSliceProfile("y"   ,varargin{:}); end
         function value = getSliceProfileZ   (self, varargin), value = self.getSliceProfile("z"   ,varargin{:}); end
@@ -158,16 +139,8 @@ classdef bloch_solver < handle & matlab.mixin.CustomCompactDisplayProvider
                 axis string {mustBeMember(axis,["x","y","z","xyz","para","perp"])}
                 dB0  = []
             end
-
-            switch axis
-                case "x"   , sel = 1;   combine = 0;
-                case "y"   , sel = 2;   combine = 0;
-                case "z"   , sel = 3;   combine = 0;
-                case "xyz" , sel = 1:3; combine = 0;
-                case "para", sel = 1:2; combine = 1;
-                case "perp", sel = 3;   combine = 0;
-            end
-            if nargin < 2
+            [sel, comb] = axis2selcomb(axis);
+            if isempty(dB0)
                 idx_dB0 = self.DeltaB0.middle_idx;
             else
                 idx_dB0 = find(self.DeltaB0.vect == dB0);
@@ -178,11 +151,12 @@ classdef bloch_solver < handle & matlab.mixin.CustomCompactDisplayProvider
             selection{self.dim.dZ  } = ':';
             selection{self.dim.dB0 } = idx_dB0;
             value = squeeze(self.M(selection{:}));
-            if combine
+            if comb
                 value = sum(value.^2,1);
             end
         end
 
+        % getSliceMiddle
         function value = getSliceMiddleX   (self, varargin), value = self.getSliceMiddle("x"   ,varargin{:}); end
         function value = getSliceMiddleY   (self, varargin), value = self.getSliceMiddle("y"   ,varargin{:}); end
         function value = getSliceMiddleZ   (self, varargin), value = self.getSliceMiddle("z"   ,varargin{:}); end
@@ -195,16 +169,8 @@ classdef bloch_solver < handle & matlab.mixin.CustomCompactDisplayProvider
                 axis string {mustBeMember(axis,["x","y","z","xyz","para","perp"])}
                 dB0  = []
             end
-
-            switch axis
-                case "x"   , sel = 1;
-                case "y"   , sel = 2;
-                case "z"   , sel = 3;
-                case "xyz" , sel = 1:3;
-                case "para", sel = 1:2;
-                case "perp", sel = 3;
-            end
-            if nargin < 2
+            sel = axis2selcomb(axis);
+            if isempty(dB0)
                 idx_B0 = self.DeltaB0.middle_idx;
             else
                 idx_B0 = find(self.DeltaB0.vect == dB0);
@@ -217,6 +183,7 @@ classdef bloch_solver < handle & matlab.mixin.CustomCompactDisplayProvider
             value = squeeze(self.M(selection{:}));
         end
 
+        % getChemicalShift
         function value = getChemicalShiftX   (self, varargin), value = self.getChemicalShift("x"   ,varargin{:}); end
         function value = getChemicalShiftY   (self, varargin), value = self.getChemicalShift("y"   ,varargin{:}); end
         function value = getChemicalShiftZ   (self, varargin), value = self.getChemicalShift("z"   ,varargin{:}); end
@@ -229,16 +196,8 @@ classdef bloch_solver < handle & matlab.mixin.CustomCompactDisplayProvider
                 axis string {mustBeMember(axis,["x","y","z","xyz","para","perp"])}
                 dZ  = []
             end
-
-            switch axis
-                case "x"   , sel = 1;   combine = 0;
-                case "y"   , sel = 2;   combine = 0;
-                case "z"   , sel = 3;   combine = 0;
-                case "xyz" , sel = 1:3; combine = 0;
-                case "para", sel = 1:2; combine = 1;
-                case "perp", sel = 3;   combine = 0;
-            end
-            if nargin < 2
+            [sel, comb] = axis2selcomb(axis);
+            if isempty(dZ)
                 idx_dZ = self.SpatialPosition.middle_idx;
             else
                 idx_dZ = find(self.SpatialPosition.vect == dZ);
@@ -249,11 +208,12 @@ classdef bloch_solver < handle & matlab.mixin.CustomCompactDisplayProvider
             selection{self.dim.dZ  } = idx_dZ;
             selection{self.dim.dB0 } = ':';
             value = squeeze(self.M(selection{:}));
-            if combine
+            if comb
                 value = sum(value.^2,1);
             end
         end
 
+        % solve bloch simplified equations equation : no T2 relaxation, no T1 relaxation, no diffusion -> only B1 field and GZ
         function solve(self)
             assert(~isempty(self.rf_pulse), '[%s]: missing rf_pulse', mfilename)
 
@@ -332,3 +292,14 @@ classdef bloch_solver < handle & matlab.mixin.CustomCompactDisplayProvider
     end % meths
 
 end % class
+
+function [sel, comb] = axis2selcomb(axis)
+switch axis
+    case "x"   , sel = 1;   comb = 0;
+    case "y"   , sel = 2;   comb = 0;
+    case "z"   , sel = 3;   comb = 0;
+    case "xyz" , sel = 1:3; comb = 0;
+    case "para", sel = 1:2; comb = 1;
+    case "perp", sel = 3;   comb = 0;
+end
+end % fcn
