@@ -99,17 +99,17 @@ classdef bloch_solver < handle & matlab.mixin.CustomCompactDisplayProvider
         % other methods
         %------------------------------------------------------------------
 
-        function value = getMx   (self, varargin), value = self.getM("x"   ,varargin{:}); end
-        function value = getMy   (self, varargin), value = self.getM("y"   ,varargin{:}); end
-        function value = getMz   (self, varargin), value = self.getM("z"   ,varargin{:}); end
-        function value = getMxyz (self, varargin), value = self.getM("xyz" ,varargin{:}); end
-        function value = getMpara(self, varargin), value = self.getM("para",varargin{:}); end
-        function value = getMperp(self, varargin), value = self.getM("perp",varargin{:}); end
+        function value = getTimeseriesX   (self, varargin), value = self.getTimeseries("x"   ,varargin{:}); end
+        function value = getTimeseriesY   (self, varargin), value = self.getTimeseries("y"   ,varargin{:}); end
+        function value = getTimeseriesZ   (self, varargin), value = self.getTimeseries("z"   ,varargin{:}); end
+        function value = getTimeseriesXYZ (self, varargin), value = self.getTimeseries("xyz" ,varargin{:}); end
+        function value = getTimeseriesPara(self, varargin), value = self.getTimeseries("para",varargin{:}); end
+        function value = getTimeseriesPerp(self, varargin), value = self.getTimeseries("perp",varargin{:}); end
 
-        function value = getM(self, axis, dZ, dB0)
+        function value = getTimeseries    (self, axis, dZ, dB0)
             arguments
                 self
-                axis        string {mustBeMember(axis,["x","y","z","xyz","para","perp"])}
+                axis string {mustBeMember(axis,["x","y","z","xyz","para","perp"])}
                 dZ   = []
                 dB0  = []
             end
@@ -146,46 +146,93 @@ classdef bloch_solver < handle & matlab.mixin.CustomCompactDisplayProvider
             end
         end
 
-        function value = getSliceProfile(self, dB0)
-            if nargin < 2
-                idx_dB0 = self.DeltaB0.middle_idx;
-            else
-                idx_dB0 = find(self.DeltaB0.vect == dB0);
+        function value = getSliceProfileX   (self, varargin), value = self.getSliceProfile("x"   ,varargin{:}); end
+        function value = getSliceProfileY   (self, varargin), value = self.getSliceProfile("y"   ,varargin{:}); end
+        function value = getSliceProfileZ   (self, varargin), value = self.getSliceProfile("z"   ,varargin{:}); end
+        function value = getSliceProfileXYZ (self, varargin), value = self.getSliceProfile("xyz" ,varargin{:}); end
+        function value = getSliceProfilePara(self, varargin), value = self.getSliceProfile("para",varargin{:}); end
+        function value = getSliceProfilePerp(self, varargin), value = self.getSliceProfile("perp",varargin{:}); end
+        function value = getSliceProfile    (self, axis, dZ)
+            arguments
+                self
+                axis string {mustBeMember(axis,["x","y","z","xyz","para","perp"])}
+                dZ  = []
             end
-            selection = cell(length(fieldnames(self.dim)), 1);
-            selection{self.dim.time} = self.rf_pulse.n_points.get();
-            selection{self.dim.XYZ } = 3;
-            selection{self.dim.dZ  } = ':';
-            selection{self.dim.dB0 } = idx_dB0;
-            value = squeeze(self.M(selection{:}));
-        end
 
-        function value = getSliceMiddle(self, dB0)
+            switch axis
+                case "x"   , sel = 1;   combine = 0;
+                case "y"   , sel = 2;   combine = 0;
+                case "z"   , sel = 3;   combine = 0;
+                case "xyz" , sel = 1:3; combine = 0;
+                case "para", sel = 1:2; combine = 1;
+                case "perp", sel = 3;   combine = 0;
+            end
             if nargin < 2
-                idx_dB0 = self.DeltaB0.middle_idx;
+                idx_dZ = self.DeltaB0.middle_idx;
             else
-                idx_dB0 = find(self.DeltaB0.vect == dB0);
+                idx_dZ = find(self.DeltaB0.vect == dZ);
             end
             selection = cell(length(fieldnames(self.dim)), 1);
-            selection{self.dim.time} = self.rf_pulse.n_points.get();
-            selection{self.dim.XYZ } = 3;
-            selection{self.dim.dZ  } = self.SpatialPosition.middle_idx;
-            selection{self.dim.dB0 } = idx_dB0;
-            value = self.M(selection{:});
-        end
-
-        function value = getChemicalProfile(self, dZ)
-            if nargin < 2
-                idx_dZ = self.SpatialPosition.middle_idx;
-            else
-                idx_dZ = find(self.SpatialPosition.vect == dZ);
-            end
-            selection = cell(length(fieldnames(self.dim)), 1);
-            selection{self.dim.time} = self.rf_pulse.n_points.get();
-            selection{self.dim.XYZ } = 3;
+            selection{self.dim.time} = self.rf_pulse.n_points.get(); % last timepoint
+            selection{self.dim.XYZ } = sel;
             selection{self.dim.dZ  } = idx_dZ;
             selection{self.dim.dB0 } = ':';
             value = squeeze(self.M(selection{:}));
+            if combine
+                value = sum(value.^2,1);
+            end
+        end
+
+        %         function value = getSliceMiddle(self, dB0)
+        %             if nargin < 2
+        %                 idx_dB0 = self.DeltaB0.middle_idx;
+        %             else
+        %                 idx_dB0 = find(self.DeltaB0.vect == dB0);
+        %             end
+        %             selection = cell(length(fieldnames(self.dim)), 1);
+        %             selection{self.dim.time} = self.rf_pulse.n_points.get();
+        %             selection{self.dim.XYZ } = 3;
+        %             selection{self.dim.dZ  } = self.SpatialPosition.middle_idx;
+        %             selection{self.dim.dB0 } = idx_dB0;
+        %             value = self.M(selection{:});
+        %         end
+
+
+        function value = getChemicalShiftX   (self, varargin), value = self.getChemicalShift("x"   ,varargin{:}); end
+        function value = getChemicalShiftY   (self, varargin), value = self.getChemicalShift("y"   ,varargin{:}); end
+        function value = getChemicalShiftZ   (self, varargin), value = self.getChemicalShift("z"   ,varargin{:}); end
+        function value = getChemicalShiftXYZ (self, varargin), value = self.getChemicalShift("xyz" ,varargin{:}); end
+        function value = getChemicalShiftPara(self, varargin), value = self.getChemicalShift("para",varargin{:}); end
+        function value = getChemicalShiftPerp(self, varargin), value = self.getChemicalShift("perp",varargin{:}); end
+        function value = getChemicalShift    (self, axis, dB0)
+            arguments
+                self
+                axis string {mustBeMember(axis,["x","y","z","xyz","para","perp"])}
+                dB0  = []
+            end
+
+            switch axis
+                case "x"   , sel = 1;   combine = 0;
+                case "y"   , sel = 2;   combine = 0;
+                case "z"   , sel = 3;   combine = 0;
+                case "xyz" , sel = 1:3; combine = 0;
+                case "para", sel = 1:2; combine = 1;
+                case "perp", sel = 3;   combine = 0;
+            end
+            if nargin < 2
+                idx_dB0 = self.SpatialPosition.middle_idx;
+            else
+                idx_dB0 = find(self.SpatialPosition.vect == dB0);
+            end
+            selection = cell(length(fieldnames(self.dim)), 1);
+            selection{self.dim.time} = self.rf_pulse.n_points.get(); % last timepoint
+            selection{self.dim.XYZ } = sel;
+            selection{self.dim.dZ  } = ':';
+            selection{self.dim.dB0 } = idx_dB0;
+            value = squeeze(self.M(selection{:}));
+            if combine
+                value = sum(value.^2,1);
+            end
         end
 
         function solve(self)

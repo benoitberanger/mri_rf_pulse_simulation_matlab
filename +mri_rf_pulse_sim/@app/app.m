@@ -106,16 +106,16 @@ classdef app < handle
             set(self.simulation_results.line_M_up  ,'XData', [time(1) time(end)], 'YData', [+1 +1]);
             set(self.simulation_results.line_M_mid ,'XData', [time(1) time(end)], 'YData', [ 0  0]);
             set(self.simulation_results.line_M_down,'XData', [time(1) time(end)], 'YData', [-1 -1]);
-            set(self.simulation_results.line_M_x,   'XData',                time, 'YData', self.bloch_solver.getMx   (dZ.selected_value, dB0.selected_value));
-            set(self.simulation_results.line_M_y,   'XData',                time, 'YData', self.bloch_solver.getMy   (dZ.selected_value, dB0.selected_value));
-            set(self.simulation_results.line_M_para,'XData',                time, 'YData', self.bloch_solver.getMpara(dZ.selected_value, dB0.selected_value));
-            set(self.simulation_results.line_M_perp,'XData',                time, 'YData', self.bloch_solver.getMperp(dZ.selected_value, dB0.selected_value));
+            set(self.simulation_results.line_M_x,   'XData',                time, 'YData', self.bloch_solver.getTimeseriesX   (dZ.selected_value, dB0.selected_value));
+            set(self.simulation_results.line_M_y,   'XData',                time, 'YData', self.bloch_solver.getTimeseriesY   (dZ.selected_value, dB0.selected_value));
+            set(self.simulation_results.line_M_para,'XData',                time, 'YData', self.bloch_solver.getTimeseriesPara(dZ.selected_value, dB0.selected_value));
+            set(self.simulation_results.line_M_perp,'XData',                time, 'YData', self.bloch_solver.getTimeseriesPerp(dZ.selected_value, dB0.selected_value));
 
             % plot line 3D
             set(self.simulation_results.line3_Mxyz,...
-                'XData', self.bloch_solver.getMx(dZ.selected_value, dB0.selected_value),...
-                'YData', self.bloch_solver.getMy(dZ.selected_value, dB0.selected_value),...
-                'ZData', self.bloch_solver.getMz(dZ.selected_value, dB0.selected_value));
+                'XData', self.bloch_solver.getTimeseriesX(dZ.selected_value, dB0.selected_value),...
+                'YData', self.bloch_solver.getTimeseriesY(dZ.selected_value, dB0.selected_value),...
+                'ZData', self.bloch_solver.getTimeseriesZ(dZ.selected_value, dB0.selected_value));
             set(self.simulation_results.q3_Mxyz_end,...
                 'XData',0, 'YData',0, 'ZData',0, ...
                 'UData',self.simulation_results.line3_Mxyz.XData(end),...
@@ -127,10 +127,10 @@ classdef app < handle
             set(self.simulation_results.line_S_up   ,'XData', [dz(1) dz(end)], 'YData', [+1 +1]);
             set(self.simulation_results.line_S_mid  ,'XData', [dz(1) dz(end)], 'YData', [ 0  0]);
             set(self.simulation_results.line_S_down ,'XData', [dz(1) dz(end)], 'YData', [-1 -1]);
-            set(self.simulation_results.line_S_Mx   ,'XData',              dz, 'YData', self.bloch_solver.M(end,1,:,dB0.selected_idx));
-            set(self.simulation_results.line_S_My   ,'XData',              dz, 'YData', self.bloch_solver.M(end,2,:,dB0.selected_idx));
-            set(self.simulation_results.line_S_Mpara,'XData',              dz, 'YData', self.bloch_solver.M(end,3,:,dB0.selected_idx));
-            set(self.simulation_results.line_S_Mperp,'XData',              dz, 'YData', sqrt(self.bloch_solver.M(end,1,:,dB0.selected_idx).^2+self.bloch_solver.M(end,2,:,dB0.selected_idx).^2));
+            set(self.simulation_results.line_S_Mx   ,'XData',              dz, 'YData', self.bloch_solver.getSliceProfileX   (dB0.selected_value));
+            set(self.simulation_results.line_S_My   ,'XData',              dz, 'YData', self.bloch_solver.getSliceProfileY   (dB0.selected_value));
+            set(self.simulation_results.line_S_Mpara,'XData',              dz, 'YData', self.bloch_solver.getSliceProfilePara(dB0.selected_value));
+            set(self.simulation_results.line_S_Mperp,'XData',              dz, 'YData', self.bloch_solver.getSliceProfilePerp(dB0.selected_value));
             set(self.simulation_results.line_S_vert ,'XData', [dZ.selected_value dZ.selected_value].*dZ.scale);
 
             % plot chemical shift
@@ -138,10 +138,10 @@ classdef app < handle
             set(self.simulation_results.line_C_up   ,'XData', [db0(1) db0(end)], 'YData', [+1 +1]);
             set(self.simulation_results.line_C_mid  ,'XData', [db0(1) db0(end)], 'YData', [ 0  0]);
             set(self.simulation_results.line_C_down ,'XData', [db0(1) db0(end)], 'YData', [-1 -1]);
-            set(self.simulation_results.line_C_Mx   ,'XData',               db0, 'YData', self.bloch_solver.M(end,1,dZ.selected_idx,:));
-            set(self.simulation_results.line_C_My   ,'XData',               db0, 'YData', self.bloch_solver.M(end,2,dZ.selected_idx,:));
-            set(self.simulation_results.line_C_Mpara,'XData',               db0, 'YData', self.bloch_solver.M(end,3,dZ.selected_idx,:));
-            set(self.simulation_results.line_C_Mperp,'XData',               db0, 'YData', sqrt(self.bloch_solver.M(end,1,dZ.selected_idx,:).^2+self.bloch_solver.M(end,2,dZ.selected_idx,:).^2));
+            set(self.simulation_results.line_C_Mx   ,'XData',               db0, 'YData', self.bloch_solver.getChemicalShiftX   (dZ.selected_value));
+            set(self.simulation_results.line_C_My   ,'XData',               db0, 'YData', self.bloch_solver.getChemicalShiftY   (dZ.selected_value));
+            set(self.simulation_results.line_C_Mpara,'XData',               db0, 'YData', self.bloch_solver.getChemicalShiftPara(dZ.selected_value));
+            set(self.simulation_results.line_C_Mperp,'XData',               db0, 'YData', self.bloch_solver.getChemicalShiftPerp(dZ.selected_value));
             set(self.simulation_results.line_C_vert ,'XData', [dB0.selected_value dB0.selected_value].*dB0.scale);
 
         end % fcn
