@@ -1,6 +1,6 @@
 function varargout = evaluate_adiabaticity_hs()
-% This function eveluate the slice profile of Hyperbolicsecant (hs) pulse
-% at differnet Amax
+% This function eveluate the slice profile of HyperbolicSecant (hs) pulse
+% at differnet maximum RF amplitude
 
 
 %% Parameters
@@ -30,13 +30,15 @@ solver = mri_rf_pulse_sim.bloch_solver(rf_pulse=pulse, B0=B0, SpatialPosition=dZ
 
 final_Mz = zeros(1,length(Amax_vect));
 
-fig = figure;
+fig = figure('Name',mfilename,'NumberTitle','off');
 ax = axes(fig);
-hold on
+hold(ax, 'on');
+
+colors = jet(length(Amax_vect));
 
 for idx = 1 : length(Amax_vect)
 
-    % update pulse
+    % update pulse (the solver has a reference to the pulse object)
     pulse.Amax.value = Amax_vect(idx);
     pulse.generate();
 
@@ -45,7 +47,8 @@ for idx = 1 : length(Amax_vect)
     plot(ax, ...
         dZ_mm, ...
         solver.getSliceProfilePerp(), ...
-        'DisplayName', string(Amax_vect_ut(idx)) + " µT" ...
+        'DisplayName', string(Amax_vect_ut(idx)) + " µT", ...
+        'Color', colors(idx,:) ...
         )
 
     final_Mz(idx) = solver.getSliceMiddlePerp();
@@ -62,16 +65,17 @@ ylabel('Mz')
 efficiency = round(abs(final_Mz-1)/2 *100); % convert Mz from [-1 to +1] into [0% to 100%]
 
 % and now print efficiency in a nice way
-t = array2table(efficiency);
-t.Properties.VariableNames = string(Amax_vect_ut) + " µT";
-t.Properties.RowNames = {'efficiency (%)'};
-disp(t)
+efficiency_table = array2table(efficiency);
+efficiency_table.Properties.VariableNames = string(Amax_vect_ut) + " µT";
+efficiency_table.Properties.RowNames = {'efficiency (%)'};
+disp(efficiency_table)
 
 
 %% Output ?
 
 if nargout
-    varargout{1} = fig;
+    varargout{1} = efficiency_table;
+    varargout{2} = fig;
 end
 
 

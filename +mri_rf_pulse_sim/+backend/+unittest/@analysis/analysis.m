@@ -1,5 +1,11 @@
 classdef analysis < matlab.unittest.TestCase
 
+    methods(TestClassSetup)
+        function prep_close(testCase)
+            testCase.addTeardown(@close, 'all')
+        end
+    end
+
     properties(TestParameter)
         to_execute
     end
@@ -14,15 +20,10 @@ classdef analysis < matlab.unittest.TestCase
     end
 
     methods(Test)
-
         function runner(testCase, to_execute)
             to_eval = sprintf('mri_rf_pulse_sim.analysis.%s', to_execute);
-            output = eval(to_eval);
-            if ishandle(output)
-                close(output)
-            end
+            eval(to_eval);
         end
-
     end
 
 end % class
