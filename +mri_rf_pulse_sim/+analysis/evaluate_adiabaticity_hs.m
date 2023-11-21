@@ -1,4 +1,4 @@
-function evaluate_adiabaticity_hs()
+function varargout = evaluate_adiabaticity_hs()
 % This function eveluate the slice profile of Hyperbolicsecant (hs) pulse
 % at differnet Amax
 
@@ -30,7 +30,8 @@ solver = mri_rf_pulse_sim.bloch_solver(rf_pulse=pulse, B0=B0, SpatialPosition=dZ
 
 final_Mz = zeros(1,length(Amax_vect));
 
-figure
+fig = figure;
+ax = axes(fig);
 hold on
 
 for idx = 1 : length(Amax_vect)
@@ -41,7 +42,7 @@ for idx = 1 : length(Amax_vect)
 
     solver.solve();
 
-    plot( ...
+    plot(ax, ...
         dZ_mm, ...
         solver.getSliceProfilePerp(), ...
         'DisplayName', string(Amax_vect_ut(idx)) + " µT" ...
@@ -65,6 +66,13 @@ t = array2table(efficiency);
 t.Properties.VariableNames = string(Amax_vect_ut) + " µT";
 t.Properties.RowNames = {'efficiency (%)'};
 disp(t)
+
+
+%% Output ?
+
+if nargout
+    varargout{1} = fig;
+end
 
 
 end % fcn

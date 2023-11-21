@@ -1,48 +1,38 @@
 classdef rf_pulse < matlab.unittest.TestCase
 
-    properties
-        get_list_function (1,:) char = 'mri_rf_pulse_sim.backend.rf_pulse.get_list'
-        pulse_list        (:,1) cell
-    end % props
-
     methods(TestClassSetup)
 
-        function assign_pulse_list(testCase)
-            testCase.verifyNotEmpty(testCase.get_list_function)
-            testCase.pulse_list = eval(testCase.get_list_function);
+        function verify_get_list_function_exists(testCase)
+            testCase.verifyNotEmpty(which('mri_rf_pulse_sim.backend.rf_pulse.get_list'))
         end
 
-    end % meths
+    end
+
+    properties(TestParameter)
+        pulse
+    end
+
+    methods(TestParameterDefinition, Static)
+
+        function pulse = get_pulse_list()
+            pulse = mri_rf_pulse_sim.backend.rf_pulse.get_list();
+        end
+
+    end
 
     methods(Test)
 
-        function list_pulse_exists(testCase)
-            assert(~isempty(which(testCase.get_list_function)),'get_list function not found')
-        end
+        function check(testCase, pulse)
 
-        function non_empty_list_pulse(testCase)
-            assert(~isempty(testCase.pulse_list), 'empty pulse list using')
-        end
-
-        function list_pulse_has_sinc(testCase)
-            assert(any(contains(testCase.pulse_list,'sinc')), 'sinc pulse not found')
-        end
-
-        function check_all_pulses(testCase)
-            for p = 1 : length(testCase.pulse_list)
-
-                pulse = testCase.pulse_list{p};
-
-                if any(pulse == filesep)
-                    split = strsplit(pulse, filesep);
-                    testCase.verifyNotEmpty( eval(sprintf('mri_rf_pulse_sim.rf_pulse.%s.%s', split{1}, split{2})) );
-                else
-                    testCase.verifyNotEmpty( eval(sprintf('mri_rf_pulse_sim.rf_pulse.%s', pulse)) );
-                end
-
+            if any(pulse == filesep)
+                split = strsplit(pulse, filesep);
+                testCase.verifyNotEmpty( eval(sprintf('mri_rf_pulse_sim.rf_pulse.%s.%s', split{1}, split{2})) );
+            else
+                testCase.verifyNotEmpty( eval(sprintf('mri_rf_pulse_sim.rf_pulse.%s', pulse)) );
             end
+
         end
 
-    end % meths
+    end
 
 end % class
