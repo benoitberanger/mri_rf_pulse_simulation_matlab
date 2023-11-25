@@ -62,6 +62,10 @@ classdef scalar < mri_rf_pulse_sim.backend.base_class
             out = -double(RIGHT);
         end % fcn
 
+        function out = power(LEFT,RIGHT)
+            out = double(LEFT) .^ double(RIGHT);
+        end % fcn
+
         function out = get(self)
             out = self.value * self.scale;
         end % fcn
