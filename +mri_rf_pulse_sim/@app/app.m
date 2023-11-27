@@ -14,6 +14,7 @@ classdef app < handle
         simulation_parameters mri_rf_pulse_sim.backend.gui.simulation_parameters
         simulation_results    mri_rf_pulse_sim.backend.gui.simulation_results
         window_definition     mri_rf_pulse_sim.backend.gui.window_definition
+        
         bloch_solver          mri_rf_pulse_sim.bloch_solver
     end % props
 
@@ -25,7 +26,11 @@ classdef app < handle
 
         % contructor
         function self = app(varargin)
+            % add to path : recommanded for a clean app close
+            addpath(fileparts(mri_rf_pulse_sim.get_package_dir));
+            
             self.bloch_solver = mri_rf_pulse_sim.bloch_solver();
+            
             if ~nargin
                 fprintf('[app]: open_gui() ... ')
                 tic
