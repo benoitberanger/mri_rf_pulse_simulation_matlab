@@ -33,6 +33,7 @@ classdef sinc_self_refocusing < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
         function generate_sinc_self_refocusing(self)
             self.assert_nonempty_prop({'n_points', 'duration', 'n_lobs', 'flip_angle'})
+            assert(mod(self.n_points.get(),4)==0, 'n_points must be a multiple of 4')
 
             self.time   = linspace(-self.duration/2, +self.duration/2, self.n_points.get());
 
@@ -40,8 +41,6 @@ classdef sinc_self_refocusing < mri_rf_pulse_sim.backend.rf_pulse.abstract
             time_middle = linspace(-self.duration/4, +self.duration/4, self.n_points/2    );
             lob_size_middle = 1/self.bandwidth/2;
             b1_middle = sinc(time_middle/lob_size_middle); % base shape
-            b1_middle = b1_middle / trapz(time_middle, b1_middle); % normalize integral
-            b1_middle = b1_middle * deg2rad(self.flip_angle.get()) / self.gamma; % scale integrale with flip angle
             gz_middle = ones(size(time_middle)) * self.GZavg;
 
             % then replicate the half of the middle on each side, with L/R swap
@@ -53,7 +52,9 @@ classdef sinc_self_refocusing < mri_rf_pulse_sim.backend.rf_pulse.abstract
             gz        = [gz_right gz_middle gz_left];
 
             % adjust amplitudes
-            self.B1  = b1/2;
+            b1 = b1 / trapz(self.time, b1); % normalize integral
+            b1 = b1 * deg2rad(self.flip_angle.get()) / self.gamma; % scale integrale with flip angle
+            self.B1  = b1;
             self.GZ  = gz*2;
         end % fcn
 
