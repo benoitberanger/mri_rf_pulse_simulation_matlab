@@ -1,0 +1,75 @@
+classdef sinc_self_refocusing < mri_rf_pulse_sim.backend.rf_pulse.abstract
+    % Pauly J, Nishimura D, Macovski A. A k-space analysis of small-tip-angle
+    % excitation. 1989. J Magn Reson. 2011 Dec;213(2):544-57. doi:
+    % 10.1016/j.jmr.2011.09.023. PMID: 22152370.
+
+    properties (GetAccess = public, SetAccess = public)
+        n_lobs     mri_rf_pulse_sim.ui_prop.scalar                         % [] number of lobs, from 1 to +Inf
+        flip_angle mri_rf_pulse_sim.ui_prop.scalar                         % [deg] flip angle
+    end % props
+
+    properties (GetAccess = public, SetAccess = protected, Dependent)
+        bandwidth                                                          % Hz
+    end % props
+
+    methods % no attribute for dependent properies
+        function value = get.bandwidth(self)
+            value = (2*self.n_lobs) / self.duration;
+        end % fcn
+    end % meths
+
+    methods (Access = public)
+
+        % constructor
+        function self = sinc_self_refocusing()
+            self.n_lobs         = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='n_lobs'    ,  value=7          );
+            self.flip_angle     = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle', value=90, unit='°');
+            self.generate_sinc_self_refocusing();
+        end % fcn
+
+        function generate(self)
+            self.generate_sinc_self_refocusing();
+        end % fcn
+
+        function generate_sinc_self_refocusing(self)
+            self.assert_nonempty_prop({'n_points', 'duration', 'n_lobs', 'flip_angle'})
+
+            self.time   = linspace(-self.duration/2, +self.duration/2, self.n_points.get());
+
+            % generate standard SINC pulse for the middle part
+            time_middle = linspace(-self.duration/4, +self.duration/4, self.n_points/2    );
+            lob_size_middle = 1/self.bandwidth/2;
+            b1_middle = sinc(time_middle/lob_size_middle); % base shape
+            b1_middle = b1_middle / trapz(time_middle, b1_middle); % normalize integral
+            b1_middle = b1_middle * deg2rad(self.flip_angle.get()) / self.gamma; % scale integrale with flip angle
+            gz_middle = ones(size(time_middle)) * self.GZavg;
+
+            % then replicate the half of the middle on each side, with L/R swap
+            b1_left   =  b1_middle(1:self.n_points/4);
+            b1_right  =  b1_middle(self.n_points/4+1:end);
+            gz_left   = -gz_middle(1:self.n_points/4);
+            gz_right  = -gz_middle(self.n_points/4+1:end);
+            b1        = [b1_right b1_middle b1_left];
+            gz        = [gz_right gz_middle gz_left];
+
+            % adjust amplitudes
+            self.B1  = b1/2;
+            self.GZ  = gz*2;
+        end % fcn
+
+        % synthesis text
+        function txt = summary(self)
+            txt = sprintf('sinc_self_refocusing : n_lobs=%d  flip_angle=%d°',...
+                self.n_lobs.get(), self.flip_angle.get());
+        end % fcn
+
+        function init_specific_gui(self, container)
+            mri_rf_pulse_sim.ui_prop.scalar.add_uicontrol_multi_scalar(...
+                container,...
+                [self.n_lobs, self.flip_angle]...
+                );
+        end % fcn
+
+    end % meths
+
+end % class
