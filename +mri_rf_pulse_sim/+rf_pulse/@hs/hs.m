@@ -26,10 +26,10 @@ classdef hs < mri_rf_pulse_sim.backend.rf_pulse.abstract
         % constructor
         function self = hs()
             self.duration.value = 7.68 * 1e-3;
-            self.Amax = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='Amax'  , value= 20 * 1e-6, unit='µT', scale=1e6);
-            self.beta = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='beta', value=1618                               );
+            self.Amax = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='Amax', value= 20 * 1e-6, unit='µT', scale=1e6);
+            self.beta = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='beta', value=1618      , unit='rad/s'        );
             BW = 2000; % Hz
-            self.mu   = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='mu'  , value=BW*pi/self.beta                    );
+            self.mu   = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='mu'  , value=BW*pi/self.beta                 );
             self.generate_hs();
         end % fcn
 
@@ -62,7 +62,7 @@ classdef hs < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
         % synthesis text
         function txt = summary(self)
-            txt = sprintf('hs : BW=%gHz  Amax=%gµT  beta=%g  mu=%g',...
+            txt = sprintf('hs : BW=%gHz  Amax=%gµT  beta=%grad/s  mu=%g',...
                 self.bandwidth, self.Amax.get(), self.beta.get(), self.mu.get());
         end % fcn
 
