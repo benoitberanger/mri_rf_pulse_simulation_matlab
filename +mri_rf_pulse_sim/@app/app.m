@@ -102,6 +102,7 @@ classdef app < handle
             dB0 = self.simulation_parameters.dB0;
             time = self.pulse_definition.rf_pulse.time * 1e3;
             bloch = self.bloch_solver;
+            pulse = self.getPulse();
 
             % plot Mxyz
             set(self.simulation_results.line_M_up  ,'XData', [time(1) time(end)], 'YData', [+1 +1]);
@@ -133,6 +134,8 @@ classdef app < handle
             set(self.simulation_results.line_S_Mpara,'XData',              dz, 'YData', bloch.getSliceProfilePara(dB0.selected_value));
             set(self.simulation_results.line_S_Mperp,'XData',              dz, 'YData', bloch.getSliceProfilePerp(dB0.selected_value));
             set(self.simulation_results.line_S_vert ,'XData', [dZ.selected_value dZ.selected_value].*dZ.scale);
+            set(self.simulation_results.line_S_stL  ,'XData', -[pulse.slice_thickness.value pulse.slice_thickness.value]/2 * pulse.slice_thickness.scale);
+            set(self.simulation_results.line_S_stR  ,'XData', +[pulse.slice_thickness.value pulse.slice_thickness.value]/2 * pulse.slice_thickness.scale);
 
             % plot chemical shift
             db0 = dB0.vect * dB0.scale;

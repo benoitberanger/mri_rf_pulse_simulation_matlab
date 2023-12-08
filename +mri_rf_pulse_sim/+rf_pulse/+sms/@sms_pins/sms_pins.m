@@ -44,7 +44,7 @@ classdef sms_pins < mri_rf_pulse_sim.backend.rf_pulse.abstract
         % constructor
         function self = sms_pins()
             self.flip_angle        = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle'       , value= 90       , unit='°'                  );
-            self.slice_distance    = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='slice_distance'   , value= 10 * 1e-3, unit='mm'      , scale=1e3);
+            self.slice_distance    = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='slice_distance'   , value=  6 * 1e-3, unit='mm'      , scale=1e3);
             self.subpulse_number   = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='subpulse_number'  , value= 21                                   );
             self.subpulse_duration = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='subpulse_duration', value=100 * 1e-6, unit='us'      , scale=1e6);
             self.use_blip          = mri_rf_pulse_sim.ui_prop.bool  (parent=self, name='use_blip'         , value=true      , text='use_blip'           );

@@ -28,6 +28,8 @@ classdef simulation_results < mri_rf_pulse_sim.backend.base_class
         line_S_mid         matlab.graphics.chart.primitive.Line
         line_S_down        matlab.graphics.chart.primitive.Line
         line_S_vert        matlab.graphics.chart.primitive.Line
+        line_S_stL         matlab.graphics.chart.primitive.Line
+        line_S_stR         matlab.graphics.chart.primitive.Line
 
         axes_ChemicalShift matlab.graphics.axis.Axes
         line_C_Mx          matlab.graphics.chart.primitive.Line
@@ -61,8 +63,8 @@ classdef simulation_results < mri_rf_pulse_sim.backend.base_class
 
         function open_gui(self)
 
-            % x + y = para
-            % z     = perp
+            % x + y = perp
+            % z     = para
 
             color      = struct;
             color.x    = [230 030 030]/255;
@@ -71,6 +73,7 @@ classdef simulation_results < mri_rf_pulse_sim.backend.base_class
             color.perp = [230 030 210]/255;
             color.ref  = [150 150 150]/255;
             color.vert = [150 150 150]/255;
+            color.st   = [050 050 050]/255;
 
             linestyle = struct;
             linestyle.x    = ':';
@@ -79,6 +82,7 @@ classdef simulation_results < mri_rf_pulse_sim.backend.base_class
             linestyle.perp = '-';
             linestyle.ref  = ':';
             linestyle.vert = '-';
+            linestyle.st   = '-';
 
             linewidth = struct;
             linewidth.x    = 1.0;
@@ -87,6 +91,7 @@ classdef simulation_results < mri_rf_pulse_sim.backend.base_class
             linewidth.perp = 2.0;
             linewidth.ref  = 0.5;
             linewidth.vert = 1.0;
+            linewidth.st   = 0.5;
 
             fig_pos = mri_rf_pulse_sim.backend.gui.get_fig_pos();
 
@@ -198,6 +203,8 @@ classdef simulation_results < mri_rf_pulse_sim.backend.base_class
             self.line_S_mid   = plot(handles.axes_SliceProfile, [time(1) time(end)], [ 0    0  ], 'Color',color.ref , 'LineStyle',linestyle.ref , 'LineWidth',linewidth.ref );
             self.line_S_down  = plot(handles.axes_SliceProfile, [time(1) time(end)], [-1   -1  ], 'Color',color.ref , 'LineStyle',linestyle.ref , 'LineWidth',linewidth.ref );
             self.line_S_vert  = plot(handles.axes_SliceProfile, [0       0        ], [-1.2 +1.2], 'Color',color.vert, 'LineStyle',linestyle.vert, 'LineWidth',linewidth.vert);
+            self.line_S_stL   = plot(handles.axes_SliceProfile, [NaN     NaN      ], [-1.2 +1.2], 'Color',color.st  , 'LineStyle',linestyle.st  , 'LineWidth',linewidth.st  );
+            self.line_S_stR   = plot(handles.axes_SliceProfile, [NaN     NaN      ], [-1.2 +1.2], 'Color',color.st  , 'LineStyle',linestyle.st  , 'LineWidth',linewidth.st  );
             legend(handles.axes_SliceProfile, {'Mx', 'My', 'M\mid\mid', 'M\perp'})
             xlabel(handles.axes_SliceProfile, 'dZ [mm]');
             ylabel(handles.axes_SliceProfile, 'final Mxyz');
