@@ -299,7 +299,7 @@ switch axis
     case "y"   , sel = 2;   comb = 0;
     case "z"   , sel = 3;   comb = 0;
     case "xyz" , sel = 1:3; comb = 0;
-    case "para", sel = 1:2; comb = 1;
-    case "perp", sel = 3;   comb = 0;
+    case "para", sel = 3;   comb = 0;
+    case "perp", sel = 1:2; comb = 1;
 end
 end % fcn
