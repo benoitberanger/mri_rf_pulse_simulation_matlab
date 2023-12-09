@@ -68,7 +68,8 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
             hold(a(1), 'on')
             plot(a(1), self.time*1e3, self.real()*1e6, lineprop_B1{:}, 'Color', [163 207 244]/255)
             a(1).XTickLabel = {};
-            a(1).YLabel.String = 'real (µT)';
+            a(1).YLabel.Interpreter = "latex";
+            a(1).YLabel.String = '$\Re \: (\mu T)$';
             plot(a(1), lineprop_ref{:})
             axis(a(1),'tight')
 
@@ -76,7 +77,8 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
             hold(a(2), 'on')
             plot(a(2), self.time*1e3, self.imag()*1e6, lineprop_B1{:}, 'Color', [163 207 244]/255)
             a(2).XTickLabel = {};
-            a(2).YLabel.String = 'imag (µT)';
+            a(2).YLabel.Interpreter = "latex";
+            a(2).YLabel.String = '$\Im \: (\mu T)$';
             plot(a(2), lineprop_ref{:})
             axis(a(2),'tight')
 
@@ -84,15 +86,17 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
             hold(a(3), 'on')
             plot(a(3), self.time*1e3, self.abs()*1e6, lineprop_B1{:}, 'Color', [100 182 229]/255)
             a(3).XTickLabel = {};
-            a(3).YLabel.String = 'magnitude (µT)';
+            a(3).YLabel.Interpreter = "latex";
+            a(3).YLabel.String = '$|B1| \: (\mu T)$';
             plot(a(3), lineprop_ref{:})
             axis(a(3),'tight')
 
             a(4) = subplot(6,1,4,'Parent',container);
             hold(a(4), 'on')
-            plot(a(4), self.time*1e3, self.angle(), lineprop_B1{:}, 'Color', [100 182 229]/255)
+            plot(a(4), self.time*1e3, self.angle()/(2*pi), lineprop_B1{:}, 'Color', [100 182 229]/255)
             a(4).XTickLabel = {};
-            a(4).YLabel.String = 'phase (radian)';
+            a(4).YLabel.Interpreter = "latex";
+            a(4).YLabel.String = '$\angle{B1} \: (\times2\pi)$';
             plot(a(4), lineprop_ref{:})
             axis(a(4),'tight')
 
@@ -100,7 +104,8 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
             hold(a(5), 'on')
             plot(a(5), self.time*1e3, self.FM(), lineprop_B1{:}, 'Color', [115 107 172]/255)
             a(5).XTickLabel = {};
-            a(5).YLabel.String = 'FM (Hz)';
+            a(5).YLabel.Interpreter = "latex";
+            a(5).YLabel.String = '$\frac{d \angle{B1}}{dt} \: (Hz)$';
             plot(a(5), lineprop_ref{:})
             axis(a(5),'tight')
 
@@ -108,7 +113,8 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
             hold(a(6), 'on')
             plot(a(6), self.time*1e3, self.GZ*1e3, lineprop_B1{:}, 'Color', [132 190 99]/255)
             a(6).XLabel.String = 'time (ms)';
-            a(6).YLabel.String = 'GZ (mT/m)';
+            a(6).YLabel.Interpreter = "latex";
+            a(6).YLabel.String = '$GZ \: (mT/m)$';
             plot(a(6), lineprop_ref{:})
             axis(a(6),'tight')
 

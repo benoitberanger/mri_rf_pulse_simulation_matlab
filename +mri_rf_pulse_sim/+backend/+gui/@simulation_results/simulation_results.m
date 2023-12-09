@@ -160,10 +160,10 @@ classdef simulation_results < mri_rf_pulse_sim.backend.base_class
             self.line_M_up   = plot(handles.axes_Mxyz, [time(1) time(end)], [+1 +1], 'Color',color.ref , 'LineStyle',linestyle.ref , 'LineWidth',linewidth.ref );
             self.line_M_mid  = plot(handles.axes_Mxyz, [time(1) time(end)], [ 0  0], 'Color',color.ref , 'LineStyle',linestyle.ref , 'LineWidth',linewidth.ref );
             self.line_M_down = plot(handles.axes_Mxyz, [time(1) time(end)], [-1 -1], 'Color',color.ref , 'LineStyle',linestyle.ref , 'LineWidth',linewidth.ref );
-            legend(handles.axes_Mxyz, {'Mx', 'My', 'M\mid\mid', 'M\perp'})
+            legend(handles.axes_Mxyz, {'M_x', 'M_y', 'M\mid\mid', 'M\perp'})
             axis(handles.axes_Mxyz, 'tight')
             xlabel(handles.axes_Mxyz, 'time (ms)');
-            ylabel(handles.axes_Mxyz, 'Mxyz');
+            ylabel(handles.axes_Mxyz, 'M_x_y_z');
             ylim(handles.axes_Mxyz, [-1.1 +1.1])
 
             handles.axes_Sphere = axes(handles.uipanel_Mxyz,...
@@ -205,9 +205,9 @@ classdef simulation_results < mri_rf_pulse_sim.backend.base_class
             self.line_S_vert  = plot(handles.axes_SliceProfile, [0       0        ], [-1.2 +1.2], 'Color',color.vert, 'LineStyle',linestyle.vert, 'LineWidth',linewidth.vert);
             self.line_S_stL   = plot(handles.axes_SliceProfile, [NaN     NaN      ], [-1.2 +1.2], 'Color',color.st  , 'LineStyle',linestyle.st  , 'LineWidth',linewidth.st  );
             self.line_S_stR   = plot(handles.axes_SliceProfile, [NaN     NaN      ], [-1.2 +1.2], 'Color',color.st  , 'LineStyle',linestyle.st  , 'LineWidth',linewidth.st  );
-            legend(handles.axes_SliceProfile, {'Mx', 'My', 'M\mid\mid', 'M\perp'})
-            xlabel(handles.axes_SliceProfile, 'dZ [mm]');
-            ylabel(handles.axes_SliceProfile, 'final Mxyz');
+            legend(handles.axes_SliceProfile, {'M_x', 'M_y', 'M\mid\mid', 'M\perp'})
+            xlabel(handles.axes_SliceProfile, '\DeltaZ [mm]');
+            ylabel(handles.axes_SliceProfile, 'final M_x_y_z');
             ylim  (handles.axes_SliceProfile, [-1.2 +1.2])
 
             %--------------------------------------------------------------
@@ -228,9 +228,9 @@ classdef simulation_results < mri_rf_pulse_sim.backend.base_class
             self.line_C_mid   = plot(handles.axes_ChemicalShift, [time(1) time(end)], [ 0    0  ], 'Color',color.ref , 'LineStyle',linestyle.ref , 'LineWidth',linewidth.ref );
             self.line_C_down  = plot(handles.axes_ChemicalShift, [time(1) time(end)], [-1   -1  ], 'Color',color.ref , 'LineStyle',linestyle.ref , 'LineWidth',linewidth.ref );
             self.line_C_vert  = plot(handles.axes_ChemicalShift, [0       0        ], [-1.2 +1.2], 'Color',color.vert, 'LineStyle',linestyle.vert, 'LineWidth',linewidth.vert);
-            legend(handles.axes_ChemicalShift, {'Mx', 'My', 'M\mid\mid', 'M\perp'})
-            xlabel(handles.axes_ChemicalShift, 'dB0 [ppm]');
-            ylabel(handles.axes_ChemicalShift, 'final Mxyz');
+            legend(handles.axes_ChemicalShift, {'M_x', 'M_y', 'M\mid\mid', 'M\perp'})
+            xlabel(handles.axes_ChemicalShift, '\DeltaB_0 [ppm]');
+            ylabel(handles.axes_ChemicalShift, 'final M_x_y_z');
             ylim  (handles.axes_ChemicalShift, [-1.2 +1.2])
 
             % IMPORTANT
