@@ -69,7 +69,7 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
             plot(a(1), self.time*1e3, self.real()*1e6, lineprop_B1{:}, 'Color', [163 207 244]/255)
             a(1).XTickLabel = {};
             a(1).YLabel.Interpreter = "latex";
-            a(1).YLabel.String = '$\Re \: (\mu T)$';
+            a(1).YLabel.String = '$Re(B1) \: (\mu T)$';
             plot(a(1), lineprop_ref{:})
             axis(a(1),'tight')
 
@@ -78,7 +78,7 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
             plot(a(2), self.time*1e3, self.imag()*1e6, lineprop_B1{:}, 'Color', [163 207 244]/255)
             a(2).XTickLabel = {};
             a(2).YLabel.Interpreter = "latex";
-            a(2).YLabel.String = '$\Im \: (\mu T)$';
+            a(2).YLabel.String = '$Im(B1) \: (\mu T)$';
             plot(a(2), lineprop_ref{:})
             axis(a(2),'tight')
 

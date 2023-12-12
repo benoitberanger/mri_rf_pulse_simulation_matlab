@@ -73,7 +73,7 @@ classdef simulation_results < mri_rf_pulse_sim.backend.base_class
             color.perp = [230 030 210]/255;
             color.ref  = [150 150 150]/255;
             color.vert = [150 150 150]/255;
-            color.st   = [050 050 050]/255;
+            color.st   = [200 200 200]/255;
 
             linestyle = struct;
             linestyle.x    = ':';
