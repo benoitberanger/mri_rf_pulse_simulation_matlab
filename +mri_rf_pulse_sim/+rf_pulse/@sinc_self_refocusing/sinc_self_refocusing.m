@@ -4,8 +4,8 @@ classdef sinc_self_refocusing < mri_rf_pulse_sim.backend.rf_pulse.abstract
     % 10.1016/j.jmr.2011.09.023. PMID: 22152370.
 
     properties (GetAccess = public, SetAccess = public)
-        n_lobs     mri_rf_pulse_sim.ui_prop.scalar                         % [] number of lobs, from 1 to +Inf
-        flip_angle mri_rf_pulse_sim.ui_prop.scalar                         % [deg] flip angle
+        n_side_lobs mri_rf_pulse_sim.ui_prop.scalar                    % [] number of side lobs, from 1 to +Inf
+        flip_angle  mri_rf_pulse_sim.ui_prop.scalar                         % [deg] flip angle
     end % props
 
     properties (GetAccess = public, SetAccess = protected, Dependent)
@@ -14,7 +14,7 @@ classdef sinc_self_refocusing < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
     methods % no attribute for dependent properies
         function value = get.bandwidth(self)
-            value = (2*self.n_lobs) / self.duration;
+            value = (2*self.n_side_lobs) / self.duration;
         end % fcn
     end % meths
 
@@ -22,8 +22,8 @@ classdef sinc_self_refocusing < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
         % constructor
         function self = sinc_self_refocusing()
-            self.n_lobs         = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='n_lobs'    ,  value=7          );
-            self.flip_angle     = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle', value=90, unit='°');
+            self.n_side_lobs = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='n_side_lobs',  value=7          );
+            self.flip_angle  = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle' , value=90, unit='°');
             self.generate_sinc_self_refocusing();
         end % fcn
 
@@ -32,7 +32,7 @@ classdef sinc_self_refocusing < mri_rf_pulse_sim.backend.rf_pulse.abstract
         end % fcn
 
         function generate_sinc_self_refocusing(self)
-            self.assert_nonempty_prop({'n_points', 'duration', 'n_lobs', 'flip_angle'})
+            self.assert_nonempty_prop({'n_points', 'duration', 'n_side_lobs', 'flip_angle'})
             assert(mod(self.n_points.get(),4)==0, 'n_points must be a multiple of 4')
 
             self.time   = linspace(-self.duration/2, +self.duration/2, self.n_points.get());
@@ -60,14 +60,14 @@ classdef sinc_self_refocusing < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
         % synthesis text
         function txt = summary(self)
-            txt = sprintf('sinc_self_refocusing : n_lobs=%d  flip_angle=%d°',...
-                self.n_lobs.get(), self.flip_angle.get());
+            txt = sprintf('sinc_self_refocusing : n_side_lobs=%d  flip_angle=%d°',...
+                self.n_side_lobs.get(), self.flip_angle.get());
         end % fcn
 
         function init_specific_gui(self, container)
             mri_rf_pulse_sim.ui_prop.scalar.add_uicontrol_multi_scalar(...
                 container,...
-                [self.n_lobs, self.flip_angle]...
+                [self.n_side_lobs, self.flip_angle]...
                 );
         end % fcn
 
