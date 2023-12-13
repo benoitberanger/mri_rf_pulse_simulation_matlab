@@ -17,7 +17,7 @@ classdef bir4_degraaf1995 < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
     methods % no attribute for dependent properies
         function value = get.bandwidth(self)
-            value = 0;
+            value = self.dWmax;
         end% % fcn
         function value = get.delta_phase(self)
             value = 180 + self.flip_angle/2;
@@ -28,7 +28,6 @@ classdef bir4_degraaf1995 < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
         % constructor
         function self = bir4_degraaf1995()
-            self.slice_thickness.value = Inf; % non-selective pulse -> only watch the dB0
             self.n_points.value = 512;        % Need more points for numerical stability
             self.duration.value = 2.8 * 1e-3; % like in the article
             self.gammaB1max = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='gammaB1max', value= 7000  , unit='Hz');
