@@ -1,6 +1,6 @@
-classdef bir4 < mri_rf_pulse_sim.backend.rf_pulse.abstract
-    % STAEWEN, R. SCOTT MD*; JOHNSON, ANTON J. BA†; ROSS, BRIAN D. PHD*,‡;
-    % PARRISH, TODD MSE§; MERKLE, HELLMUT PHD*; GARWOOD, MICHAEL PHD*,∥. 3-D
+classdef bir4_steawen1990 < mri_rf_pulse_sim.backend.rf_pulse.abstract
+    % STAEWEN, R. SCOTT MD; JOHNSON, ANTON J. BA; ROSS, BRIAN D. PHD;
+    % PARRISH, TODD MSE; MERKLE, HELLMUT PHD; GARWOOD, MICHAEL PHD. 3-D
     % FLASH Imaging Using a Single Surface Coil and a New Adiabatic Pulse,
     % BIR-4. Investigative Radiology 25(5):p 559-567, May 1990.
 
@@ -14,32 +14,36 @@ classdef bir4 < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
     properties (GetAccess = public, SetAccess = protected, Dependent)
         bandwidth                                                          % [Hz]
+        delta_phase                                                        % [deg]
     end % props
 
     methods % no attribute for dependent properies
         function value = get.bandwidth(self)
-            warning('wrong bandwidth !!!')
-            value = 2000;
+            value = 0;
         end% % fcn
+        function value = get.delta_phase(self)
+            value = 180 + self.flip_angle/2;
+        end
     end % meths
 
     methods (Access = public)
 
         % constructor
-        function self = bir4()
+        function self = bir4_steawen1990()
+            self.slice_thickness.value = Inf; % non-selective pulse -> only watch the dB0 curves
             self.Amax       = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='Amax'      , value=   20 * 1e-6, unit='µT', scale=1e6);
             self.flip_angle = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle', value=   90       , unit='°'            );
             self.Beta       = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='Beta'      , value=   10                             );
             self.tanKappa   = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='tanKappa'  , value=   10                             );
             self.dW0factor  = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='dW0factor' , value=  100                             );
-            self.generate_bir4();
+            self.generate_bir4_steawen1990();
         end % fcn
 
         function generate(self)
-            self.generate_bir4();
+            self.generate_bir4_steawen1990();
         end % fcn
 
-        function generate_bir4(self)
+        function generate_bir4_steawen1990(self)
 
             % check
             assert(mod(self.n_points.value,2)==0, 'n_points must be an even number')
@@ -49,10 +53,10 @@ classdef bir4 < mri_rf_pulse_sim.backend.rf_pulse.abstract
             % --- same terminology and notations as in the article ---
 
             t = self.time/(self.duration/4);
-            t1 = t(        t<1 );
-            t2 = t( t>=1 & t<2 );
-            t3 = t( t>=2 & t<3 );
-            t4 = t( t>=3       );
+            t1 = t(        t<=1 );
+            t2 = t( t>=1 & t<=2 );
+            t3 = t( t>=2 & t<=3 );
+            t4 = t( t>=3        );
 
             BETA = self.Beta.value;
             KAPPA = atan(self.tanKappa.value);
@@ -73,17 +77,18 @@ classdef bir4 < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
             % apply phase shift in the central part -> this produces the desired flip angle
             dp  = zeros(size(self.time));
-            dp(t>=1 & t<3) = deg2rad(180 + self.flip_angle/2);
+            dp(t>=1 & t<3) = deg2rad(self.delta_phase);
 
             self.B1 = a .* exp(1j * (p + dp));
 
             self.GZ = ones(size(self.time)) * self.GZavg;
+
         end
 
         % synthesis text
         function txt = summary(self)
-            txt = sprintf('BIR-4 : Amax=%gµT  ',...
-                self.Amax.get());
+            txt = sprintf('BIR-4 : Amax=%gµT  FA=%g°  beta=%g  tanKappa=%g  dWmax=%gHz',...
+                self.Amax.get(), self.flip_angle.get(), self.Beta.get(), self.tanKappa.get(), self.dWmax.get());
         end % fcn
 
         function init_specific_gui(self, container)
