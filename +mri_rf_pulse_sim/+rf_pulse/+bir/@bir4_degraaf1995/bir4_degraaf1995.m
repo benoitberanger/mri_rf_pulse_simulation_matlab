@@ -8,7 +8,7 @@ classdef bir4_degraaf1995 < mri_rf_pulse_sim.backend.rf_pulse.abstract
         flip_angle   mri_rf_pulse_sim.ui_prop.scalar                       % [deg] flip angle
         Beta         mri_rf_pulse_sim.ui_prop.scalar                       % []
         dWmax        mri_rf_pulse_sim.ui_prop.scalar                       % [] frequency sweep factor
-        n_transients mri_rf_pulse_sim.ui_prop.scalar                       % [] number of "transients"==BIR-4 with DeltaPhi in the article (phase cycling)
+        n_transients mri_rf_pulse_sim.ui_prop.list                         % [] number of "transients"==BIR-4 with DeltaPhi in the article (phase cycling)
     end % props
 
     properties (GetAccess = public, SetAccess = protected, Dependent)
@@ -35,7 +35,7 @@ classdef bir4_degraaf1995 < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.flip_angle     = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle'  , value=   90  , unit='°' );
             self.Beta           = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='Beta'        , value=    5.3           );
             self.dWmax          = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='dWmax'       , value= 3571  , unit='Hz');
-            self.n_transients   = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='n_transients', value=    1             );
+            self.n_transients   = mri_rf_pulse_sim.ui_prop.list  (parent=self, name='n_transients', items=[1,2,4], value=  1);
             self.generate_bir4_degraaf1995();
         end % fcn
 
@@ -118,8 +118,9 @@ classdef bir4_degraaf1995 < mri_rf_pulse_sim.backend.rf_pulse.abstract
         function init_specific_gui(self, container)
             mri_rf_pulse_sim.ui_prop.scalar.add_uicontrol_multi_scalar(...
                 container,...
-                [self.gammaB1max, self.flip_angle, self.Beta, self.dWmax self.n_transients]...
-                );
+                [self.gammaB1max, self.flip_angle, self.Beta, self.dWmax],...
+                [0 0 0.8 1]);
+            self.n_transients.add_uicontrol(container, [0.8 0 0.2 1])
         end % fcn
 
     end % meths
