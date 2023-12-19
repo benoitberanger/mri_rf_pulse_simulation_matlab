@@ -15,7 +15,7 @@ classdef hs_excitation < mri_rf_pulse_sim.backend.rf_pulse.abstract
         Amax                                                               % [T]
     end % props
 
-    methods % no attribute for dependent properies
+    methods % no attribute for dependent properties
         function value = get.bandwidth(self)
             FA = deg2rad(self.flip_angle.get());
             value = self.beta/pi^2 * ...

@@ -19,7 +19,7 @@ classdef sms_pins < mri_rf_pulse_sim.backend.rf_pulse.abstract
         blip_duration                                                      % [s]
     end % props
 
-    methods % no attribute for dependent properies
+    methods % no attribute for dependent properties
 
         function value = get.N(self)
             value = self.slice_distance / self.slice_thickness;

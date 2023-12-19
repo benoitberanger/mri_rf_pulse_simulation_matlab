@@ -12,7 +12,7 @@ classdef hs < mri_rf_pulse_sim.backend.rf_pulse.abstract
         adiabatic_condition (1,1) double                                   % [T] B1max (Amax) minimal to be adiabatic
     end % props
 
-    methods % no attribute for dependent properies
+    methods % no attribute for dependent properties
         function value = get.bandwidth(self)
             value = self.beta * self.mu  / pi;
         end% % fcn

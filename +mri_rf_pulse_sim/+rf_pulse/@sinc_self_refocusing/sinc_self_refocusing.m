@@ -12,7 +12,7 @@ classdef sinc_self_refocusing < mri_rf_pulse_sim.backend.rf_pulse.abstract
         bandwidth                                                          % Hz
     end % props
 
-    methods % no attribute for dependent properies
+    methods % no attribute for dependent properties
         function value = get.bandwidth(self)
             value = (2*self.n_side_lobs) / self.duration;
         end % fcn

@@ -17,7 +17,7 @@ classdef gaussian < mri_rf_pulse_sim.backend.rf_pulse.abstract
         sigma                                                              % []
     end % props
 
-    methods % no attribute for dependent properies
+    methods % no attribute for dependent properties
         function value = get.sigma    (self); value = self.duration/7.734; end
         function value = get.bandwidth(self); value = 0.3748/self.sigma  ; end
     end % meths

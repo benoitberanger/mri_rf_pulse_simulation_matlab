@@ -9,7 +9,7 @@ classdef foci < mri_rf_pulse_sim.rf_pulse.hs
         A (1,:) double % C-shape
     end % props
 
-    methods % no attribute for dependent properies
+    methods % no attribute for dependent properties
 
         function  value = get.A(self)
             value = 10 * ones(size(self.time));

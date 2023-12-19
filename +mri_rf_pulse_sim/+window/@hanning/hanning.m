@@ -7,7 +7,7 @@ classdef hanning < mri_rf_pulse_sim.backend.window.abstract
         a1    mri_rf_pulse_sim.ui_prop.scalar
     end % props
 
-    methods % no attribute for dependent properies
+    methods % no attribute for dependent properties
         function value = get.shape(self)
             value = self.a0 + self.a1 * cos(2*pi*self.rf_pulse.time/self.rf_pulse.duration);
         end % fcn

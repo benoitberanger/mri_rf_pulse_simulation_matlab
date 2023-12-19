@@ -12,15 +12,15 @@ classdef bir4_steawen1990 < mri_rf_pulse_sim.backend.rf_pulse.abstract
         dW0factor  mri_rf_pulse_sim.ui_prop.scalar                         % [] frequency sweep factor
     end % props
 
+    properties (GetAccess = public, SetAccess = protected)
+        bandwidth = 0                                                      % [Hz]
+    end % props
+
     properties (GetAccess = public, SetAccess = protected, Dependent)
-        bandwidth                                                          % [Hz]
         delta_phase                                                        % [deg]
     end % props
 
-    methods % no attribute for dependent properies
-        function value = get.bandwidth(self)
-            value = 0;
-        end% % fcn
+    methods % no attribute for dependent properties
         function value = get.delta_phase(self)
             value = 180 + self.flip_angle/2;
         end

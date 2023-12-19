@@ -13,7 +13,7 @@ classdef (Abstract) sms_mb < mri_rf_pulse_sim.backend.rf_pulse.abstract
         band_seperation (1,1) double                                       % Hz
     end % props
 
-    methods % no attribute for dependent properies
+    methods % no attribute for dependent properties
         function value = get.band_seperation(self)
             value = self.bandwidth * self.slice_distance/self.slice_thickness;
         end

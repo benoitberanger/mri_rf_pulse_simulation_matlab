@@ -16,7 +16,7 @@ classdef bir4_degraaf1995 < mri_rf_pulse_sim.backend.rf_pulse.abstract
         delta_phase                                                        % [deg]
     end % props
 
-    methods % no attribute for dependent properies
+    methods % no attribute for dependent properties
         function value = get.bandwidth(self)
             value = self.dWmax;
         end% % fcn

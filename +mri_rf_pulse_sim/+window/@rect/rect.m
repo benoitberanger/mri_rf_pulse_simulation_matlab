@@ -4,7 +4,7 @@ classdef rect < mri_rf_pulse_sim.backend.window.abstract
         shape
     end % props
 
-    methods % no attribute for dependent properies
+    methods % no attribute for dependent properties
         function value = get.shape(self)
             value = ones(size(self.rf_pulse.time));
         end % fcn

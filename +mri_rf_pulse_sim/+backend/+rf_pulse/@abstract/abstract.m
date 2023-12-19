@@ -21,7 +21,7 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
         gradGZmax       (1,1) double                                       % [T/m/s] max(dGZ/dt)
     end % props
 
-    methods % no attribute for dependent properies
+    methods % no attribute for dependent properties
         function value = get.B1max    (self); value = max (abs(self.B1));                                      end
         function value = get.GZmax    (self); value = max (abs(self.GZ));                                      end
         function value = get.GZavg    (self); value = 2*pi*self.bandwidth / (self.gamma*self.slice_thickness); end
@@ -147,7 +147,7 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
     % =====================================================================
     % ABSTRACT stuff : need to be implemented in subclass
 
-    properties (Abstract, GetAccess = public, SetAccess = protected, Dependent)
+    properties (Abstract, GetAccess = public, SetAccess = protected)
         bandwidth (1,1) double                                             % [Hz]
     end % props
 

@@ -21,7 +21,7 @@ classdef dante < mri_rf_pulse_sim.backend.rf_pulse.abstract
         blip_duration                                                      % [s]
     end % props
 
-    methods % no attribute for dependent properies
+    methods % no attribute for dependent properties
 
         function value = get.bandwidth(self)
             value = 1 / self.duration;
