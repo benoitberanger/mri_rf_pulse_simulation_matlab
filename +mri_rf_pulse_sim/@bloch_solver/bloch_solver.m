@@ -231,7 +231,12 @@ classdef bloch_solver < handle & matlab.mixin.CustomCompactDisplayProvider
 
             B1mag = self.rf_pulse.mag();
             B1pha = self.rf_pulse.pha();
-
+            
+%             T1 = 1; % s
+%             T2 = 0.1; % s
+            T1 = Inf; % s
+            T2 = Inf; % s
+            
             for t = 2:length(self.rf_pulse.time)
 
                 dt = self.rf_pulse.time(t) - self.rf_pulse.time(t-1);
@@ -276,6 +281,12 @@ classdef bloch_solver < handle & matlab.mixin.CustomCompactDisplayProvider
                 m(:,1,t) =  cos_phy .* Mprev(:,1) - sin_phy .* Mprev(:,2);
                 m(:,2,t) =  sin_phy .* Mprev(:,1) + cos_phy .* Mprev(:,2);
 
+                % Relaxation
+                % !!! Seperation of Rotation THEN Relaxation induce an error linear with 'dt' !!!
+                m(:,1,t) = m(:,1,t)                  .* exp( -dt / T2 );
+                m(:,2,t) = m(:,2,t)                  .* exp( -dt / T2 );
+                m(:,3,t) =(m(:,3,t) - self.Mxyz0(3)) .* exp( -dt / T1 ) + self.Mxyz0(3);
+                
             end % time
 
             m = reshape(m, [self.DeltaB0.N self.SpatialPosition.N 3 length(self.rf_pulse.time)]);
