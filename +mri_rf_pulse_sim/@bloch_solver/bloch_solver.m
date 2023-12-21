@@ -146,7 +146,7 @@ classdef bloch_solver < handle & matlab.mixin.CustomCompactDisplayProvider
                 idx_dB0 = find(self.DeltaB0.vect == dB0);
             end
             selection = cell(length(fieldnames(self.dim)), 1);
-            selection{self.dim.time} = self.rf_pulse.n_points.get(); % last timepoint
+            selection{self.dim.time} = length(self.rf_pulse.time); % last timepoint
             selection{self.dim.XYZ } = sel;
             selection{self.dim.dZ  } = ':';
             selection{self.dim.dB0 } = idx_dB0;
@@ -176,7 +176,7 @@ classdef bloch_solver < handle & matlab.mixin.CustomCompactDisplayProvider
                 idx_B0 = find(self.DeltaB0.vect == dB0);
             end
             selection = cell(length(fieldnames(self.dim)), 1);
-            selection{self.dim.time} = self.rf_pulse.n_points.get(); % last timepoint
+            selection{self.dim.time} = length(self.rf_pulse.time); % last timepoint
             selection{self.dim.XYZ } = sel;
             selection{self.dim.dZ  } = self.SpatialPosition.middle_idx;
             selection{self.dim.dB0 } = idx_B0;
@@ -203,7 +203,7 @@ classdef bloch_solver < handle & matlab.mixin.CustomCompactDisplayProvider
                 idx_dZ = find(self.SpatialPosition.vect == dZ);
             end
             selection = cell(length(fieldnames(self.dim)), 1);
-            selection{self.dim.time} = self.rf_pulse.n_points.get(); % last timepoint
+            selection{self.dim.time} = length(self.rf_pulse.time); % last timepoint
             selection{self.dim.XYZ } = sel;
             selection{self.dim.dZ  } = idx_dZ;
             selection{self.dim.dB0 } = ':';
