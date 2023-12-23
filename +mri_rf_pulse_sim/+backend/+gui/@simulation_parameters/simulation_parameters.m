@@ -4,6 +4,8 @@ classdef simulation_parameters < mri_rf_pulse_sim.backend.base_class
         dZ  mri_rf_pulse_sim.ui_prop.range                                 % [m] slice (spin) position
         dB0 mri_rf_pulse_sim.ui_prop.range                                 % [ppm] off-resonance vector
         B0  mri_rf_pulse_sim.ui_prop.scalar                                % [T] static magnetic field strength
+        T1  mri_rf_pulse_sim.ui_prop.scalar                                % [s] T1 relaxtion coefficient : set to +Inf by default
+        T2  mri_rf_pulse_sim.ui_prop.scalar                                % [s] T2 relaxtion coefficient : set to +Inf by default
 
         auto_simplot     mri_rf_pulse_sim.ui_prop.bool
         auto_disp_pulse  mri_rf_pulse_sim.ui_prop.bool
@@ -20,6 +22,8 @@ classdef simulation_parameters < mri_rf_pulse_sim.backend.base_class
             self.dZ  = mri_rf_pulse_sim.ui_prop.range (parent=self, name='dZ' , vect=linspace(-010,010,201)*1e-3, scale=1e3, unit='mm' );
             self.dB0 = mri_rf_pulse_sim.ui_prop.range (parent=self, name='dB0', vect=linspace(-020,020,201)*1e-6, scale=1e6, unit='ppm');
             self.B0  = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='B0' , value=2.89                                 , unit='T'  );
+            self.T1  = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='T1' , value=+Inf                      , scale=1e3, unit='ms' );
+            self.T2  = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='T2' , value=+Inf                      , scale=1e3, unit='ms' );
 
             self.auto_simplot    = mri_rf_pulse_sim.ui_prop.bool(name='auto_simplot'   , text='auto_simplot'   , value=true);
             self.auto_disp_pulse = mri_rf_pulse_sim.ui_prop.bool(name='auto_disp_pulse', text='auto_disp_pulse', value=true);
@@ -84,7 +88,7 @@ classdef simulation_parameters < mri_rf_pulse_sim.backend.base_class
             handles.uipanel_controls = uipanel(figHandle,...
                 'Title','Controls',...
                 'Units','Normalized',...
-                'Position',[0 0.7 1 0.3],...
+                'Position',[0 0.6 1 0.4],...
                 'BackgroundColor',figureBGcolor);
 
             self.auto_simplot   .add_uicontrol(handles.uipanel_controls,[0.0 0.5 0.2 0.5])
@@ -98,7 +102,9 @@ classdef simulation_parameters < mri_rf_pulse_sim.backend.base_class
                 'BackgroundColor',buttonBGcolor,...
                 'Callback',@self.callback_simplot);
 
-            self.B0.add_uicontrol(handles.uipanel_controls, [0.5 0 0.5 1])
+            mri_rf_pulse_sim.ui_prop.scalar.add_uicontrol_multi_scalar(handles.uipanel_controls, ...
+                [self.B0 self.T1 self.T2], ...
+                [0.5 0 0.5 1])
 
             % IMPORTANT
             guidata(figHandle,handles)

@@ -6,6 +6,8 @@ classdef bloch_solver < handle & matlab.mixin.CustomCompactDisplayProvider
         SpatialPosition       mri_rf_pulse_sim.ui_prop.range               % [m] spatial Z offcet to evaluate magnetization -> this evaluates the slice profile
         DeltaB0               mri_rf_pulse_sim.ui_prop.range               % [T] B0 offcet, expressed in ppm
         Mxyz0           (3,1) double                                       % [] initial magnetization vector
+        T1                    mri_rf_pulse_sim.ui_prop.scalar              % [s] T1 relaxtion coefficient : set to +Inf by default
+        T2                    mri_rf_pulse_sim.ui_prop.scalar              % [s] T2 relaxtion coefficient : set to +Inf by default
         % gamma -> from rf_pulse
         % time -> from rf_pulse
     end % pros
@@ -27,6 +29,8 @@ classdef bloch_solver < handle & matlab.mixin.CustomCompactDisplayProvider
                 args.SpatialPosition
                 args.DeltaB0
                 args.Mxyz0
+                args.T1
+                args.T2
             end
 
             % do not define .rf_pulse -> let the user do it
@@ -34,12 +38,16 @@ classdef bloch_solver < handle & matlab.mixin.CustomCompactDisplayProvider
             self.SpatialPosition = mri_rf_pulse_sim.ui_prop.range (parent=self, name='SpatialPosition', vect=linspace(-10,+10,11)*1e-3, scale=1e3, unit='mm' );
             self.DeltaB0         = mri_rf_pulse_sim.ui_prop.range (parent=self, name='DelatB0'        , vect=linspace(-10,+10, 3)*1e-6, scale=1e6, unit='ppm');
             self.Mxyz0           = [0; 0; 1];
+            self.T1              = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='T1'             , value=+Inf                    , scale=1e3, unit='ms' );
+            self.T2              = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='T2'             , value=+Inf                    , scale=1e3, unit='ms' );
 
             if isfield(args, 'rf_pulse'       ), self.setPulse          (args.rf_pulse       ); end
             if isfield(args, 'B0'             ), self.setB0             (args.B0             ); end
             if isfield(args, 'SpatialPosition'), self.setSpatialPosition(args.SpatialPosition); end
             if isfield(args, 'DeltaB0'        ), self.setDeltaB0        (args.DeltaB0        ); end
             if isfield(args, 'Mxyz0'          ), self.setMxyz0          (args.Mxyz0          ); end
+            if isfield(args, 'T1'             ), self.setT1             (args.T1             ); end
+            if isfield(args, 'T2'             ), self.setT2             (args.T1             ); end
 
         end % fcn
 
@@ -82,6 +90,22 @@ classdef bloch_solver < handle & matlab.mixin.CustomCompactDisplayProvider
         function setMxyz0(self, value)
             switch class(value)
                 case 'double', self.Mxyz0 = value;
+                otherwise, error('bad input type')
+            end
+        end % fcn
+
+        function setT1(self, value)
+            switch class(value)
+                case 'mri_rf_pulse_sim.ui_prop.scalar', self.T1       = value;
+                case 'double'                         , self.T1.value = value;
+                otherwise, error('bad input type')
+            end
+        end % fcn
+
+        function setT2(self, value)
+            switch class(value)
+                case 'mri_rf_pulse_sim.ui_prop.scalar', self.T2       = value;
+                case 'double'                         , self.T2.value = value;
                 otherwise, error('bad input type')
             end
         end % fcn
@@ -231,12 +255,16 @@ classdef bloch_solver < handle & matlab.mixin.CustomCompactDisplayProvider
 
             B1mag = self.rf_pulse.mag();
             B1pha = self.rf_pulse.pha();
-            
-%             T1 = 1; % s
-%             T2 = 0.1; % s
-            T1 = Inf; % s
-            T2 = Inf; % s
-            
+
+            use_T1_relaxiation = false;
+            use_T2_relaxiation = false;
+            if isfinite(self.T1.value)
+                use_T1_relaxiation = true;
+            end
+            if isfinite(self.T2.value)
+                use_T2_relaxiation = true;
+            end
+
             for t = 2:length(self.rf_pulse.time)
 
                 dt = self.rf_pulse.time(t) - self.rf_pulse.time(t-1);
@@ -283,10 +311,14 @@ classdef bloch_solver < handle & matlab.mixin.CustomCompactDisplayProvider
 
                 % Relaxation
                 % !!! Seperation of Rotation THEN Relaxation induce an error linear with 'dt' !!!
-                m(:,1,t) = m(:,1,t)                  .* exp( -dt / T2 );
-                m(:,2,t) = m(:,2,t)                  .* exp( -dt / T2 );
-                m(:,3,t) =(m(:,3,t) - self.Mxyz0(3)) .* exp( -dt / T1 ) + self.Mxyz0(3);
-                
+                if use_T2_relaxiation
+                    m(:,1,t) = m(:,1,t)                  .* exp( -dt / self.T2 );
+                    m(:,2,t) = m(:,2,t)                  .* exp( -dt / self.T2 );
+                end
+                if use_T1_relaxiation
+                    m(:,3,t) =(m(:,3,t) - self.Mxyz0(3)) .* exp( -dt / self.T1 ) + self.Mxyz0(3);
+                end
+
             end % time
 
             m = reshape(m, [self.DeltaB0.N self.SpatialPosition.N 3 length(self.rf_pulse.time)]);

@@ -14,7 +14,7 @@ classdef app < handle
         simulation_parameters mri_rf_pulse_sim.backend.gui.simulation_parameters
         simulation_results    mri_rf_pulse_sim.backend.gui.simulation_results
         window_definition     mri_rf_pulse_sim.backend.gui.window_definition
-        
+
         bloch_solver          mri_rf_pulse_sim.bloch_solver
     end % props
 
@@ -28,9 +28,9 @@ classdef app < handle
         function self = app(varargin)
             % add to path : recommanded for a clean app close
             addpath(fileparts(mri_rf_pulse_sim.get_package_dir));
-            
+
             self.bloch_solver = mri_rf_pulse_sim.bloch_solver();
-            
+
             if ~nargin
                 fprintf('[app]: open_gui() ... ')
                 tic
@@ -189,6 +189,8 @@ classdef app < handle
             self.bloch_solver.setSpatialPosition(self.simulation_parameters.dZ );
             self.bloch_solver.setDeltaB0        (self.simulation_parameters.dB0);
             self.bloch_solver.setB0             (self.simulation_parameters.B0 );
+            self.bloch_solver.setT1             (self.simulation_parameters.T1 );
+            self.bloch_solver.setT2             (self.simulation_parameters.T2 );
 
             self.listener__update_pulse  = addlistener(self, 'update_pulse' , @self.callback__update_pulse );
             self.listener__update_setup  = addlistener(self, 'update_setup' , @self.callback__update_setup );
