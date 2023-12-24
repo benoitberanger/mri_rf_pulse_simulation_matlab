@@ -69,6 +69,8 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
             plot(a(1), self.time*1e3, self.real()*1e6, lineprop_B1{:}, 'Color', [163 207 244]/255)
             a(1).XTickLabel = {};
             a(1).YLabel.String = 'Re [µT]';
+            a(1).YLabel.Rotation = 0;
+            a(1).YLabel.HorizontalAlignment = 'right';
             plot(a(1), lineprop_ref{:})
             axis(a(1),'tight')
 
@@ -77,6 +79,8 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
             plot(a(2), self.time*1e3, self.imag()*1e6, lineprop_B1{:}, 'Color', [163 207 244]/255)
             a(2).XTickLabel = {};
             a(2).YLabel.String = 'Im [µT]';
+            a(2).YLabel.Rotation = 0;
+            a(2).YLabel.HorizontalAlignment = 'right';
             plot(a(2), lineprop_ref{:})
             axis(a(2),'tight')
 
@@ -85,6 +89,8 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
             plot(a(3), self.time*1e3, self.abs()*1e6, lineprop_B1{:}, 'Color', [100 182 229]/255)
             a(3).XTickLabel = {};
             a(3).YLabel.String = 'Mag [µT]';
+            a(3).YLabel.Rotation = 0;
+            a(3).YLabel.HorizontalAlignment = 'right';
             plot(a(3), lineprop_ref{:})
             axis(a(3),'tight')
 
@@ -93,6 +99,8 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
             plot(a(4), self.time*1e3, self.angle()/(2*pi), lineprop_B1{:}, 'Color', [100 182 229]/255)
             a(4).XTickLabel = {};
             a(4).YLabel.String = 'Pha x2π[rad]';
+            a(4).YLabel.Rotation = 0;
+            a(4).YLabel.HorizontalAlignment = 'right';
             plot(a(4), lineprop_ref{:})
             axis(a(4),'tight')
 
@@ -101,6 +109,8 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
             plot(a(5), self.time*1e3, self.FM(), lineprop_B1{:}, 'Color', [115 107 172]/255)
             a(5).XTickLabel = {};
             a(5).YLabel.String = 'FM [Hz]';
+            a(5).YLabel.Rotation = 0;
+            a(5).YLabel.HorizontalAlignment = 'right';
             plot(a(5), lineprop_ref{:})
             axis(a(5),'tight')
 
@@ -109,6 +119,8 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
             plot(a(6), self.time*1e3, self.GZ*1e3, lineprop_B1{:}, 'Color', [132 190 99]/255)
             a(6).XLabel.String = 'time (ms)';
             a(6).YLabel.String = 'GZ (mT/m)';
+            a(6).YLabel.Rotation = 0;
+            a(6).YLabel.HorizontalAlignment = 'right';
             plot(a(6), lineprop_ref{:})
             axis(a(6),'tight')
 
