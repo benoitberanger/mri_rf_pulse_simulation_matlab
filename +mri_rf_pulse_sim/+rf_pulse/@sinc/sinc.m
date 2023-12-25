@@ -1,8 +1,8 @@
 classdef sinc < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
     properties (GetAccess = public, SetAccess = public)
-        n_side_lobs mri_rf_pulse_sim.ui_prop.scalar                    % [] number of side lobs, from 1 to +Inf
-        flip_angle  mri_rf_pulse_sim.ui_prop.scalar                         % [deg] flip angle
+        n_side_lobs mri_rf_pulse_sim.ui_prop.scalar                        % [] number of side lobs, from 1 to +Inf
+        flip_angle  mri_rf_pulse_sim.ui_prop.scalar                        % [deg] flip angle
 
         window                                                             % window object
     end % props
@@ -26,7 +26,7 @@ classdef sinc < mri_rf_pulse_sim.backend.rf_pulse.abstract
         % constructor
         function self = sinc()
             self.n_points.value = 128;
-            self.n_side_lobs    = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='n_side_lobs',  value=7          );
+            self.n_side_lobs    = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='n_side_lobs',  value=2          );
             self.flip_angle     = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle' , value=90, unit='°');
             self.generate_sinc();
         end % fcn
@@ -37,8 +37,6 @@ classdef sinc < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
         % generate time, AM, FM, GM
         function generate_sinc(self)
-            self.assert_nonempty_prop({'n_points', 'duration', 'n_side_lobs'})
-
             self.time = linspace(-self.duration/2, +self.duration/2, self.n_points.get());
 
             lob_size = 1/self.bandwidth;
