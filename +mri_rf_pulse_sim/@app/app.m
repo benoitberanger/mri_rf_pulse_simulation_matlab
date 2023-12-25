@@ -191,6 +191,7 @@ classdef app < handle
             self.bloch_solver.setB0             (self.simulation_parameters.B0 );
             self.bloch_solver.setT1             (self.simulation_parameters.T1 );
             self.bloch_solver.setT2             (self.simulation_parameters.T2 );
+            self.bloch_solver.setM0             (self.simulation_parameters.M0 );
 
             self.listener__update_pulse  = addlistener(self, 'update_pulse' , @self.callback__update_pulse );
             self.listener__update_setup  = addlistener(self, 'update_setup' , @self.callback__update_setup );
