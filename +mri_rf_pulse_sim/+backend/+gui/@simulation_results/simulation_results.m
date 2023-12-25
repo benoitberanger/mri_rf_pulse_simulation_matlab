@@ -165,6 +165,8 @@ classdef simulation_results < mri_rf_pulse_sim.backend.base_class
             xlabel(handles.axes_Mxyz, 'time (ms)');
             ylabel(handles.axes_Mxyz, 'M_x_y_z');
             ylim(handles.axes_Mxyz, [-1.1 +1.1])
+            handles.axes_Mxyz.YLabel.Rotation = 0;
+            handles.axes_Mxyz.YLabel.HorizontalAlignment = 'right';
 
             handles.axes_Sphere = axes(handles.uipanel_Mxyz,...
                 'Position',[0.7 0 0.3 1]);
@@ -186,7 +188,7 @@ classdef simulation_results < mri_rf_pulse_sim.backend.base_class
             %--------------------------------------------------------------
             % SliceProfile
             handles.uipanel_SliceProfile = uipanel(figHandle,...
-                'Title','SliceProfile(dZ)',...
+                'Title','SliceProfile',...
                 'Units','Normalized',...
                 'Position',[0 0.3 1 0.3],...
                 'BackgroundColor',figureBGcolor);
@@ -209,11 +211,13 @@ classdef simulation_results < mri_rf_pulse_sim.backend.base_class
             xlabel(handles.axes_SliceProfile, '\DeltaZ [mm]');
             ylabel(handles.axes_SliceProfile, 'final M_x_y_z');
             ylim  (handles.axes_SliceProfile, [-1.2 +1.2])
+            handles.axes_SliceProfile.YLabel.Rotation = 0;
+            handles.axes_SliceProfile.YLabel.HorizontalAlignment = 'right';
 
             %--------------------------------------------------------------
             % ChemicalShift
             handles.uipanel_ChemicalShift = uipanel(figHandle,...
-                'Title','ChemicalShift(ppm)',...
+                'Title','ChemicalShift',...
                 'Units','Normalized',...
                 'Position',[0 0 1 0.3],...
                 'BackgroundColor',figureBGcolor);
@@ -232,6 +236,8 @@ classdef simulation_results < mri_rf_pulse_sim.backend.base_class
             xlabel(handles.axes_ChemicalShift, '\DeltaB_0 [ppm]');
             ylabel(handles.axes_ChemicalShift, 'final M_x_y_z');
             ylim  (handles.axes_ChemicalShift, [-1.2 +1.2])
+            handles.axes_ChemicalShift.YLabel.Rotation = 0;
+            handles.axes_ChemicalShift.YLabel.HorizontalAlignment = 'right';
 
             % IMPORTANT
             guidata(figHandle,handles)
