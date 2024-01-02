@@ -78,11 +78,10 @@ classdef bool < mri_rf_pulse_sim.backend.base_class
         end % fcn
 
         function displayRep = compactRepresentationForSingleLine(self,displayConfiguration,width)
-            txt = sprintf('%g (%s)', ...
-                self.value, self.text);
+            txt = sprintf('%g [bool]', self.value);
             displayRep = widthConstrainedDataRepresentation(self,displayConfiguration,width,...
                 StringArray=txt,AllowTruncatedDisplayForScalar=true);
-        end % dcn
+        end % fcn
 
     end % meths
 

@@ -100,7 +100,7 @@ classdef list < mri_rf_pulse_sim.backend.base_class
                 self.name, self.value);
             displayRep = widthConstrainedDataRepresentation(self,displayConfiguration,width,...
                 StringArray=txt,AllowTruncatedDisplayForScalar=true);
-        end % dcn
+        end % fcn
 
     end % meths
 

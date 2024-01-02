@@ -125,11 +125,16 @@ classdef vec3 < mri_rf_pulse_sim.backend.base_class
         end % fcn
 
         function displayRep = compactRepresentationForSingleLine(self,displayConfiguration,width)
-            txt = sprintf('%g (%g %s)', ...
-                self.xyz, self.xyz*self.scale, self.unit);
+            txt = sprintf('[%g %g %g]', self.x, self.y, self.z);
+            if self.scale ~= 1
+                txt = sprintf('%s ([%g %g %g])', txt, self.x*self.scale, self.y*self.scale, self.z*self.scale);
+            end
+            if ~isempty(self.unit)
+                txt = sprintf(' %s', txt, self.unit);
+            end
             displayRep = widthConstrainedDataRepresentation(self,displayConfiguration,width,...
                 StringArray=txt,AllowTruncatedDisplayForScalar=true);
-        end % dcn
+        end % fcn
 
     end % meths
 
@@ -138,7 +143,7 @@ classdef vec3 < mri_rf_pulse_sim.backend.base_class
         function callback_update(self, src, ~)
             prev_xyz = self.xyz;
             try
-                self.xyz = str2num(src.String) / self.scale;
+                self.xyz = str2num(src.String) / self.scale; %#ok<ST2NM>
             catch
                 src.String = num2str(prev_xyz * self.scale);
             end

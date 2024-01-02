@@ -165,7 +165,7 @@ classdef range < mri_rf_pulse_sim.backend.base_class
                 self.min*self.scale, self.max*self.scale, self.N, self.unit);
             displayRep = widthConstrainedDataRepresentation(self,displayConfiguration,width,...
                 StringArray=txt,AllowTruncatedDisplayForScalar=true);
-        end % dcn
+        end % fcn
 
     end % meths
 
