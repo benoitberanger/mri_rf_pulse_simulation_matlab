@@ -87,19 +87,19 @@ classdef vec3 < mri_rf_pulse_sim.backend.base_class
         function out = get(self)
             out = self.xyz * self.scale;
         end % fcn
-        function set(self, in)
+        function self = set(self, in)
             self.xyz = in;
         end % fcn
-        function set_xyz(self,in)
+        function self = set_xyz(self,in)
             self.set(in);
         end % fcn
-        function set_x(self,in)
+        function self = set_x(self,in)
             self.x = in;
         end % fcn
-        function set_y(self,in)
+        function self = set_y(self,in)
             self.y = in;
         end % fcn
-        function set_z(self,in)
+        function self = set_z(self,in)
             self.z = in;
         end % fcn
 
@@ -108,7 +108,7 @@ classdef vec3 < mri_rf_pulse_sim.backend.base_class
         end % fcn
 
         % rotation : angle is in degree (°)
-        function rot_x(self, angle)
+        function self = rot_x(self, angle)
             % Rx : y -> z
             t = deg2rad(angle);
             c = cos(t);
@@ -119,7 +119,7 @@ classdef vec3 < mri_rf_pulse_sim.backend.base_class
                 0 s c;
                 ] * self.xyz;
         end % fcn
-        function rot_y(self, angle)
+        function self = rot_y(self, angle)
             % Ry : z -> x
             t = deg2rad(angle);
             c = cos(t);
@@ -130,7 +130,7 @@ classdef vec3 < mri_rf_pulse_sim.backend.base_class
                 -s 0 c;
                 ] * self.xyz;
         end % fcn
-        function rot_z(self, angle)
+        function self = rot_z(self, angle)
             % Rz : x -> y
             t = deg2rad(angle);
             c = cos(t);
@@ -142,7 +142,7 @@ classdef vec3 < mri_rf_pulse_sim.backend.base_class
                 ] * self.xyz;
         end % fcn
 
-        function normalize(self)
+        function self = normalize(self)
             self.xyz = self.xyz / self.nm;
         end % fcn
 
