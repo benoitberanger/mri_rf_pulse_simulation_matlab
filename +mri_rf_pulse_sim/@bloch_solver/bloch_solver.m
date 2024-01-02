@@ -37,7 +37,7 @@ classdef bloch_solver < handle & matlab.mixin.CustomCompactDisplayProvider
             self.B0              = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='B0'             , value=2.89                               , unit='T'  );
             self.SpatialPosition = mri_rf_pulse_sim.ui_prop.range (parent=self, name='SpatialPosition', vect=linspace(-10,+10,11)*1e-3, scale=1e3, unit='mm' );
             self.DeltaB0         = mri_rf_pulse_sim.ui_prop.range (parent=self, name='DelatB0'        , vect=linspace(-10,+10, 3)*1e-6, scale=1e6, unit='ppm');
-            self.M0              = mri_rf_pulse_sim.ui_prop.vec3  (parent=self, name='M0'             , xyz=[0 0 1]                                          );
+            self.M0              = mri_rf_pulse_sim.ui_prop.vec3  (parent=self, name='M0'             , xyz=[0 0 1]'                                         );
             self.T1              = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='T1'             , value=+Inf                    , scale=1e3, unit='ms' );
             self.T2              = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='T2'             , value=+Inf                    , scale=1e3, unit='ms' );
 

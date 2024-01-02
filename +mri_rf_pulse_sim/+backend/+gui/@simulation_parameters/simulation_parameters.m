@@ -25,7 +25,7 @@ classdef simulation_parameters < mri_rf_pulse_sim.backend.base_class
             self.B0  = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='B0' , value=2.89                                 , unit='T'  );
             self.T1  = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='T1' , value=+Inf                      , scale=1e3, unit='ms' );
             self.T2  = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='T2' , value=+Inf                      , scale=1e3, unit='ms' );
-            self.M0  = mri_rf_pulse_sim.ui_prop.vec3  (parent=self, name='M0' , xyz=[0 0 1]                                            );
+            self.M0  = mri_rf_pulse_sim.ui_prop.vec3  (parent=self, name='M0' , xyz=[0 0 1]'                                           );
 
             self.auto_simplot    = mri_rf_pulse_sim.ui_prop.bool(name='auto_simplot'   , text='auto_simplot'   , value=true);
             self.auto_disp_pulse = mri_rf_pulse_sim.ui_prop.bool(name='auto_disp_pulse', text='auto_disp_pulse', value=true);
@@ -92,7 +92,7 @@ classdef simulation_parameters < mri_rf_pulse_sim.backend.base_class
                 'Units','Normalized',...
                 'Position',[0 0.6 1 0.4],...
                 'BackgroundColor',figureBGcolor);
-
+            
             self.M0.add_uicontrol(handles.uipanel_controls, [0.0 0.0 0.4 0.4])
 
             self.auto_simplot   .add_uicontrol(handles.uipanel_controls,[0.0 0.7 0.3 0.3])

@@ -2,7 +2,7 @@ classdef vec3 < mri_rf_pulse_sim.backend.base_class
 
     properties(GetAccess = public, SetAccess = public, SetObservable, AbortSet)
         name   (1,:) char
-        xyz    (1,3) double
+        xyz    (3,1) double
         unit         char
         scale  (1,1) double {mustBeFinite} = 1
     end % props
@@ -12,18 +12,20 @@ classdef vec3 < mri_rf_pulse_sim.backend.base_class
     end % props
 
     properties (GetAccess = public, SetAccess = public, Dependent)
-        x (1,1) double
-        y (1,1) double
-        z (1,1) double
+        x  (1,1) double
+        y  (1,1) double
+        z  (1,1) double
+        nm (1,1) double % norm of the vector
     end % props
 
     methods % no attribute for dependent properties
-        function val = get.x(self)    , val = self.xyz(1)      ; end
-        function val = get.y(self)    , val = self.xyz(2)      ; end
-        function val = get.z(self)    , val = self.xyz(3)      ; end
-        function       set.x(self,val),       self.xyz(1) = val; end
-        function       set.y(self,val),       self.xyz(2) = val; end
-        function       set.z(self,val),       self.xyz(3) = val; end
+        function val = get.x (self)    , val = self.xyz(1)      ; end
+        function val = get.y (self)    , val = self.xyz(2)      ; end
+        function val = get.z (self)    , val = self.xyz(3)      ; end
+        function       set.x (self,val),       self.xyz(1) = val; end
+        function       set.y (self,val),       self.xyz(2) = val; end
+        function       set.z (self,val),       self.xyz(3) = val; end
+        function val = get.nm(self)    , val = norm(self.xyz)   ; end
     end % meths
 
     methods (Access = public)
@@ -81,11 +83,67 @@ classdef vec3 < mri_rf_pulse_sim.backend.base_class
             out = double(LEFT) .^ double(RIGHT);
         end % fcn
 
+        % get / set aliases
         function out = get(self)
             out = self.xyz * self.scale;
         end % fcn
         function set(self, in)
             self.xyz = in;
+        end % fcn
+        function set_xyz(self,in)
+            self.set(in);
+        end % fcn
+        function set_x(self,in)
+            self.x = in;
+        end % fcn
+        function set_y(self,in)
+            self.y = in;
+        end % fcn
+        function set_z(self,in)
+            self.z = in;
+        end % fcn
+
+        function out = norm(self)
+            out = norm(self.xyz);
+        end % fcn
+
+        % rotation : angle is in degree (°)
+        function rot_x(self, angle)
+            % Rx : y -> z
+            t = deg2rad(angle);
+            c = cos(t);
+            s = sin(t);
+            self.xyz = [
+                1 0 0;
+                0 c -s;
+                0 s c;
+                ] * self.xyz;
+        end % fcn
+        function rot_y(self, angle)
+            % Ry : z -> x
+            t = deg2rad(angle);
+            c = cos(t);
+            s = sin(t);
+            self.xyz = [
+                c 0 s;
+                0 1 0;
+                -s 0 c;
+                ] * self.xyz;
+        end % fcn
+        function rot_z(self, angle)
+            % Rz : x -> y
+            t = deg2rad(angle);
+            c = cos(t);
+            s = sin(t);
+            self.xyz = [
+                c -s 0;
+                s c 0;
+                0 0 1;
+                ] * self.xyz;
+        end % fcn
+
+        function normalize(self)
+            self.xyz = self.xyz / self.nm;
         end % fcn
 
         function add_uicontrol(self,container,rect)
@@ -113,7 +171,7 @@ classdef vec3 < mri_rf_pulse_sim.backend.base_class
 
             self.edit = uicontrol(container,...
                 'Style'           , 'edit'                           ,...
-                'String'          , num2str(self.xyz * self.scale) ,...
+                'String'          , num2str(self.xyz' * self.scale)  ,...
                 'Units'           , 'normalized'                     ,...
                 'BackgroundColor' , [1 1 1]                          ,...
                 'Position'        , pos_edit                         ,...
@@ -125,9 +183,9 @@ classdef vec3 < mri_rf_pulse_sim.backend.base_class
         end % fcn
 
         function displayRep = compactRepresentationForSingleLine(self,displayConfiguration,width)
-            txt = sprintf('[%g %g %g]', self.x, self.y, self.z);
+            txt = sprintf('[%g %g %g]''', self.x, self.y, self.z);
             if self.scale ~= 1
-                txt = sprintf('%s ([%g %g %g])', txt, self.x*self.scale, self.y*self.scale, self.z*self.scale);
+                txt = sprintf('%s ([%g %g %g]'')', txt, self.x*self.scale, self.y*self.scale, self.z*self.scale);
             end
             if ~isempty(self.unit)
                 txt = sprintf(' %s', txt, self.unit);
@@ -141,16 +199,16 @@ classdef vec3 < mri_rf_pulse_sim.backend.base_class
     methods(Access = protected)
 
         function callback_update(self, src, ~)
-            prev_xyz = self.xyz;
+            prev_xyz = self.xyz';
             try
-                self.xyz = str2num(src.String) / self.scale; %#ok<ST2NM>
+                self.xyz = (str2num(src.String) / self.scale)'; %#ok<ST2NM>
             catch
                 src.String = num2str(prev_xyz * self.scale);
             end
         end % fcn
 
         function postset_update(self, ~, ~)
-            new_xyz          = self.xyz;
+            new_xyz          = self.xyz';
             self.edit.String = num2str(new_xyz * self.scale);
 
             self.notify_parent();
