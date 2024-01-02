@@ -39,7 +39,7 @@ classdef rect < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
         function txt = summary(self) % #abstract
             txt = sprintf('[%s]  flip_angle=%d°',...
-                mfliename, self.flip_angle.get());
+                mfilename, self.flip_angle.get());
         end % fcn
 
         function init_specific_gui(self, container) % #abstract

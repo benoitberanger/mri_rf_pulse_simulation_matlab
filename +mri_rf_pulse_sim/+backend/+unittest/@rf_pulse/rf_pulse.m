@@ -1,9 +1,18 @@
 classdef rf_pulse < matlab.unittest.TestCase
 
+    properties
+        fig
+    end % props
+
     methods(TestClassSetup)
 
         function verify_get_list_function_exists(testCase)
             testCase.verifyNotEmpty(which('mri_rf_pulse_sim.backend.rf_pulse.get_list'))
+        end
+
+        function open_fig_for_pulse_plot(testCase)
+            testCase.fig = figure('NumberTitle','off');
+            testCase.addTeardown(@close, testCase.fig)
         end
 
     end
@@ -24,12 +33,19 @@ classdef rf_pulse < matlab.unittest.TestCase
 
         function check(testCase, pulse)
 
+            % instantiate
             if any(pulse == filesep)
                 split = strsplit(pulse, filesep);
-                testCase.verifyNotEmpty( eval(sprintf('mri_rf_pulse_sim.rf_pulse.%s.%s', split{1}, split{2})) );
+                pulse_relpath = sprintf('mri_rf_pulse_sim.rf_pulse.%s.%s', split{1}, split{2});
             else
-                testCase.verifyNotEmpty( eval(sprintf('mri_rf_pulse_sim.rf_pulse.%s', pulse)) );
+                pulse_relpath = sprintf('mri_rf_pulse_sim.rf_pulse.%s', pulse);
             end
+            p = eval(pulse_relpath);
+
+            % plot
+            clf(testCase.fig)
+            p.plot(testCase.fig)
+            testCase.fig.Name = p.summary();
 
         end
 
