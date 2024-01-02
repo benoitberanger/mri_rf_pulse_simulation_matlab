@@ -13,7 +13,7 @@ classdef bir4_steawen1990 < mri_rf_pulse_sim.backend.rf_pulse.abstract
     end % props
 
     properties (GetAccess = public, SetAccess = protected)
-        bandwidth = 0                                                      % [Hz]
+        bandwidth = 0                                                      % [Hz]  #abstract
     end % props
 
     properties (GetAccess = public, SetAccess = protected, Dependent)
@@ -39,7 +39,7 @@ classdef bir4_steawen1990 < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.generate_bir4_steawen1990();
         end % fcn
 
-        function generate(self)
+        function generate(self) % #abstract
             self.generate_bir4_steawen1990();
         end % fcn
 
@@ -85,13 +85,12 @@ classdef bir4_steawen1990 < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
         end
 
-        % synthesis text
-        function txt = summary(self)
-            txt = sprintf('BIR-4 : Amax=%gµT  FA=%g°  beta=%g  tanKappa=%g  dWmax=%gHz',...
-                self.Amax.get(), self.flip_angle.get(), self.Beta.get(), self.tanKappa.get(), self.dWmax.get());
+        function txt = summary(self) % #abstract
+            txt = sprintf('[%s] : Amax=%gµT  FA=%g°  beta=%g  tanKappa=%g  dWmax=%gHz',...
+                mfilename, self.Amax.get(), self.flip_angle.get(), self.Beta.get(), self.tanKappa.get(), self.dWmax.get());
         end % fcn
 
-        function init_specific_gui(self, container)
+        function init_specific_gui(self, container) % #abstract
             mri_rf_pulse_sim.ui_prop.scalar.add_uicontrol_multi_scalar(...
                 container,...
                 [self.Amax, self.flip_angle, self.Beta, self.tanKappa, self.dW0factor]...

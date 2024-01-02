@@ -15,7 +15,7 @@ classdef sms_pins < mri_rf_pulse_sim.backend.rf_pulse.abstract
     properties (GetAccess = public, SetAccess = protected, Dependent)
         N                 mri_rf_pulse_sim.ui_prop.scalar                  % [] number of subpulse in each SINC lob
         M                 mri_rf_pulse_sim.ui_prop.scalar                  % [] number of subpulse on each side (left right)
-        bandwidth                                                          % [Hz]
+        bandwidth                                                          % [Hz] % #abstract
         blip_duration                                                      % [s]
     end % props
 
@@ -51,7 +51,7 @@ classdef sms_pins < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.generate_PINS();
         end % fcn
 
-        function generate(self)
+        function generate(self) % #abstract
             self.generate_PINS();
         end % fcn
 
@@ -86,13 +86,12 @@ classdef sms_pins < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
         end % fcn
 
-        % synthesis text
-        function txt = summary(self)
-            txt = sprintf('rect : flip_angle=%d° slice_distance=%gmm  subpulse_number=%d  subpulse_duration=%gus',...
-                self.flip_angle.get(), self.slice_distance.get(), self.subpulse_number.get(), self.subpulse_duration.get());
+        function txt = summary(self) % #abstract
+            txt = sprintf('[%s] : flip_angle=%d° slice_distance=%gmm  subpulse_number=%d  subpulse_duration=%gus',...
+                mfilename ,self.flip_angle.get(), self.slice_distance.get(), self.subpulse_number.get(), self.subpulse_duration.get());
         end % fcn
 
-        function init_specific_gui(self, container)
+        function init_specific_gui(self, container) % #abstract
             self.use_blip.add_uicontrol(...
                 container,...
                 [0.3 0.0 0.5 0.2]...

@@ -8,7 +8,7 @@ classdef hs < mri_rf_pulse_sim.backend.rf_pulse.abstract
     end % props
 
     properties (GetAccess = public, SetAccess = protected, Dependent)
-        bandwidth                                                          % [Hz]
+        bandwidth                                                          % [Hz]  #abstract
         adiabatic_condition (1,1) double                                   % [T] B1max (Amax) minimal to be adiabatic
     end % props
 
@@ -33,11 +33,10 @@ classdef hs < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.generate_hs();
         end % fcn
 
-        function generate(self)
+        function generate(self) % #abstract
             self.generate_hs();
         end % fcn
 
-        % generate time, AM, FM, GM
         function generate_hs(self)
             self.assert_nonempty_prop({'Amax', 'beta', 'mu'})
 
@@ -60,13 +59,12 @@ classdef hs < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.GZ = ones(size(self.time)) * self.GZavg;
         end % fcn
 
-        % synthesis text
-        function txt = summary(self)
-            txt = sprintf('hs : BW=%gHz  Amax=%gµT  beta=%grad/s  mu=%g',...
-                self.bandwidth, self.Amax.get(), self.beta.get(), self.mu.get());
+        function txt = summary(self) % #abstract
+            txt = sprintf('[%s]  BW=%gHz  Amax=%gµT  beta=%grad/s  mu=%g',...
+                mfilename, self.bandwidth, self.Amax.get(), self.beta.get(), self.mu.get());
         end % fcn
 
-        function init_specific_gui(self, container)
+        function init_specific_gui(self, container) % #abstract
             mri_rf_pulse_sim.ui_prop.scalar.add_uicontrol_multi_scalar(...
                 container,...
                 [self.Amax, self.beta, self.mu]...

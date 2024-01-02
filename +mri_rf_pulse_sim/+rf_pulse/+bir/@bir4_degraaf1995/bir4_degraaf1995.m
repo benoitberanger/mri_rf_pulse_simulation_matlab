@@ -12,7 +12,7 @@ classdef bir4_degraaf1995 < mri_rf_pulse_sim.backend.rf_pulse.abstract
     end % props
 
     properties (GetAccess = public, SetAccess = protected, Dependent)
-        bandwidth                                                          % [Hz]
+        bandwidth                                                          % [Hz]  #abstract
         delta_phase                                                        % [deg]
     end % props
 
@@ -39,7 +39,7 @@ classdef bir4_degraaf1995 < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.generate_bir4_degraaf1995();
         end % fcn
 
-        function generate(self)
+        function generate(self) % #abstract
             self.generate_bir4_degraaf1995();
         end % fcn
 
@@ -109,13 +109,12 @@ classdef bir4_degraaf1995 < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.GZ = ones(size(self.time)) * self.GZavg;
         end
 
-        % synthesis text
-        function txt = summary(self)
-            txt = sprintf('BIR-4 : gammaB1max=%gHz  FA=%g°  beta=%g  dWmax=%gHz',...
-                self.gammaB1max.get(), self.flip_angle.get(), self.Beta.get(), self.dWmax.get());
+        function txt = summary(self) % #abstract
+            txt = sprintf('[%s]  gammaB1max=%gHz  FA=%g°  beta=%g  dWmax=%gHz',...
+                mfilename, self.gammaB1max.get(), self.flip_angle.get(), self.Beta.get(), self.dWmax.get());
         end % fcn
 
-        function init_specific_gui(self, container)
+        function init_specific_gui(self, container) % #abstract
             mri_rf_pulse_sim.ui_prop.scalar.add_uicontrol_multi_scalar(...
                 container,...
                 [self.gammaB1max, self.flip_angle, self.Beta, self.dWmax],...

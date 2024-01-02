@@ -17,7 +17,7 @@ classdef slr < mri_rf_pulse_sim.backend.rf_pulse.abstract
     end % props
 
     properties (GetAccess = public, SetAccess = protected, Dependent)
-        bandwidth                                                          % Hz
+        bandwidth                                                          % [Hz]  #abstract
     end % props
 
     methods % no attribute for dependent properties
@@ -41,13 +41,12 @@ classdef slr < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.generate_slr();
         end % fcn
 
-        function generate(self)
+        function generate(self) % #abstract
             self.generate_slr();
         end % fcn
 
-        % generate time, AM, FM, GM
         function generate_slr(self)
-            
+
             MAX_N = 512; % this value comes from the .c file, if the code is run with 512+ points MATLAB crashes
             assert(self.n_points.get() < MAX_N, 'n_points must be < %d', MAX_N)
 
@@ -64,13 +63,12 @@ classdef slr < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
         end % fcn
 
-        % synthesis text
-        function txt = summary(self)
-            txt = sprintf('slr : d1=%g  d2=%g  TBWP=%g  ptype=%s  ftype=%s  FA=%g°',...
-                self.d1.get(), self.d2.get(), self.TBWP.get(), self.pulse_type.get(), self.filter_type.get(), self.flip_angle.get());
+        function txt = summary(self) % #abstract
+            txt = sprintf('[%s]  d1=%g  d2=%g  TBWP=%g  ptype=%s  ftype=%s  FA=%g°',...
+                mfilename, self.d1.get(), self.d2.get(), self.TBWP.get(), self.pulse_type.get(), self.filter_type.get(), self.flip_angle.get());
         end % fcn
 
-        function init_specific_gui(self, container)
+        function init_specific_gui(self, container) % #abstract
             rect_scalar = [0.0 0.0 0.6 1.0];
             rect_ptype  = [0.6 0.0 0.2 1.0];
             rect_ftype  = [0.8 0.0 0.2 1.0];
@@ -84,13 +82,6 @@ classdef slr < mri_rf_pulse_sim.backend.rf_pulse.abstract
         end % fcn
 
     end % meths
-
-    methods (Access = private)
-    end % meths
-
-    methods(Static)
-
-    end
 
 end % class
 

@@ -6,12 +6,13 @@ classdef foci < mri_rf_pulse_sim.rf_pulse.hs
     % Med. 1997 Nov;38(5):828-33. doi: 10.1002/mrm.1910380520. PMID: 9358458.
 
     properties (GetAccess = public, SetAccess = protected, Dependent)
-        A (1,:) double % C-shape
+        Cshape (1,:) double
     end % props
 
     methods % no attribute for dependent properties
 
-        function  value = get.A(self)
+        function  value = get.Cshape(self)
+            % This is the C-shape, that will be used to modulate the amplitude, frequency and gradient
             value = 10 * ones(size(self.time));
 
             conditon = cosh(self.beta*self.time) < 10.0;
@@ -26,21 +27,30 @@ classdef foci < mri_rf_pulse_sim.rf_pulse.hs
             self.generate_foci();
         end % fcn
 
-        function generate(self)
+        function generate(self) % #abstract
             self.generate_foci();
         end % fcn
 
         function generate_foci(self)
+            % FOCI is derived from HS
+            % First call HS generator, then apply C-shape.
+            
             self.generate_hs();
 
-            % apply C-shape
-            magnitude_Cshaped = self.A .* self.magnitude;
-            freqmod_Cshaped = self.A .* self.FM;
+            magnitude_Cshaped = self.Cshape .* self.magnitude;
+            freqmod_Cshaped   = self.Cshape .* self.FM;
             phase_from_freqmod_Cshaped = self.freq2phase(freqmod_Cshaped);
             self.B1 = magnitude_Cshaped .* exp(1j * phase_from_freqmod_Cshaped);
-            self.GZ = self.GZavg / mean(self.A) * self.A;
+            self.GZ = self.GZavg / mean(self.Cshape) * self.Cshape;
         end % fcn
 
+        function txt = summary(self) % #abstract
+            txt = sprintf('[%s]  BW=%gHz  Amax=%gµT  beta=%grad/s  mu=%g',...
+                mfilename, self.bandwidth, self.Amax.get(), self.beta.get(), self.mu.get());
+        end % fcn
+
+        % init_specific_gui : use the same as in HS  % #abstract
+        
     end % meths
 
 end % class

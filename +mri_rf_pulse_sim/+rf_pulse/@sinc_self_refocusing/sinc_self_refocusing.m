@@ -4,12 +4,12 @@ classdef sinc_self_refocusing < mri_rf_pulse_sim.backend.rf_pulse.abstract
     % 10.1016/j.jmr.2011.09.023. PMID: 22152370.
 
     properties (GetAccess = public, SetAccess = public)
-        n_side_lobs mri_rf_pulse_sim.ui_prop.scalar                    % [] number of side lobs, from 1 to +Inf
-        flip_angle  mri_rf_pulse_sim.ui_prop.scalar                         % [deg] flip angle
+        n_side_lobs mri_rf_pulse_sim.ui_prop.scalar                        % [] number of side lobs, from 1 to +Inf
+        flip_angle  mri_rf_pulse_sim.ui_prop.scalar                        % [deg] flip angle
     end % props
 
     properties (GetAccess = public, SetAccess = protected, Dependent)
-        bandwidth                                                          % Hz
+        bandwidth                                                          % [Hz]  #abstract
     end % props
 
     methods % no attribute for dependent properties
@@ -27,7 +27,7 @@ classdef sinc_self_refocusing < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.generate_sinc_self_refocusing();
         end % fcn
 
-        function generate(self)
+        function generate(self) % #abstract
             self.generate_sinc_self_refocusing();
         end % fcn
 
@@ -58,13 +58,12 @@ classdef sinc_self_refocusing < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.GZ  = gz*2;
         end % fcn
 
-        % synthesis text
-        function txt = summary(self)
-            txt = sprintf('sinc_self_refocusing : n_side_lobs=%d  flip_angle=%d°',...
-                self.n_side_lobs.get(), self.flip_angle.get());
+        function txt = summary(self) % #abstract
+            txt = sprintf('[%s] : n_side_lobs=%d  flip_angle=%d°',...
+                mfilename, self.n_side_lobs.get(), self.flip_angle.get());
         end % fcn
 
-        function init_specific_gui(self, container)
+        function init_specific_gui(self, container) % #abstract
             mri_rf_pulse_sim.ui_prop.scalar.add_uicontrol_multi_scalar(...
                 container,...
                 [self.n_side_lobs, self.flip_angle]...

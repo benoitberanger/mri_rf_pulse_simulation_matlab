@@ -11,20 +11,24 @@ classdef hs_excitation < mri_rf_pulse_sim.backend.rf_pulse.abstract
     end % props
 
     properties (GetAccess = public, SetAccess = protected, Dependent)
-        bandwidth                                                          % [Hz]
+        bandwidth                                                          % [Hz]  #abstract
         Amax                                                               % [T]
     end % props
 
     methods % no attribute for dependent properties
+        
         function value = get.bandwidth(self)
+            % Analytic expression for the bandwidth, depdending on the flip angle.
             FA = deg2rad(self.flip_angle.get());
             value = self.beta/pi^2 * ...
                 acosh( ...
                 (cosh(pi*self.mu)*(cos(FA)-0.5*sqrt(3+cos(FA)^2)) + cos(FA) -1 ) ...
                 /...
                 (0.5*sqrt(3+cos(FA)^2) -1) );
-        end% % fcn
+        end% fcn
+        
         function value = get.Amax(self)
+            % Analytic expression for the max amplitude, depending on the flip angle.
             FA = deg2rad(self.flip_angle.get());
             value = (self.beta / self.gamma) * ...
                 sqrt( ...
@@ -32,6 +36,7 @@ classdef hs_excitation < mri_rf_pulse_sim.backend.rf_pulse.abstract
                 + ...
                 self.mu^2);
         end % fcn
+        
     end % meths
 
     methods (Access = public)
@@ -44,11 +49,10 @@ classdef hs_excitation < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.generate_hs_excitation();
         end % fcn
 
-        function generate(self)
+        function generate(self) % #abstract
             self.generate_hs_excitation();
         end % fcn
 
-        % generate time, AM, FM, GM
         function generate_hs_excitation(self)
             self.assert_nonempty_prop({'Amax', 'beta', 'mu'})
 
@@ -62,13 +66,12 @@ classdef hs_excitation < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.GZ = ones(size(self.time)) * self.GZavg;
         end % fcn
 
-        % synthesis text
-        function txt = summary(self)
-            txt = sprintf('hs : BW=%gHz  flip_angle=%g°  beta=%grad/s  mu=%g',...
-                self.bandwidth, self.flip_angle.get(), self.beta.get(), self.mu.get());
+        function txt = summary(self) % #abstract
+            txt = sprintf('[%s] : BW=%gHz  flip_angle=%g°  beta=%grad/s  mu=%g',...
+                mfilename, self.bandwidth, self.flip_angle.get(), self.beta.get(), self.mu.get());
         end % fcn
 
-        function init_specific_gui(self, container)
+        function init_specific_gui(self, container) % #abstract
             mri_rf_pulse_sim.ui_prop.scalar.add_uicontrol_multi_scalar(...
                 container,...
                 [self.flip_angle, self.beta, self.mu]...

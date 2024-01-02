@@ -3,7 +3,7 @@ classdef USER_DEFINED < mri_rf_pulse_sim.backend.rf_pulse.abstract
     % pulse from scratch dynamically within the GUI
 
     properties (GetAccess = public, SetAccess = protected)
-        bandwidth                                                          % Hz
+        bandwidth                                                          % [Hz]  #abstract
     end % props
 
     methods % no attribute for dependent properties
@@ -23,15 +23,15 @@ classdef USER_DEFINED < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.bandwidth = 1000; % set to a default value
         end % fcn
 
-        function generate(self)
+        function generate(self) %#ok<MANU>  #abstract
             % pass
         end % fcn
 
-        function txt = summary(self)
+        function txt = summary(self) %#ok<MANU>  #abstract
             txt = '<USER_DEFINED>';
         end % fcn
 
-        function init_specific_gui(self, container)
+        function init_specific_gui(self, container) %#ok<INUSD>  #abstract
             % pass
         end % fcn
 

@@ -8,7 +8,7 @@ classdef sinc < mri_rf_pulse_sim.backend.rf_pulse.abstract
     end % props
 
     properties (GetAccess = public, SetAccess = protected, Dependent)
-        bandwidth                                                          % Hz
+        bandwidth                                                          % [Hz]  #abstract
     end % props
 
     methods % no attribute for dependent properties
@@ -31,11 +31,10 @@ classdef sinc < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.generate_sinc();
         end % fcn
 
-        function generate(self)
+        function generate(self) % #abstract
             self.generate_sinc();
         end % fcn
 
-        % generate time, AM, FM, GM
         function generate_sinc(self)
             self.time = linspace(-self.duration/2, +self.duration/2, self.n_points.get());
 
@@ -51,10 +50,9 @@ classdef sinc < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.GZ  = ones(size(self.time)) * self.GZavg;
         end % fcn
 
-        % synthesis text
-        function txt = summary(self)
-            txt = sprintf('sinc : n_side_lobs=%d  flip_angle=%d°',...
-                self.n_side_lobs.get(), self.flip_angle.get());
+        function txt = summary(self) % #abstract
+            txt = sprintf('[%s] : n_side_lobs=%d  flip_angle=%d°',...
+                mfilename, self.n_side_lobs.get(), self.flip_angle.get());
         end % fcn
 
         function set_window(self, name)
@@ -74,7 +72,7 @@ classdef sinc < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.generate();
         end % fcn
 
-        function init_specific_gui(self, container)
+        function init_specific_gui(self, container) % #abstract
             mri_rf_pulse_sim.ui_prop.scalar.add_uicontrol_multi_scalar(...
                 container,...
                 [self.n_side_lobs, self.flip_angle],...

@@ -7,7 +7,7 @@ classdef sms_mb_hs < mri_rf_pulse_sim.rf_pulse.hs & mri_rf_pulse_sim.backend.rf_
             self.generate_sms_mb_hs();
         end % fcn
 
-        function generate(self)
+        function generate(self) % #abstract
             self.generate_sms_mb_hs();
         end % fcn
 
@@ -22,13 +22,12 @@ classdef sms_mb_hs < mri_rf_pulse_sim.rf_pulse.hs & mri_rf_pulse_sim.backend.rf_
 
         end % fcn
 
-        % synthesis text
-        function txt = summary(self)
-            txt = sprintf('sinc : n_slice=%d  slice_distance=%d  BW=%gHz  Amax=%gµT  beta=%g  mu=%g',...
-                self.n_slice.get(), self.slice_distance.get(), self.bandwidth, self.Amax.get(), self.beta.get(), self.mu.get());
+        function txt = summary(self) % #abstract
+            txt = sprintf('[%s] : n_slice=%d  slice_distance=%d  BW=%gHz  Amax=%gµT  beta=%g  mu=%g',...
+                mfilename, self.n_slice.get(), self.slice_distance.get(), self.bandwidth, self.Amax.get(), self.beta.get(), self.mu.get());
         end % fcn
 
-        function init_specific_gui(self, container)
+        function init_specific_gui(self, container) % #abstract
             mri_rf_pulse_sim.ui_prop.scalar.add_uicontrol_multi_scalar(...
                 container,...
                 [self.n_slice self.slice_distance self.Amax, self.beta, self.mu]...

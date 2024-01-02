@@ -17,7 +17,7 @@ classdef dante < mri_rf_pulse_sim.backend.rf_pulse.abstract
     end % props
 
     properties (GetAccess = public, SetAccess = protected, Dependent)
-        bandwidth                                                          % [Hz]
+        bandwidth                                                          % [Hz]  #abstract
         blip_duration                                                      % [s]
     end % props
 
@@ -45,7 +45,7 @@ classdef dante < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.generate_DANTE();
         end % fcn
 
-        function generate(self)
+        function generate(self) % #abstract
             self.generate_DANTE();
         end % fcn
 
@@ -131,13 +131,12 @@ classdef dante < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
         end % fcn
 
-        % synthesis text
-        function txt = summary(self)
-            txt = sprintf('rect : flip_angle=%d°  subpulse_number=%d  subpulse_duration=%gus',...
-                self.flip_angle.get(), self.subpulse_number.get(), self.subpulse_duration.get());
+        function txt = summary(self) % #abstract
+            txt = sprintf('[%s]  flip_angle=%d°  subpulse_number=%d  subpulse_duration=%gus',...
+                mfilename, self.flip_angle.get(), self.subpulse_number.get(), self.subpulse_duration.get());
         end % fcn
 
-        function init_specific_gui(self, container)
+        function init_specific_gui(self, container)  % #abstract
             self.phase_alternation.add_uicontrol(...
                 container,...
                 [0.2 0.0 0.3 0.2]...

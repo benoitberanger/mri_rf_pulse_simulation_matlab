@@ -13,7 +13,7 @@ classdef gaussian < mri_rf_pulse_sim.backend.rf_pulse.abstract
     end % props
 
     properties (GetAccess = public, SetAccess = protected, Dependent)
-        bandwidth                                                          % [Hz]
+        bandwidth                                                          % [Hz]  #abstract
         sigma                                                              % []
     end % props
 
@@ -31,7 +31,7 @@ classdef gaussian < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.generate_gaussian();
         end % fcn
 
-        function generate(self)
+        function generate(self) % #abstract
             self.generate_gaussian();
         end % fcn
 
@@ -47,13 +47,12 @@ classdef gaussian < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.GZ  = ones(size(self.time)) * self.GZavg;
         end % fcn
 
-        % synthesis text
-        function txt = summary(self)
-            txt = sprintf('rect : flip_angle=%d°  frequency_offcet=%gHz  bandwidth=%gHz',...
-                self.flip_angle.get(), self.frequency_offcet.get(), self.bandwidth);
+        function txt = summary(self) % #abstract
+            txt = sprintf('[%s]  flip_angle=%d°  frequency_offcet=%gHz  bandwidth=%gHz',...
+                mfilename, self.flip_angle.get(), self.frequency_offcet.get(), self.bandwidth);
         end % fcn
 
-        function init_specific_gui(self, container)
+        function init_specific_gui(self, container) % #abstract
             mri_rf_pulse_sim.ui_prop.scalar.add_uicontrol_multi_scalar(...
                 container,...
                 [self.flip_angle self.frequency_offcet],...
