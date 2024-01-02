@@ -112,15 +112,19 @@ classdef pulse_definition < mri_rf_pulse_sim.backend.base_class
         end % fcn
 
         function pulse_obj = set_rf_pulse(self, pulse)
+
+            % delete window if necessary
             if ~isempty(self.app.window_definition) && ~isempty(self.app.window_definition.fig)
                 delete(self.app.window_definition.fig);
             end
 
+            % clean previous plot
             handles = guidata(self.fig);
             delete(handles.uipanel_settings_base    .Children)
             delete(handles.uipanel_settings_specific.Children)
             delete(handles.uipanel_plot             .Children)
 
+            % instantiate OR assign pulse
             switch class(pulse)
                 case 'char'
                     if any(pulse == filesep)
@@ -135,11 +139,20 @@ classdef pulse_definition < mri_rf_pulse_sim.backend.base_class
             self.rf_pulse.parent = self;
             self.rf_pulse.app    = self.app;
 
+            % plot pulse
             self.rf_pulse.init_base_gui    (handles.uipanel_settings_base    );
             self.rf_pulse.init_specific_gui(handles.uipanel_settings_specific);
             self.rf_pulse.plot(handles.uipanel_plot);
+
+            % update list of pulse : highlight the fresh pulse
+            idx = find( strcmp(handles.listbox_rf_pulse.String, pulse) );
+            if idx
+                handles.listbox_rf_pulse.Value = idx;
+            else
+                handles.listbox_rf_pulse.Valeu = [];
+            end
+
             notify(self.app, 'update_pulse');
-            
             pulse_obj = self.rf_pulse;
         end % fcn
 
