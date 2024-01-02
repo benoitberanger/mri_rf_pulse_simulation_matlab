@@ -1,17 +1,26 @@
 classdef app < matlab.unittest.TestCase
 
     properties
-        obj_path (1,:) char = 'mri_rf_pulse_sim.app'
-        obj
+        app_path (1,:) char = 'mri_rf_pulse_sim.app'
+        application
     end % props
 
     methods(TestClassSetup)
 
         % open the app once at the begining of the test(and prepare it's closing)
         function open_app(testCase)
-            testCase.verifyNotEmpty(testCase.obj_path)
-            testCase.obj = eval(testCase.obj_path);
-            testCase.addTeardown(@close, testCase.obj.pulse_definition.fig)
+            testCase.verifyNotEmpty(testCase.app_path)
+            testCase.application = eval(testCase.app_path);
+            testCase.addTeardown(@close, testCase.application.pulse_definition.fig)
+        end
+
+    end % meths
+
+    methods(TestMethodTeardown)
+
+        % at the end of each test, wait for all figures to be fully updated
+        function update_gui(testCase) %#ok<MANU>
+            drawnow();
         end
 
     end % meths
@@ -20,26 +29,53 @@ classdef app < matlab.unittest.TestCase
 
         % simple check
         function check_app_opened(testCase)
-            testCase.verifyNotEmpty(testCase.obj)
+            testCase.verifyNotEmpty(testCase.application)
         end
 
         % rf pulse
         function getPulse(testCase)
-            testCase.verifyNotEmpty(testCase.obj.getPulse())
+            testCase.verifyNotEmpty(testCase.application.getPulse())
         end
         function setPulse(testCase)
-            testCase.verifyNotEmpty(testCase.obj.setPulse('hs'))
+            target_pulse = 'foci'; % FOCI is derived from HS, it's a nice crash test
+            testCase.verifyNotEmpty(testCase.application.setPulse(target_pulse))
+            handles = guidata(testCase.application.pulse_definition.fig); % now check if listbox is correclty updated
+            testCase.verifyEqual(handles.listbox_rf_pulse.String{handles.listbox_rf_pulse.Value}, target_pulse)
         end
         function set_duration(testCase)
-            testCase.obj.getPulse().duration.set(0.003)
+            testCase.application.getPulse().duration.set(0.005)
         end
 
-        % dZ
-        function set_N_dZ(testCase)
-            testCase.obj.simulation_parameters.dZ.N = 11;
+        % dZ / dB0
+        function set_N_dB0(testCase)
+            testCase.application.simulation_parameters.dB0.N = 11;
         end
-        function set_display_dZ(testCase)
-            testCase.obj.simulation_parameters.dZ.select = testCase.obj.simulation_parameters.dZ.vect(end);
+        function set_display_dZ_last(testCase)
+            testCase.application.simulation_parameters.dZ.select = testCase.application.simulation_parameters.dZ.vect(end);
+        end
+        function set_display_dZ_middle(testCase)
+            testCase.application.simulation_parameters.dZ.select = testCase.application.simulation_parameters.dZ.middle_value;
+        end
+
+        % B0
+        function set_B0(testCase)
+            testCase.application.simulation_parameters.B0.set(3);
+        end
+
+        % M0
+        function set_M0_xyz(testCase)
+            testCase.application.simulation_parameters.M0.xyz = [0.0 0.1 0.9];
+        end
+        function set_M0_z(testCase)
+            testCase.application.simulation_parameters.M0.z = 0.8;
+        end
+
+        % T1 & T2 relaxation
+        function set_T1(testCase)
+            testCase.application.simulation_parameters.T1.set(0.100);
+        end
+        function set_T2(testCase)
+            testCase.application.simulation_parameters.T2.set(0.010);
         end
 
     end % meths
