@@ -11,7 +11,7 @@ classdef vec3 < mri_rf_pulse_sim.backend.base_class
         edit         matlab.ui.control.UIControl
     end % props
 
-    properties (GetAccess = public, SetAccess = protected, Dependent)
+    properties (GetAccess = public, SetAccess = public, Dependent)
         x (1,1) double
         y (1,1) double
         z (1,1) double
