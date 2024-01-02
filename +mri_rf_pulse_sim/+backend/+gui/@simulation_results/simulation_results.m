@@ -1,8 +1,6 @@
 classdef simulation_results < mri_rf_pulse_sim.backend.base_class
 
     properties(GetAccess = public, SetAccess = ?mri_rf_pulse_sim.app)
-        M (:,:,:,:) double
-
         fig matlab.ui.Figure
 
         axes_Mxyz          matlab.graphics.axis.Axes

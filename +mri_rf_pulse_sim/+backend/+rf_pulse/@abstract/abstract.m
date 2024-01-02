@@ -54,7 +54,7 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
 
         % plot the shape of the pulse : real, imag, abs, angle, FM, GZ
         % it will be plotted in a new figure or a pre-opened figure/uipanel
-        function plot(self, container)
+        function varargout = plot(self, container)
             self.assert_nonempty_prop({'time', 'B1', 'GZ'})
 
             if ~exist('container','var')
@@ -125,6 +125,10 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
             axis(a(6),'tight')
 
             linkaxes(a,'x');
+            
+            if nargout
+                varargout{1} = container;
+            end
         end
 
         function callback_update(self, ~, ~)
@@ -140,6 +144,12 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
                 container, ...
                 [self.n_points, self.duration, self.slice_thickness] ...
                 );
+        end % fcn
+        
+        function displayRep = compactRepresentationForSingleLine(self,displayConfiguration,width)
+            txt = sprintf('%s', self.summary());
+            displayRep = widthConstrainedDataRepresentation(self,displayConfiguration,width,...
+                StringArray=txt,AllowTruncatedDisplayForScalar=true);
         end % fcn
 
     end % meths
