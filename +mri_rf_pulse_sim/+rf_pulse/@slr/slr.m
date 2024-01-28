@@ -7,7 +7,6 @@ classdef slr < mri_rf_pulse_sim.backend.rf_pulse.abstract
     % dependency : https://github.com/LarsonLab/Spectral-Spatial-RF-Pulse-Design.git
 
     properties (GetAccess = public, SetAccess = public)
-
         d1          mri_rf_pulse_sim.ui_prop.scalar                        % [] ripple ratio on the rect top      (from 0 to 1)
         d2          mri_rf_pulse_sim.ui_prop.scalar                        % [] ripple ratio on the rect baseline (from 0 to 1)
         TBWP        mri_rf_pulse_sim.ui_prop.scalar                        % [] TimeBandWidthProduct -> needs to be an input paramter

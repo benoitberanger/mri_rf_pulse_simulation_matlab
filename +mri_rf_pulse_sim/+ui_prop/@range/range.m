@@ -20,6 +20,10 @@ classdef range < mri_rf_pulse_sim.backend.base_class
         selected_value (1,1) double
     end % props
 
+    properties (GetAccess = public, SetAccess = protected, Dependent)
+        repr
+    end % props
+
     properties (GetAccess = public, SetAccess = public)
         edit_min      matlab.ui.control.UIControl
         edit_max      matlab.ui.control.UIControl
@@ -30,9 +34,14 @@ classdef range < mri_rf_pulse_sim.backend.base_class
 
     methods % no attributes for Dependent properties
 
+        function value = get.repr(self)
+            value = sprintf('linspace(%+g,%+g,%d) %s', ...
+                self.min*self.scale, self.max*self.scale, self.N, self.unit);
+        end % fcn
+
         function value = get.vect(self)
             value = linspace(self.min, self.max, self.N);
-        end
+        end % fcn
 
         function value = get.middle_idx(self)
             value = round(self.N/2);
@@ -161,10 +170,8 @@ classdef range < mri_rf_pulse_sim.backend.base_class
         end % fcn
 
         function displayRep = compactRepresentationForSingleLine(self,displayConfiguration,width)
-            txt = sprintf('linspace(%+g,%+g,%d) %s', ...
-                self.min*self.scale, self.max*self.scale, self.N, self.unit);
             displayRep = widthConstrainedDataRepresentation(self,displayConfiguration,width,...
-                StringArray=txt,AllowTruncatedDisplayForScalar=true);
+                StringArray=self.repr,AllowTruncatedDisplayForScalar=true);
         end % fcn
 
     end % meths

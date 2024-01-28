@@ -6,6 +6,16 @@ classdef bool < mri_rf_pulse_sim.backend.base_class
         text   (1,:) char
     end % props
 
+    properties (GetAccess = public, SetAccess = protected, Dependent)
+        repr
+    end % props
+
+    methods % no attribute for dependent properties
+        function value = get.repr(self)
+            value = sprintf('%g [bool]', self.value);
+        end
+    end % methods
+
     properties (GetAccess = public, SetAccess = public)
         checkbox      matlab.ui.control.UIControl
     end % props
@@ -78,9 +88,8 @@ classdef bool < mri_rf_pulse_sim.backend.base_class
         end % fcn
 
         function displayRep = compactRepresentationForSingleLine(self,displayConfiguration,width)
-            txt = sprintf('%g [bool]', self.value);
             displayRep = widthConstrainedDataRepresentation(self,displayConfiguration,width,...
-                StringArray=txt,AllowTruncatedDisplayForScalar=true);
+                StringArray=self.repr,AllowTruncatedDisplayForScalar=true);
         end % fcn
 
     end % meths

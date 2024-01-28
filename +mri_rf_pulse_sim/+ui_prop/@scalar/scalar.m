@@ -7,6 +7,24 @@ classdef scalar < mri_rf_pulse_sim.backend.base_class
         scale  (1,1) double {mustBeFinite} = 1
     end % props
 
+    properties (GetAccess = public, SetAccess = protected, Dependent)
+        repr
+    end % props
+
+    methods % no attribute for dependent properties
+        function value = get.repr(self)
+            value = sprintf('%g', self.value);
+            if     self.scale ~= 1 && ~isempty(self.unit)
+                value = sprintf('%s (%g %s)', value, self.value*self.scale, self.unit);
+            elseif self.scale == 1 && ~isempty(self.unit)
+                value = sprintf('%s %s', value,  self.unit);
+            elseif self.scale ~= 1 &&  isempty(self.unit)
+                value = sprintf('%s (%g)', value, self.value*self.scale);
+                % elseif self.scale == 1 &&  isempty(self.unit) % just pass this one
+            end
+        end
+    end % methods
+
     properties (GetAccess = public, SetAccess = public)
         edit         matlab.ui.control.UIControl
     end % props
@@ -110,15 +128,8 @@ classdef scalar < mri_rf_pulse_sim.backend.base_class
         end % fcn
 
         function displayRep = compactRepresentationForSingleLine(self,displayConfiguration,width)
-            txt = sprintf('%g', self.value);
-            if self.scale ~= 1
-                txt = sprintf('%s (%g)', txt, self.value*self.scale);
-            end
-            if ~isempty(self.unit)
-                txt = sprintf(' %s', txt, self.unit);
-            end
             displayRep = widthConstrainedDataRepresentation(self,displayConfiguration,width,...
-                StringArray=txt,AllowTruncatedDisplayForScalar=true);
+                StringArray=self.repr,AllowTruncatedDisplayForScalar=true);
         end % fcn
 
     end % meths

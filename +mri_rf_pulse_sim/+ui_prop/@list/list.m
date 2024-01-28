@@ -1,22 +1,25 @@
 classdef list < mri_rf_pulse_sim.backend.base_class
 
-
     properties(GetAccess = public, SetAccess = public, SetObservable, AbortSet)
         name   (1,:) char
         items  (:,1)
         value
     end % props
 
-
     properties(GetAccess = public, SetAccess = protected)
         type (1,:) char
     end % props
 
-
     properties (GetAccess = public, SetAccess = protected, Dependent)
         idx
+        repr
     end % props
 
+    methods % no attribute for dependent properties
+        function value = get.repr(self)
+            value = sprintf('%s = %s', self.name, self.value);
+        end
+    end % methods
 
     properties (GetAccess = public, SetAccess = public)
         listbox      matlab.ui.control.UIControl
@@ -96,10 +99,8 @@ classdef list < mri_rf_pulse_sim.backend.base_class
         end % fcn
 
         function displayRep = compactRepresentationForSingleLine(self,displayConfiguration,width)
-            txt = sprintf('%s = %s', ...
-                self.name, self.value);
             displayRep = widthConstrainedDataRepresentation(self,displayConfiguration,width,...
-                StringArray=txt,AllowTruncatedDisplayForScalar=true);
+                StringArray=self.repr,AllowTruncatedDisplayForScalar=true);
         end % fcn
 
     end % meths

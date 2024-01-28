@@ -18,7 +18,21 @@ classdef vec3 < mri_rf_pulse_sim.backend.base_class
         nm (1,1) double % norm of the vector
     end % props
 
+    properties (GetAccess = public, SetAccess = protected, Dependent)
+        repr
+    end % props
+
     methods % no attribute for dependent properties
+        function value = get.repr(self)
+            value = sprintf('[%g %g %g]''', self.x, self.y, self.z);
+            if self.scale ~= 1
+                value = sprintf('%s ([%g %g %g]'')', value, self.x*self.scale, self.y*self.scale, self.z*self.scale);
+            end
+            if ~isempty(self.unit)
+                value = sprintf(' %s', value, self.unit);
+            end
+        end % fcn
+
         function val = get.x (self)    , val = self.xyz(1)      ; end
         function val = get.y (self)    , val = self.xyz(2)      ; end
         function val = get.z (self)    , val = self.xyz(3)      ; end
@@ -183,15 +197,8 @@ classdef vec3 < mri_rf_pulse_sim.backend.base_class
         end % fcn
 
         function displayRep = compactRepresentationForSingleLine(self,displayConfiguration,width)
-            txt = sprintf('[%g %g %g]''', self.x, self.y, self.z);
-            if self.scale ~= 1
-                txt = sprintf('%s ([%g %g %g]'')', txt, self.x*self.scale, self.y*self.scale, self.z*self.scale);
-            end
-            if ~isempty(self.unit)
-                txt = sprintf(' %s', txt, self.unit);
-            end
             displayRep = widthConstrainedDataRepresentation(self,displayConfiguration,width,...
-                StringArray=txt,AllowTruncatedDisplayForScalar=true);
+                StringArray=self.repr,AllowTruncatedDisplayForScalar=true);
         end % fcn
 
     end % meths

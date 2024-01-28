@@ -175,7 +175,7 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
 
     methods (Abstract)
         % all abstract methods can be "empty" and do nothing
-        % but hey MUST be defined
+        % but they MUST be defined
         generate                                                           % generate pulse shape using input parameters
         init_specific_gui                                                  % draw UI elements
         summary                                                            % print summary text
