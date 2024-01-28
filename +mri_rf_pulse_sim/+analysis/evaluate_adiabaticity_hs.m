@@ -9,66 +9,67 @@ function varargout = evaluate_adiabaticity_hs()
 pulse = mri_rf_pulse_sim.rf_pulse.hs();
 fprintf('Analytical adiabaticity condition : Amax = %g µT \n', pulse.adiabatic_condition*1e6)
 
-% define spatial evaluation
-dZ_mm = linspace(-pulse.slice_thickness.get(),+pulse.slice_thickness.get(),501); % millimeter
-dZ    = dZ_mm * 1e-3;                                                            % meter
-
-% define B0 field inhomogenity
-dB0 = 0;   % in this exemple, assume no dB0
-
-% static magnetic field
-B0 = 2.89; % Tesla (value for Siemens 3T at 123MHz)
+% set parameters of the solver
+solver = mri_rf_pulse_sim.bloch_solver();
+solver.setPulse(pulse);
+n_dz = 301;
+solver.setSpatialPosition(linspace(-pulse.slice_thickness.get(),+pulse.slice_thickness.get(),n_dz));
+solver.setDeltaB0(0); % in this exemple, assume no dB0
 
 % Evaluate slice profile over these deferent max amplitude :
-Amax_vect_ut = (2 : 2 : 20);        % micro tesla
-Amax_vect    = Amax_vect_ut * 1e-6; % tesla
+vect = 2 : 2 : 20; % µT
+Amax_range = mri_rf_pulse_sim.ui_prop.range(name='Amax', vect=vect*1e-6, unit='µT', scale=1e6);
 
 
-%% Computation (and plot)
+%% Computation
 
-solver = mri_rf_pulse_sim.bloch_solver(rf_pulse=pulse, B0=B0, SpatialPosition=dZ, DeltaB0=dB0);
+% pre-allocation
+all_slice_profile = zeros(solver.SpatialPosition.N,Amax_range.N);
+mid_slice_profile = zeros(1                       ,Amax_range.N);
 
-final_Mz = zeros(1,length(Amax_vect));
-
-fig = figure('Name',mfilename,'NumberTitle','off');
-ax = axes(fig);
-hold(ax, 'on');
-
-colors = jet(length(Amax_vect));
-
-for idx = 1 : length(Amax_vect)
-
+for idx = 1 : Amax_range.N
     % update pulse (the solver has a reference to the pulse object)
-    pulse.Amax.value = Amax_vect(idx);
+    pulse.Amax.value = Amax_range.vect(idx);
     pulse.generate();
 
+    % solve and store
     solver.solve();
-
-    plot(ax, ...
-        dZ_mm, ...
-        solver.getSliceProfilePara(), ...
-        'DisplayName', string(Amax_vect_ut(idx)) + " µT", ...
-        'Color', colors(idx,:) ...
-        )
-
-    final_Mz(idx) = solver.getSliceMiddlePara();
-
+    all_slice_profile(:,idx) = solver.getSliceProfilePara();
+    mid_slice_profile(idx)   = solver.getSliceMiddlePara();
 end
-
-legend()
-xlabel('mm')
-ylabel('Mz')
 
 
 %%  Display inversion efficieny
 
-efficiency = round(abs(final_Mz-1)/2 *100); % convert Mz from [-1 to +1] into [0% to 100%]
+efficiency = round(abs(mid_slice_profile-1)/2 *100); % convert Mz from [-1 to +1] into [0% to 100%]
 
 % and now print efficiency in a nice way
 efficiency_table = array2table(efficiency);
-efficiency_table.Properties.VariableNames = string(Amax_vect_ut) + " µT";
+efficiency_table.Properties.VariableNames = string(Amax_range.getScaled()) + " µT";
 efficiency_table.Properties.RowNames = {'efficiency (%)'};
 disp(efficiency_table)
+
+
+%% Plot
+
+fig = figure('Name',mfilename,'NumberTitle','off');
+
+ax1 = subplot(4,1, 1:3);
+colors = jet(Amax_range.N);
+hold(ax1, 'on');
+for idx = 1 : Amax_range.N
+    plot(ax1, solver.SpatialPosition.getScaled, all_slice_profile(:,idx), ...
+        'Color', colors(idx,:), ...
+        'DisplayName', sprintf('%g %s', Amax_range.vect(idx)*Amax_range.scale, Amax_range.unit))
+end
+legend()
+xlabel('mm')
+ylabel('Mz')
+
+ax2 = subplot(4,1, 4  );
+plot(ax2, Amax_range.getScaled(), efficiency, 'Marker', 'x');
+xlabel('µT')
+ylabel(efficiency_table.Properties.RowNames)
 
 
 %% Output ?
