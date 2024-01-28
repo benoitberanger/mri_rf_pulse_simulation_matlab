@@ -59,8 +59,8 @@ classdef sinc_self_refocusing < mri_rf_pulse_sim.backend.rf_pulse.abstract
         end % fcn
 
         function txt = summary(self) % #abstract
-            txt = sprintf('[%s] : n_side_lobs=%d  flip_angle=%d°',...
-                mfilename, self.n_side_lobs.get(), self.flip_angle.get());
+            txt = sprintf('[%s] : n_side_lobs=%s  flip_angle=%s',...
+                mfilename, self.n_side_lobs.repr, self.flip_angle.repr);
         end % fcn
 
         function init_specific_gui(self, container) % #abstract

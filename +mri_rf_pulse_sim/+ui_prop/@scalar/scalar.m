@@ -15,11 +15,11 @@ classdef scalar < mri_rf_pulse_sim.backend.base_class
         function value = get.repr(self)
             value = sprintf('%g', self.value);
             if     self.scale ~= 1 && ~isempty(self.unit)
-                value = sprintf('%s (%g %s)', value, self.value*self.scale, self.unit);
+                value = sprintf('%s(%g%s)', value, self.value*self.scale, self.unit);
             elseif self.scale == 1 && ~isempty(self.unit)
-                value = sprintf('%s %s', value,  self.unit);
+                value = sprintf('%s%s', value,  self.unit);
             elseif self.scale ~= 1 &&  isempty(self.unit)
-                value = sprintf('%s (%g)', value, self.value*self.scale);
+                value = sprintf('%s(%g)', value, self.value*self.scale);
                 % elseif self.scale == 1 &&  isempty(self.unit) % just pass this one
             end
         end
@@ -84,11 +84,24 @@ classdef scalar < mri_rf_pulse_sim.backend.base_class
             out = double(LEFT) .^ double(RIGHT);
         end % fcn
 
-        function out = get(self)
+        function out = getRaw(self)
+            out = self.value;
+        end % fcn
+        function out = getScaled(self)
             out = self.value * self.scale;
         end % fcn
-        function set(self, in)
+        function out = get(self)
+            out = self.getRaw();
+        end % fcn
+
+        function setRaw(self, in)
             self.value = in;
+        end % fcn
+        function setScaled(self, in)
+            self.value = in * self.scale;
+        end % fcn
+        function set(self, in)
+            self.setRaw(in);
         end % fcn
 
         function add_uicontrol(self,container,rect)

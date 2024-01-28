@@ -45,8 +45,8 @@ classdef foci < mri_rf_pulse_sim.rf_pulse.hs
         end % fcn
 
         function txt = summary(self) % #abstract
-            txt = sprintf('[%s]  BW=%gHz  Amax=%gµT  beta=%grad/s  mu=%g',...
-                mfilename, self.bandwidth, self.Amax.get(), self.beta.get(), self.mu.get());
+            txt = sprintf('[%s]  BW=%gHz  Amax=%s  beta=%s  mu=%s',...
+                mfilename, self.bandwidth, self.Amax.repr, self.beta.repr, self.mu.repr);
         end % fcn
 
         % init_specific_gui : use the same as in HS  % #abstract

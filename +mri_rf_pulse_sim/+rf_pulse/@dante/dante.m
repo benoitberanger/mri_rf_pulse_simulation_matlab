@@ -132,8 +132,8 @@ classdef dante < mri_rf_pulse_sim.backend.rf_pulse.abstract
         end % fcn
 
         function txt = summary(self) % #abstract
-            txt = sprintf('[%s]  flip_angle=%d°  subpulse_number=%d  subpulse_duration=%gus',...
-                mfilename, self.flip_angle.get(), self.subpulse_number.get(), self.subpulse_duration.get());
+            txt = sprintf('[%s]  flip_angle=%s  subpulse_number=%s  subpulse_duration=%s',...
+                mfilename, self.flip_angle.repr, self.subpulse_number.repr, self.subpulse_duration.repr);
         end % fcn
 
         function init_specific_gui(self, container)  % #abstract

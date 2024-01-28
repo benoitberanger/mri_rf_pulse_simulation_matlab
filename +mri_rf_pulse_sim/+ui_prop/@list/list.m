@@ -22,7 +22,7 @@ classdef list < mri_rf_pulse_sim.backend.base_class
     end % methods
 
     properties (GetAccess = public, SetAccess = public)
-        listbox      matlab.ui.control.UIControl
+        listbox matlab.ui.control.UIControl
     end % props
 
     methods % no attributes for Dependent properties

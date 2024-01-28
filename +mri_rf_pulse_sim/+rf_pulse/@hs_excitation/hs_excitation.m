@@ -67,8 +67,8 @@ classdef hs_excitation < mri_rf_pulse_sim.backend.rf_pulse.abstract
         end % fcn
 
         function txt = summary(self) % #abstract
-            txt = sprintf('[%s] : BW=%gHz  flip_angle=%g°  beta=%grad/s  mu=%g',...
-                mfilename, self.bandwidth, self.flip_angle.get(), self.beta.get(), self.mu.get());
+            txt = sprintf('[%s] : BW=%gHz  flip_angle=%s  beta=%s  mu=%s',...
+                mfilename, self.bandwidth, self.flip_angle.repr, self.beta.repr, self.mu.repr);
         end % fcn
 
         function init_specific_gui(self, container) % #abstract

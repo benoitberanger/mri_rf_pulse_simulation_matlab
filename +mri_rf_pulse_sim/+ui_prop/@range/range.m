@@ -64,8 +64,14 @@ classdef range < mri_rf_pulse_sim.backend.base_class
             self.select =        value(round(self.N/2));
         end
 
-        function out = get(self)
+        function out = getRaw(self)
             out = self.vect;
+        end % fcn
+        function out = getScaled(self)
+            out = self.vect * self.scale;
+        end % fcn
+        function out = get(self)
+            out = self.getRaw();
         end % fcn
 
     end % meths

@@ -39,8 +39,8 @@ classdef hanning < mri_rf_pulse_sim.backend.rf_pulse.abstract
         end % fcn
 
         function txt = summary(self) % #abstract
-            txt = sprintf('[%s]  flip_angle=%d°',...
-                mfilename, self.flip_angle.get());
+            txt = sprintf('[%s]  flip_angle=%s',...
+                mfilename, self.flip_angle.repr);
         end % fcn
 
         function init_specific_gui(self, container) % #abstract

@@ -98,8 +98,14 @@ classdef vec3 < mri_rf_pulse_sim.backend.base_class
         end % fcn
 
         % get / set aliases
-        function out = get(self)
+        function out = getRaw(self)
+            out = self.xyz;
+        end % fcn
+        function out = getScaled(self)
             out = self.xyz * self.scale;
+        end % fcn
+        function out = get(self)
+            out = self.getRaw();
         end % fcn
         function self = set(self, in)
             self.xyz = in;

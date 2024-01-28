@@ -48,8 +48,8 @@ classdef gaussian < mri_rf_pulse_sim.backend.rf_pulse.abstract
         end % fcn
 
         function txt = summary(self) % #abstract
-            txt = sprintf('[%s]  flip_angle=%d°  frequency_offcet=%gHz  bandwidth=%gHz',...
-                mfilename, self.flip_angle.get(), self.frequency_offcet.get(), self.bandwidth);
+            txt = sprintf('[%s]  flip_angle=%s  frequency_offcet=%s  bandwidth=%gHz',...
+                mfilename, self.flip_angle.repr, self.frequency_offcet.repr, self.bandwidth);
         end % fcn
 
         function init_specific_gui(self, container) % #abstract

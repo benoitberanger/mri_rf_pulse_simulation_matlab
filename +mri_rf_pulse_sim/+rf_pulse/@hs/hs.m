@@ -60,8 +60,8 @@ classdef hs < mri_rf_pulse_sim.backend.rf_pulse.abstract
         end % fcn
 
         function txt = summary(self) % #abstract
-            txt = sprintf('[%s]  BW=%gHz  Amax=%gµT  beta=%grad/s  mu=%g',...
-                mfilename, self.bandwidth, self.Amax.get(), self.beta.get(), self.mu.get());
+            txt = sprintf('[%s]  BW=%gHz  Amax=%s  beta=%s  mu=%s',...
+                mfilename, self.bandwidth, self.Amax.repr, self.beta.repr, self.mu.repr);
         end % fcn
 
         function init_specific_gui(self, container) % #abstract

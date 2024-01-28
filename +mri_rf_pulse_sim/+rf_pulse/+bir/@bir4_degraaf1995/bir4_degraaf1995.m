@@ -110,8 +110,8 @@ classdef bir4_degraaf1995 < mri_rf_pulse_sim.backend.rf_pulse.abstract
         end
 
         function txt = summary(self) % #abstract
-            txt = sprintf('[%s]  gammaB1max=%gHz  FA=%g°  beta=%g  dWmax=%gHz',...
-                mfilename, self.gammaB1max.get(), self.flip_angle.get(), self.Beta.get(), self.dWmax.get());
+            txt = sprintf('[%s]  gammaB1max=%s  FA=%s  beta=%s  dWmax=%s',...
+                mfilename, self.gammaB1max.repr, self.flip_angle.repr, self.Beta.repr, self.dWmax.repr);
         end % fcn
 
         function init_specific_gui(self, container) % #abstract

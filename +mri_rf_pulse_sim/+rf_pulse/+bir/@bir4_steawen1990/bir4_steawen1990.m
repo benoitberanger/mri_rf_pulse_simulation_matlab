@@ -86,8 +86,8 @@ classdef bir4_steawen1990 < mri_rf_pulse_sim.backend.rf_pulse.abstract
         end
 
         function txt = summary(self) % #abstract
-            txt = sprintf('[%s]  Amax=%gµT  FA=%g°  beta=%g  tanKappa=%g  dW0factor=%g',...
-                mfilename, self.Amax.get(), self.flip_angle.get(), self.Beta.get(), self.tanKappa.get(), self.dW0factor.get());
+            txt = sprintf('[%s]  Amax=%s  FA=%s  beta=%s  tanKappa=%s  dW0factor=%s',...
+                mfilename, self.Amax.repr, self.flip_angle.repr, self.Beta.repr, self.tanKappa.repr, self.dW0factor.repr);
         end % fcn
 
         function init_specific_gui(self, container) % #abstract

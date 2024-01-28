@@ -23,8 +23,8 @@ classdef sms_mb_hs < mri_rf_pulse_sim.rf_pulse.hs & mri_rf_pulse_sim.backend.rf_
         end % fcn
 
         function txt = summary(self) % #abstract
-            txt = sprintf('[%s] : n_slice=%d  slice_distance=%d  BW=%gHz  Amax=%gµT  beta=%g  mu=%g',...
-                mfilename, self.n_slice.get(), self.slice_distance.get(), self.bandwidth, self.Amax.get(), self.beta.get(), self.mu.get());
+            txt = sprintf('[%s] : n_slice=%s  slice_distance=%s  BW=%gHz  Amax=%s  beta=%s  mu=%s',...
+                mfilename, self.n_slice.repr, self.slice_distance.repr, self.bandwidth, self.Amax.repr, self.beta.repr, self.mu.repr);
         end % fcn
 
         function init_specific_gui(self, container) % #abstract
