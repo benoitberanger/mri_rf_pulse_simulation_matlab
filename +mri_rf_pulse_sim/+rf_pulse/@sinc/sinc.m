@@ -26,7 +26,7 @@ classdef sinc < mri_rf_pulse_sim.backend.rf_pulse.abstract
         % constructor
         function self = sinc()
             self.n_points.value = 128;
-            self.n_side_lobs    = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='n_side_lobs',  value=2          );
+            self.n_side_lobs    = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='n_side_lobs', value= 2          );
             self.flip_angle     = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle' , value=90, unit='°');
             self.generate_sinc();
         end % fcn
@@ -53,6 +53,9 @@ classdef sinc < mri_rf_pulse_sim.backend.rf_pulse.abstract
         function txt = summary(self) % #abstract
             txt = sprintf('[%s] : n_side_lobs=%s  flip_angle=%s',...
                 mfilename, self.n_side_lobs.repr, self.flip_angle.repr);
+            if ~isempty(self.window) && isvalid(self.window)
+                txt = sprintf('%s  window=%s', txt, self.window.name);
+            end
         end % fcn
 
         function set_window(self, name)
