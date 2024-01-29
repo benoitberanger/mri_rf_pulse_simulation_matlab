@@ -9,76 +9,81 @@ function varargout = compare_hs_foci()
 % using the exact same paramters.
 pulse = mri_rf_pulse_sim.rf_pulse.foci();
 
-% define spatial evaluation
-dZ_mm = linspace(-pulse.slice_thickness.get(),+pulse.slice_thickness.get(),501); % millimeter
-dZ    = dZ_mm * 1e-3;                                                            % meter
-
-% define B0 field inhomogenity
-dB0 = 0;   % in this exemple, assume no dB0
-
-% static magnetic field
-B0 = 2.89; % Tesla (value for Siemens 3T at 123MHz)
+% set parameters of the solver
+solver = mri_rf_pulse_sim.bloch_solver();
+solver.setPulse(pulse);
+n_dz = 301;
+solver.setSpatialPosition(linspace(-pulse.slice_thickness.get(),+pulse.slice_thickness.get(),n_dz));
+solver.setDeltaB0(0); % in this exemple, assume no dB0
 
 % Evaluate slice profile over these deferent max amplitude :
-Amax_vect_ut = (3 : 3 : 18);        % micro tesla
-Amax_vect    = Amax_vect_ut * 1e-6; % tesla
+vect = 3 : 3 : 18; % µT
+Amax_range = mri_rf_pulse_sim.ui_prop.range(name='Amax', vect=vect*1e-6, unit='µT', scale=1e6);
 
 
 %% Computation (and plot)
 
-solver = mri_rf_pulse_sim.bloch_solver(rf_pulse=pulse, B0=B0, SpatialPosition=dZ, DeltaB0=dB0);
+% pre-allocation
+all_slice_profile = zeros(2,solver.SpatialPosition.N,Amax_range.N);
+mid_slice_profile = zeros(2,1                       ,Amax_range.N);
 
-% line 1 HS, line 2 is FOCI
-final_Mz = zeros(2,length(Amax_vect));
-
-fig = figure('Name',mfilename,'NumberTitle','off');
-ax(1) = subplot(1,2,1);
-ax(2) = subplot(1,2,2);
-hold(ax, 'on');
-
-colors = jet(length(Amax_vect));
-
-for idx = 1 : length(Amax_vect)
+for idx = 1 : Amax_range.N
 
     % update pulse (the solver has a reference to the pulse object)
-    pulse.Amax.value = Amax_vect(idx);
+    pulse.Amax.value = Amax_range.vect(idx);
 
     pulse.generate_hs();
     solver.solve();
-    plot(ax(1), ...
-        dZ_mm, ...
-        solver.getSliceProfilePara(), ...
-        'DisplayName', string(Amax_vect_ut(idx)) + " µT", ...
-        'Color', colors(idx,:) ...
-        )
-    final_Mz(1,idx) = solver.getSliceMiddlePara();
+    all_slice_profile(1,:,idx) = solver.getSliceProfilePara();
+    mid_slice_profile(1,1,idx) = solver.getSliceMiddlePara();
 
     pulse.generate_foci();
     solver.solve();
-    plot(ax(2), ...
-        dZ_mm, ...
-        solver.getSliceProfilePara(), ...
-        'DisplayName', string(Amax_vect_ut(idx)) + " µT", ...
-        'Color', colors(idx,:) ...
-        )
-    final_Mz(2,idx) = solver.getSliceMiddlePara();
+    all_slice_profile(2,:,idx) = solver.getSliceProfilePara();
+    mid_slice_profile(2,1,idx) = solver.getSliceMiddlePara();
 
 end
-
-legend()
-xlabel('mm')
-ylabel('Mz')
 
 
 %%  Display inversion efficieny
 
-efficiency = round(abs(final_Mz-1)/2 *100); % convert Mz from [-1 to +1] into [0% to 100%]
+efficiency = round(abs(squeeze(mid_slice_profile)-1)/2 *100); % convert Mz from [-1 to +1] into [0% to 100%]
 
 % and now print efficiency in a nice way
 efficiency_table = array2table(efficiency);
-efficiency_table.Properties.VariableNames = string(Amax_vect_ut) + " µT";
+efficiency_table.Properties.VariableNames = string(Amax_range.getScaled()) + " µT";
 efficiency_table.Properties.RowNames = {'efficiency HS (%)', 'efficiency FOCI (%)'};
 disp(efficiency_table)
+
+
+%% Plot
+
+fig = figure('Name',mfilename,'NumberTitle','off');
+
+ax1 = subplot('Position', [0.10 0.40 0.35 0.50]);
+ax2 = subplot('Position', [0.55 0.40 0.35 0.50]);
+hold([ax1 ax2], 'on');
+colors = jet(Amax_range.N);
+for idx = 1 : Amax_range.N
+    plot(ax1, solver.SpatialPosition.getScaled, all_slice_profile(1,:,idx), ...
+        'Color', colors(idx,:), ...
+        'DisplayName', sprintf('%g %s', Amax_range.vect(idx)*Amax_range.scale, Amax_range.unit))
+    plot(ax2, solver.SpatialPosition.getScaled, all_slice_profile(2,:,idx), ...
+        'Color', colors(idx,:), ...
+        'DisplayName', sprintf('%g %s', Amax_range.vect(idx)*Amax_range.scale, Amax_range.unit))
+end
+legend(ax1)
+legend(ax2)
+xlabel([ax1 ax2],'mm')
+ylabel([ax1 ax2],'Mz')
+title(ax1, 'HS')
+title(ax2, 'FOCI')
+
+ax3 = subplot('Position', [0.1 0.1 0.8 0.2]);
+plot(ax3, Amax_range.getScaled(), efficiency, 'Marker', 'x');
+xlabel('µT')
+ylabel('efficiency (%)')
+legend({'HS', 'FOCI'})
 
 
 %% Output ?
