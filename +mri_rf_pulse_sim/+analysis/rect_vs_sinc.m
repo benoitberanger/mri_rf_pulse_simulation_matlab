@@ -9,6 +9,9 @@ function varargout = rect_vs_sinc()
 RECT = mri_rf_pulse_sim.rf_pulse.rect();
 SINC = mri_rf_pulse_sim.rf_pulse.sinc();
 
+RECT.plot();
+SINC.plot();
+
 slice_thickness = 4/1000; % mm -> m
 factor = 4; % to visualize larger than just the expected slice profile
 
@@ -39,6 +42,8 @@ SINC.set_window('hanning');
 SINC.generate();
 solver.solve(); % the solver already has a pointer to the pulse
 all_slice_profile(:,3) = solver.getSliceProfilePerp();
+
+SINC.plot(); % plot hanning
 
 
 %% Plot

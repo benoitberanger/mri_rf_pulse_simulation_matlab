@@ -9,6 +9,11 @@ function varargout = compare_hs_foci()
 % using the exact same paramters.
 pulse = mri_rf_pulse_sim.rf_pulse.foci();
 
+pulse.generate_foci();
+pulse.plot();
+pulse.generate_hs();
+pulse.plot();
+
 % set parameters of the solver
 solver = mri_rf_pulse_sim.bloch_solver();
 solver.setPulse(pulse);
@@ -17,7 +22,7 @@ solver.setSpatialPosition(linspace(-pulse.slice_thickness.get(),+pulse.slice_thi
 solver.setDeltaB0(0); % in this exemple, assume no dB0
 
 % Evaluate slice profile over these deferent max amplitude :
-vect = 3 : 3 : 18; % µT
+vect = 2 : 2 : 18; % µT
 Amax_range = mri_rf_pulse_sim.ui_prop.range(name='Amax', vect=vect*1e-6, unit='µT', scale=1e6);
 
 

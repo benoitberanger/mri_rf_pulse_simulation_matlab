@@ -7,6 +7,7 @@ function varargout = evaluate_adiabaticity_hs()
 
 % generate HS pulse with default paramters
 pulse = mri_rf_pulse_sim.rf_pulse.hs();
+pulse.plot();
 fprintf('Analytical adiabaticity condition : Amax = %g µT \n', pulse.adiabatic_condition*1e6)
 
 % set parameters of the solver
