@@ -64,8 +64,6 @@ classdef sinc < mri_rf_pulse_sim.backend.rf_pulse.abstract
                 case {'','none','NONE'}
                     self.window = mri_rf_pulse_sim.window.base.empty;
                 otherwise
-                    list = mri_rf_pulse_sim.window.get_list();
-                    assert(any(strcmp(list,name)), 'incorrect window name')
                     fullname = sprintf('mri_rf_pulse_sim.window.%s', name);
                     self.window = feval(fullname, rf_pulse=self);
             end
