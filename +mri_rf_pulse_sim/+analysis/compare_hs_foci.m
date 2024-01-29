@@ -72,10 +72,12 @@ colors = jet(Amax_range.N);
 for idx = 1 : Amax_range.N
     plot(ax1, solver.SpatialPosition.getScaled, all_slice_profile(1,:,idx), ...
         'Color', colors(idx,:), ...
-        'DisplayName', sprintf('%g %s', Amax_range.vect(idx)*Amax_range.scale, Amax_range.unit))
+        'DisplayName', sprintf('%g %s', Amax_range.vect(idx)*Amax_range.scale, Amax_range.unit), ...
+        'LineWidth',2)
     plot(ax2, solver.SpatialPosition.getScaled, all_slice_profile(2,:,idx), ...
         'Color', colors(idx,:), ...
-        'DisplayName', sprintf('%g %s', Amax_range.vect(idx)*Amax_range.scale, Amax_range.unit))
+        'DisplayName', sprintf('%g %s', Amax_range.vect(idx)*Amax_range.scale, Amax_range.unit), ...
+        'LineWidth',2)
 end
 legend(ax1)
 legend(ax2)
@@ -85,7 +87,7 @@ title(ax1, 'HS')
 title(ax2, 'FOCI')
 
 ax3 = subplot('Position', [0.1 0.1 0.8 0.2]);
-plot(ax3, Amax_range.getScaled(), efficiency, 'Marker', 'x');
+plot(ax3, Amax_range.getScaled(), efficiency, 'Marker', 'x', 'LineWidth',2);
 xlabel('µT')
 ylabel('efficiency (%)')
 legend({'HS', 'FOCI'})

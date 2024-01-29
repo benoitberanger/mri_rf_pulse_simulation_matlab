@@ -61,14 +61,15 @@ hold(ax1, 'on');
 for idx = 1 : Amax_range.N
     plot(ax1, solver.SpatialPosition.getScaled, all_slice_profile(:,idx), ...
         'Color', colors(idx,:), ...
-        'DisplayName', sprintf('%g %s', Amax_range.vect(idx)*Amax_range.scale, Amax_range.unit))
+        'DisplayName', sprintf('%g %s', Amax_range.vect(idx)*Amax_range.scale, Amax_range.unit), ...
+        'LineWidth',2)
 end
 legend()
 xlabel('mm')
 ylabel('Mz')
 
 ax2 = subplot(4,1, 4  );
-plot(ax2, Amax_range.getScaled(), efficiency, 'Marker', 'x');
+plot(ax2, Amax_range.getScaled(), efficiency, 'Marker', 'x', 'LineWidth',2);
 xlabel('µT')
 ylabel(efficiency_table.Properties.RowNames)
 

@@ -1,14 +1,13 @@
 function varargout = rect_vs_sinc()
-% This function compares the RECT pulse, which is the simplest pulse,
+% This function compares the RECT pulse, which is the "simplest" pulse,
 % versus the SINC, which is probably the most used.
 
 
 %% Parameters
 
-% generate HS pulse with default paramters
+% generate both pulses, and plot them
 RECT = mri_rf_pulse_sim.rf_pulse.rect();
 SINC = mri_rf_pulse_sim.rf_pulse.sinc();
-
 RECT.plot();
 SINC.plot();
 
@@ -55,9 +54,9 @@ ax(2) = subplot(2,1,2);
 
 for i = 1 : length(ax)
     hold(ax(i), 'on');
-    plot(ax(i), solver.SpatialPosition.getScaled(), all_slice_profile(:,1), 'Color', colors(1,:))
-    plot(ax(i), solver.SpatialPosition.getScaled(), all_slice_profile(:,2), 'Color', colors(2,:))
-    plot(ax(i), solver.SpatialPosition.getScaled(), all_slice_profile(:,3), 'Color', colors(3,:))
+    plot(ax(i), solver.SpatialPosition.getScaled(), all_slice_profile(:,1), 'Color', colors(1,:), 'LineWidth',2)
+    plot(ax(i), solver.SpatialPosition.getScaled(), all_slice_profile(:,2), 'Color', colors(2,:), 'LineWidth',2)
+    plot(ax(i), solver.SpatialPosition.getScaled(), all_slice_profile(:,3), 'Color', colors(3,:), 'LineWidth',2)
     xlabel(ax(i),'mm')
     ylabel(ax(i),'SliceProfile')
     % visual tips
@@ -75,8 +74,7 @@ xlim(ax(1),[-slice_thickness +slice_thickness]*solver.SpatialPosition.scale)
 %% Output ?
 
 if nargout
-    varargout{1} = efficiency_table;
-    varargout{2} = fig;
+    varargout{1} = fig;
 end
 
 
