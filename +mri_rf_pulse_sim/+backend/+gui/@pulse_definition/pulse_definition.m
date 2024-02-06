@@ -124,14 +124,16 @@ classdef pulse_definition < mri_rf_pulse_sim.backend.base_class
             delete(handles.uipanel_settings_specific.Children)
             delete(handles.uipanel_plot             .Children)
 
+            rf_rel_path = 'mri_rf_pulse_sim.rf_pulse.';
+            
             % instantiate OR assign pulse
             switch class(pulse)
                 case 'char'
                     if any(pulse == filesep)
                         split = strsplit(pulse, filesep);
-                        self.rf_pulse = eval(sprintf('mri_rf_pulse_sim.rf_pulse.%s.%s', split{1}, split{2}));
+                        self.rf_pulse = eval(sprintf('%S%s.%s', rf_rel_path, split{1}, split{2}));
                     else
-                        self.rf_pulse = eval(sprintf('mri_rf_pulse_sim.rf_pulse.%s', pulse));
+                        self.rf_pulse = eval(sprintf('%s%s', rf_rel_path, pulse));
                     end
                 otherwise
                     self.rf_pulse = pulse;
@@ -145,11 +147,13 @@ classdef pulse_definition < mri_rf_pulse_sim.backend.base_class
             self.rf_pulse.plot(handles.uipanel_plot);
 
             % update list of pulse : highlight the fresh pulse
-            idx = find( strcmp(handles.listbox_rf_pulse.String, pulse) );
+            simplified_object_name = strrep(class(self.rf_pulse),rf_rel_path,'');
+            simplified_object_name = strrep(simplified_object_name,'.',filesep);
+            idx = find( strcmp(handles.listbox_rf_pulse.String, simplified_object_name) );
             if idx
                 handles.listbox_rf_pulse.Value = idx;
             else
-                handles.listbox_rf_pulse.Valeu = [];
+                handles.listbox_rf_pulse.Value = [];
             end
 
             notify(self.app, 'update_pulse');
