@@ -6,11 +6,6 @@ classdef USER_DEFINED < mri_rf_pulse_sim.backend.rf_pulse.abstract
         bandwidth                                                          % [Hz]  #abstract
     end % props
 
-    methods % no attribute for dependent properties
-        function value = get.bandwidth(self       ); value          = self.bandwidth; end
-        function         set.bandwidth(self, value); self.bandwidth = value         ; end
-    end % meths
-
     methods (Access = public)
 
         % constructor
@@ -22,6 +17,10 @@ classdef USER_DEFINED < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.GZ        = zeros(size(self.time));
             self.bandwidth = 1000; % set to a default value
         end % fcn
+
+        function setBandwidth(self, value) % protected properties : need a setter
+            self.bandwidth = value;
+        end
 
         function generate(self) %#ok<MANU>  #abstract
             % pass
