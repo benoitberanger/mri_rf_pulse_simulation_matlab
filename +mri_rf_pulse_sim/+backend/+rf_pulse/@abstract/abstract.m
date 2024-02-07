@@ -27,7 +27,7 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
         function value = get.GZavg    (self); value = 2*pi*self.bandwidth / (self.gamma*self.slice_thickness); end
         function value = get.FM       (self); value = gradient(self.phase,self.time) / (2*pi);                 end
         function value = get.tbwp     (self); value = self.duration * self.bandwidth;                          end
-        function value = get.power    (self); value = trapz(self.time,self.magnitude.^2);                      end
+        function value = get.power    (self); value = trapz(self.time,self.magnitude.^2)/self.duration;        end
         function value = get.gradB1max(self); value = max(gradient(self.magnitude,self.time));                 end
         function value = get.gradGZmax(self); value = max(gradient(self.GZ       ,self.time));                 end
     end % meths
