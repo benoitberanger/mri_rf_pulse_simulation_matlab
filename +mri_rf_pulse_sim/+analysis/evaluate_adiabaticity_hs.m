@@ -18,7 +18,7 @@ solver.setSpatialPosition(linspace(-pulse.slice_thickness.get(),+pulse.slice_thi
 solver.setDeltaB0(0); % in this exemple, assume no dB0
 
 % Evaluate slice profile over these deferent max amplitude :
-vect = 2 : 2 : 20; % µT
+vect = 2 : 2 : 26; % µT
 Amax_range = mri_rf_pulse_sim.ui_prop.range(name='Amax', vect=vect*1e-6, unit='µT', scale=1e6);
 
 
