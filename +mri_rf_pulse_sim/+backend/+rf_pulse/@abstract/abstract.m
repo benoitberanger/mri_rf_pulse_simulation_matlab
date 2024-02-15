@@ -16,7 +16,8 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
         GZmax           (1,1) double                                       % [T/m]   max value of  gradient(t)
         GZavg           (1,1) double                                       % [T/m]   average value of gradient(t) -> used for slice thickness
         tbwp            (1,1) double                                       % []      time-bandwidth product -> in the literature, it represents a "quality" factor
-        power           (1,1) double                                       % [T²s]   power factor !!! not in Watt !!!
+        energy          (1,1) double                                       % []      ~Joules (J)
+        power           (1,1) double                                       % []      ~Watts  (W) !! average power (not instantaneous)
         gradB1max       (1,1) double                                       % [T/s]   max(dB1/dt)
         gradGZmax       (1,1) double                                       % [T/m/s] max(dGZ/dt)
     end % props
@@ -27,7 +28,8 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
         function value = get.GZavg    (self); value = 2*pi*self.bandwidth / (self.gamma*self.slice_thickness); end
         function value = get.FM       (self); value = gradient(self.phase,self.time) / (2*pi);                 end
         function value = get.tbwp     (self); value = self.duration * self.bandwidth;                          end
-        function value = get.power    (self); value = trapz(self.time,self.magnitude.^2)/self.duration;        end
+        function value = get.energy   (self); value = trapz(self.time,self.magnitude.^2);                      end
+        function value = get.power    (self); value = self.energy/self.duration;                               end
         function value = get.gradB1max(self); value = max(gradient(self.magnitude,self.time));                 end
         function value = get.gradGZmax(self); value = max(gradient(self.GZ       ,self.time));                 end
     end % meths
