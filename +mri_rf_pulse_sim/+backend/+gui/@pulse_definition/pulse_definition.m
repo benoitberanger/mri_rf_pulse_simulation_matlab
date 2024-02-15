@@ -131,7 +131,7 @@ classdef pulse_definition < mri_rf_pulse_sim.backend.base_class
                 case 'char'
                     if any(pulse == filesep)
                         split = strsplit(pulse, filesep);
-                        self.rf_pulse = eval(sprintf('%S%s.%s', rf_rel_path, split{1}, split{2}));
+                        self.rf_pulse = eval(sprintf('%s%s.%s', rf_rel_path, split{1}, split{2}));
                     else
                         self.rf_pulse = eval(sprintf('%s%s', rf_rel_path, pulse));
                     end
