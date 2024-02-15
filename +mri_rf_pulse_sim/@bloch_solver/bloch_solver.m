@@ -194,7 +194,7 @@ classdef bloch_solver < handle & matlab.mixin.CustomCompactDisplayProvider
                 axis string {mustBeMember(axis,["x","y","z","xyz","para","perp"])}
                 dB0  = []
             end
-            sel = axis2selcomb(axis);
+            [sel, comb] = axis2selcomb(axis);
             if isempty(dB0)
                 idx_B0 = self.DeltaB0.middle_idx;
             else
@@ -206,6 +206,9 @@ classdef bloch_solver < handle & matlab.mixin.CustomCompactDisplayProvider
             selection{self.dim.dZ  } = self.SpatialPosition.middle_idx;
             selection{self.dim.dB0 } = idx_B0;
             value = squeeze(self.M(selection{:}));
+            if comb
+                value = sqrt(sum(value.^2));
+            end
         end
 
         % getChemicalShift
@@ -234,7 +237,7 @@ classdef bloch_solver < handle & matlab.mixin.CustomCompactDisplayProvider
             selection{self.dim.dB0 } = ':';
             value = squeeze(self.M(selection{:}));
             if comb
-                value = sum(value.^2,1);
+                value = sqrt(sum(value.^2));
             end
         end
 
