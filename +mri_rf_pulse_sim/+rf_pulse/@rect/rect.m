@@ -28,7 +28,7 @@ classdef rect < mri_rf_pulse_sim.backend.rf_pulse.abstract
         function generate_rect(self)
             self.assert_nonempty_prop({'n_points', 'duration','flip_angle'})
 
-            self.time = linspace(-self.duration/2, +self.duration/2, self.n_points.get());
+            self.time = linspace(0, self.duration, self.n_points.get());
 
             waveform = ones(size(self.time)); % base shape
             waveform = waveform / trapz(self.time, waveform); % normalize integral
