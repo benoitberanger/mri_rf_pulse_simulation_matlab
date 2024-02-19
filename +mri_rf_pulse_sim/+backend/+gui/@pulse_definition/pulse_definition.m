@@ -1,11 +1,8 @@
 classdef pulse_definition < mri_rf_pulse_sim.backend.base_class
 
     properties (GetAccess = public,  SetAccess = ?mri_rf_pulse_sim.app)
-
         rf_pulse
-
-        fig matlab.ui.Figure
-
+        fig      matlab.ui.Figure
     end % props
 
     methods
@@ -17,65 +14,89 @@ classdef pulse_definition < mri_rf_pulse_sim.backend.base_class
 
     methods (Access = public)
 
-        function self = pulse_definition(varargin)
-            if nargin < 1
-                return
+        function self = pulse_definition(args)
+            arguments
+                args.action
+                args.app
             end
 
-            action = varargin{1};
-            switch action
-                case 'open_gui'
-                    if nargin > 1
-                        self.app = varargin{2};
-                    end
-                    self.open_gui();
+            if length(fieldnames(args)) < 1
+                return
+            else
+                if isfield(args, 'action'), action   = args.action; end
+                if isfield(args, 'app'   ), self.app = args.app   ; end
+            end
+
+            switch lower(action)
+                case 'opengui'
+                    self.opengui();
+                case 'opengui_onefig'
+                    self.opengui(true);
                 otherwise
                     error('unknown action')
             end
         end % fcn
 
-        function open_gui(self)
+        function opengui(self, use_onefig)
+            if nargin < 2
+                use_onefig = false;
+            end
 
             fig_pos = mri_rf_pulse_sim.backend.gui.get_fig_pos();
 
-            % Create a figure
-            figHandle = figure( ...
-                'MenuBar'         , 'none'                   , ...
-                'Toolbar'         , 'none'                   , ...
-                'Name'            , 'Pulse definition'       , ...
-                'NumberTitle'     , 'off'                    , ...
-                'Units'           , 'normalized'             , ...
-                'Position'        , fig_pos.(mfilename)      , ...
-                'CloseRequestFcn' , @self.callback_cleanup   );
+            if use_onefig
 
-            figureBGcolor = [0.9 0.9 0.9]; set(figHandle,'Color',figureBGcolor);
-            buttonBGcolor = figureBGcolor - 0.1;
-            editBGcolor   = [1.0 1.0 1.0];
+                container = uipanel(self.app.fig,...
+                    'Title'           , 'Pulse definition'       , ...
+                    'Units'           , 'normalized'             , ...
+                    'Position'        , fig_pos.(mfilename)      );
 
-            % Create GUI handles : pointers to access the graphic objects
-            handles               = guihandles(figHandle);
-            handles.fig           = figHandle;
-            handles.figureBGcolor = figureBGcolor;
-            handles.buttonBGcolor = buttonBGcolor;
-            handles.editBGcolor   = editBGcolor  ;
+                handles = guidata(self.app.fig);
 
-            handles.uipanel_plot = uipanel(figHandle,...
+            else
+
+                % Create figure
+                figHandle = figure( ...
+                    'MenuBar'         , 'none'                   , ...
+                    'Toolbar'         , 'none'                   , ...
+                    'Name'            , 'Pulse definition'       , ...
+                    'NumberTitle'     , 'off'                    , ...
+                    'Units'           , 'normalized'             , ...
+                    'Position'        , fig_pos.(mfilename)      , ...
+                    'CloseRequestFcn' , @self.callback_cleanup   );
+
+                figureBGcolor = [0.9 0.9 0.9]; set(figHandle,'Color',figureBGcolor);
+                buttonBGcolor = figureBGcolor - 0.1;
+                editBGcolor   = [1.0 1.0 1.0];
+
+                % Create GUI handles : pointers to access the graphic objects
+                handles               = guihandles(figHandle);
+                handles.fig           = figHandle;
+                handles.figureBGcolor = figureBGcolor;
+                handles.buttonBGcolor = buttonBGcolor;
+                handles.editBGcolor   = editBGcolor  ;
+
+                container = figHandle;
+
+            end
+
+            handles.uipanel_plot = uipanel(container,...
                 'Title','Plot',...
                 'Units','Normalized',...
                 'Position',[0 0 1 0.7],...
-                'BackgroundColor',figureBGcolor);
+                'BackgroundColor',handles.figureBGcolor);
 
-            handles.uipanel_selection = uipanel(figHandle,...
+            handles.uipanel_selection = uipanel(container,...
                 'Title','Selection',...
                 'Units','Normalized',...
                 'Position',[0 0.7 0.4 0.3],...
-                'BackgroundColor',figureBGcolor);
+                'BackgroundColor',handles.figureBGcolor);
 
-            handles.uipanel_settings = uipanel(figHandle,...
+            handles.uipanel_settings = uipanel(container,...
                 'Title','Settings',...
                 'Units','Normalized',...
                 'Position',[0.4 0.7 0.6 0.3],...
-                'BackgroundColor',figureBGcolor);
+                'BackgroundColor',handles.figureBGcolor);
 
             handles.listbox_rf_pulse = uicontrol(handles.uipanel_selection,...
                 'Style','listbox',...
@@ -88,21 +109,25 @@ classdef pulse_definition < mri_rf_pulse_sim.backend.base_class
                 'Title','Pulse specific',...
                 'Units','Normalized',...
                 'Position',[0 0 1 0.7],...
-                'BackgroundColor',figureBGcolor);
+                'BackgroundColor',handles.figureBGcolor);
 
             handles.uipanel_settings_base = uipanel(handles.uipanel_settings,...
                 'Title', 'Base',...
                 'Units','Normalized',...
                 'Position',[0 0.7 1 0.3],...
-                'BackgroundColor',figureBGcolor);
+                'BackgroundColor',handles.figureBGcolor);
 
             % IMPORTANT
-            guidata(figHandle,handles)
+            guidata(container,handles)
             % After creating the figure, dont forget the line
             % guidata(figHandle,handles) . It allows smart retrive like
             % handles=guidata(hObject)
 
-            self.fig = figHandle;
+            if use_onefig
+                self.fig = self.app.fig;
+            else
+                self.fig = container;
+            end
 
             % initialize with default values
             idx_sinc = find(strcmp(handles.listbox_rf_pulse.String,'sinc'));
@@ -125,7 +150,7 @@ classdef pulse_definition < mri_rf_pulse_sim.backend.base_class
             delete(handles.uipanel_plot             .Children)
 
             rf_rel_path = 'mri_rf_pulse_sim.rf_pulse.';
-            
+
             % instantiate OR assign pulse
             switch class(pulse)
                 case 'char'

@@ -18,7 +18,11 @@ classdef simulation_parameters < mri_rf_pulse_sim.backend.base_class
 
     methods (Access = public)
 
-        function self = simulation_parameters(varargin)
+        function self = simulation_parameters(args)
+            arguments
+                args.action
+                args.app
+            end
 
             self.dZ  = mri_rf_pulse_sim.ui_prop.range (parent=self, name='dZ' , vect=linspace(-010,010,201)*1e-3, scale=1e3, unit='mm' );
             self.dB0 = mri_rf_pulse_sim.ui_prop.range (parent=self, name='dB0', vect=linspace(-020,020,201)*1e-6, scale=1e6, unit='ppm');
@@ -30,69 +34,88 @@ classdef simulation_parameters < mri_rf_pulse_sim.backend.base_class
             self.auto_simplot    = mri_rf_pulse_sim.ui_prop.bool(name='auto_simplot'   , text='auto_simplot'   , value=true);
             self.auto_disp_pulse = mri_rf_pulse_sim.ui_prop.bool(name='auto_disp_pulse', text='auto_disp_pulse', value=true);
 
-            if nargin < 1
+            if length(fieldnames(args)) < 1
                 return
+            else
+                if isfield(args, 'action'), action   = args.action; end
+                if isfield(args, 'app'   ), self.app = args.app   ; end
             end
 
-            action = varargin{1};
-            switch action
-                case 'open_gui'
-                    if nargin > 1
-                        self.app = varargin{2};
-                    end
-                    self.open_gui();
+            switch lower(action)
+                case 'opengui'
+                    self.opengui();
+                case 'opengui_onefig'
+                    self.opengui('onefig');
                 otherwise
                     error('unknown action')
             end
 
         end % fcn
 
-        function open_gui(self)
+        function opengui(self, use_onefig)
+            if nargin < 2
+                use_onefig = false;
+            end
 
             fig_pos = mri_rf_pulse_sim.backend.gui.get_fig_pos();
 
-            % Create a figure
-            figHandle = figure( ...
-                'MenuBar'         , 'none'                   , ...
-                'Toolbar'         , 'none'                   , ...
-                'Name'            , 'Simulation parameters'  , ...
-                'NumberTitle'     , 'off'                    , ...
-                'Units'           , 'normalized'             , ...
-                'Position'        , fig_pos.(mfilename)      , ...
-                'CloseRequestFcn' , @self.callback_cleanup   );
+            if use_onefig
 
-            figureBGcolor = [0.9 0.9 0.9]; set(figHandle,'Color',figureBGcolor);
-            buttonBGcolor = figureBGcolor - 0.1;
-            editBGcolor   = [1.0 1.0 1.0];
+                container = uipanel(self.app.fig,...
+                    'Title'           , 'Simulation parameters'  , ...
+                    'Units'           , 'normalized'             , ...
+                    'Position'        , fig_pos.(mfilename)      );
 
-            % Create GUI handles : pointers to access the graphic objects
-            handles               = guihandles(figHandle);
-            handles.fig           = figHandle;
-            handles.figureBGcolor = figureBGcolor;
-            handles.buttonBGcolor = buttonBGcolor;
-            handles.editBGcolor   = editBGcolor  ;
+                handles = guidata(self.app.fig);
 
-            handles.uipanel_dB0 = uipanel(figHandle,...
+            else
+
+                % Create a figure
+                figHandle = figure( ...
+                    'MenuBar'         , 'none'                   , ...
+                    'Toolbar'         , 'none'                   , ...
+                    'Name'            , 'Simulation parameters'  , ...
+                    'NumberTitle'     , 'off'                    , ...
+                    'Units'           , 'normalized'             , ...
+                    'Position'        , fig_pos.(mfilename)      , ...
+                    'CloseRequestFcn' , @self.callback_cleanup   );
+
+                figureBGcolor = [0.9 0.9 0.9]; set(figHandle,'Color',figureBGcolor);
+                buttonBGcolor = figureBGcolor - 0.1;
+                editBGcolor   = [1.0 1.0 1.0];
+
+                % Create GUI handles : pointers to access the graphic objects
+                handles               = guihandles(figHandle);
+                handles.fig           = figHandle;
+                handles.figureBGcolor = figureBGcolor;
+                handles.buttonBGcolor = buttonBGcolor;
+                handles.editBGcolor   = editBGcolor  ;
+
+                container = figHandle;
+
+            end
+
+            handles.uipanel_dB0 = uipanel(container,...
                 'Title','dB0 [ppm] : off-resonance',...
                 'Units','Normalized',...
                 'Position',[0 0 1 0.3],...
-                'BackgroundColor',figureBGcolor);
+                'BackgroundColor',handles.figureBGcolor);
 
-            handles.uipanel_dZ = uipanel(figHandle,...
+            handles.uipanel_dZ = uipanel(container,...
                 'Title','dZ [mm] : slice (spin) position',...
                 'Units','Normalized',...
                 'Position',[0 0.3 1 0.3],...
-                'BackgroundColor',figureBGcolor);
+                'BackgroundColor',handles.figureBGcolor);
 
             self.dZ .add_uicontrol_setup(handles.uipanel_dZ )
             self.dB0.add_uicontrol_setup(handles.uipanel_dB0)
 
-            handles.uipanel_controls = uipanel(figHandle,...
+            handles.uipanel_controls = uipanel(container,...
                 'Title','Controls',...
                 'Units','Normalized',...
                 'Position',[0 0.6 1 0.4],...
-                'BackgroundColor',figureBGcolor);
-            
+                'BackgroundColor',handles.figureBGcolor);
+
             self.M0.add_uicontrol(handles.uipanel_controls, [0.0 0.0 0.4 0.4])
 
             self.auto_simplot   .add_uicontrol(handles.uipanel_controls,[0.0 0.7 0.3 0.3])
@@ -103,7 +126,7 @@ classdef simulation_parameters < mri_rf_pulse_sim.backend.base_class
                 'String', 'simulate + plot', ...
                 'Units','Normalized',...
                 'Position',[0.3 0.4 0.3 0.6],...
-                'BackgroundColor',buttonBGcolor,...
+                'BackgroundColor',handles.buttonBGcolor,...
                 'Callback',@self.callback_simplot);
 
             mri_rf_pulse_sim.ui_prop.scalar.add_uicontrol_multi_scalar(handles.uipanel_controls, ...
@@ -111,12 +134,16 @@ classdef simulation_parameters < mri_rf_pulse_sim.backend.base_class
                 [0.6 0 0.4 1])
 
             % IMPORTANT
-            guidata(figHandle,handles)
+            guidata(container,handles)
             % After creating the figure, dont forget the line
             % guidata(figHandle,handles) . It allows smart retrive like
             % handles=guidata(hObject)
 
-            self.fig = figHandle;
+            if use_onefig
+                self.fig = self.app.fig;
+            else
+                self.fig = container;
+            end
 
             % initialize with default values
 

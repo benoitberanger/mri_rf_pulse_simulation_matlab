@@ -16,6 +16,8 @@ classdef app < handle
         window_definition     mri_rf_pulse_sim.backend.gui.window_definition
 
         bloch_solver          mri_rf_pulse_sim.bloch_solver
+
+        fig                   matlab.ui.Figure % for the "one figure" configuration
     end % props
 
     methods (Access = public)
@@ -25,22 +27,29 @@ classdef app < handle
         %------------------------------------------------------------------
 
         % contructor
-        function self = app(varargin)
-            % add to path : recommanded for a clean app close
-            addpath(fileparts(mri_rf_pulse_sim.get_package_dir));
+        function self = app(action)
+            arguments
+                action (1,:) {mustBeTextScalar} = "opengui"
+            end
+
+            addpath(fileparts(mri_rf_pulse_sim.get_package_dir())); % recommanded for a clean app close
 
             self.bloch_solver = mri_rf_pulse_sim.bloch_solver();
 
-            if ~nargin
-                fprintf('[app]: open_gui() ... ')
-                tic
-                self.open_gui();
-                fprintf('done in %.3gs \n', toc)
-
-                drawnow();
-
-                self.simplot();
+            fprintf('[app]: opengui() ... ')
+            tic
+            switch lower(action)
+                case "opengui"
+                    self.opengui();
+                case "opengui_onefig"
+                    self.opengui("onefig");
+                otherwise
+                    error('unkwnown action : %s', action)
             end
+            fprintf('done in %.3gs \n', toc)
+            drawnow();
+            self.simplot();
+
         end % fcn
 
         function simplot(self)
@@ -181,10 +190,44 @@ classdef app < handle
 
     methods (Access = protected)
 
-        function open_gui(self)
-            self.pulse_definition      = mri_rf_pulse_sim.backend.gui.pulse_definition     ('open_gui', self);
-            self.simulation_parameters = mri_rf_pulse_sim.backend.gui.simulation_parameters('open_gui', self);
-            self.simulation_results    = mri_rf_pulse_sim.backend.gui.simulation_results   ('open_gui', self);
+        function opengui(self, action)
+            arguments
+                self
+                action (1,:) {mustBeTextScalar} = ""
+            end
+
+            switch action
+
+                case "onefig"
+
+                    self.fig = figure( ...
+                        'MenuBar'         , 'none'                   , ...
+                        'Toolbar'         , 'none'                   , ...
+                        'Name'            , 'MRI RF pulse simulation', ...
+                        'NumberTitle'     , 'off'                    , ...
+                        'Units'           , 'normalized'             , ...
+                        'Position'        , [0.1 0.1 0.8 0.8]        , ...
+                        'CloseRequestFcn' , @self.callback_cleanup   );
+
+                    figureBGcolor = [0.9 0.9 0.9]; set(self.fig,'Color',figureBGcolor);
+                    buttonBGcolor = figureBGcolor - 0.1;
+                    editBGcolor   = [1.0 1.0 1.0];
+
+                    % Create GUI handles : pointers to access the graphic objects
+                    handles               = guihandles(self.fig);
+                    handles.fig           = self.fig;
+                    handles.figureBGcolor = figureBGcolor;
+                    handles.buttonBGcolor = buttonBGcolor;
+                    handles.editBGcolor   = editBGcolor  ;
+
+                    guidata(self.fig,handles)
+
+                    action = "_" + action;
+            end
+
+            self.pulse_definition      = mri_rf_pulse_sim.backend.gui.pulse_definition     (app=self, action="opengui"+action);
+            self.simulation_parameters = mri_rf_pulse_sim.backend.gui.simulation_parameters(app=self, action="opengui"+action);
+            self.simulation_results    = mri_rf_pulse_sim.backend.gui.simulation_results   (app=self, action="opengui"+action);
 
             self.bloch_solver.setSpatialPosition(self.simulation_parameters.dZ );
             self.bloch_solver.setDeltaB0        (self.simulation_parameters.dB0);
@@ -262,6 +305,7 @@ classdef app < handle
         function callback_cleanup(self, ~, ~)
             fprintf('[app]: cleanup() ... ')
             tic
+            try delete(self.                      fig); catch, end
             try delete(self.window_definition    .fig); catch, end
             try delete(self.pulse_definition     .fig); catch, end
             try delete(self.simulation_parameters.fig); catch, end
