@@ -1,10 +1,19 @@
-function s = get_fig_pos()
+function s = get_fig_pos(use_onfig)
+
+if nargin == 0
+    use_onfig = false;
+end
 
 s = struct;
 
-x0 = 0.02;
+if use_onfig
+    x0 = 0.00;
+    y0 = 0.00;
+else
+    x0 = 0.02;
+    y0 = 0.05;
+end
 x1 = 1 - x0*2;
-y0 = 0.05;
 y1 = 1 - y0*2;
 
 pulse_definition      = [0.0  0.2  0.3  0.8];

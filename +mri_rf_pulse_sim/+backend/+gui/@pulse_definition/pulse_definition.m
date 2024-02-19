@@ -42,7 +42,7 @@ classdef pulse_definition < mri_rf_pulse_sim.backend.base_class
                 use_onefig = false;
             end
 
-            fig_pos = mri_rf_pulse_sim.backend.gui.get_fig_pos();
+            fig_pos = mri_rf_pulse_sim.backend.gui.get_fig_pos(use_onefig);
             fig_col = mri_rf_pulse_sim.backend.gui.get_fig_colors();
 
             if use_onefig

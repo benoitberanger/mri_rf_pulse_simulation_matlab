@@ -2,8 +2,10 @@ classdef app < handle
     % This is the application class. It handles everything. Most of the user actions should be done using this class.
     %
     % START THE APP
-    %         mri_rf_pulse_sim.app      % for only GUI operations
-    %   app = mri_rf_pulse_sim.app()    % to keep a handle to the application, for later Scripting or CommandWindow operations
+    %         mri_rf_pulse_sim.app                                         % for only GUI operations
+    %   app = mri_rf_pulse_sim.app()                                       % to keep a handle to the application, for later Scripting or CommandWindow operations
+    %   app = mri_rf_pulse_sim.app('opengui')                              % same as above : `opengui` is the default action
+    %   app = mri_rf_pulse_sim.app('opengui_onefig')                       % instead of 3 seperated figures, use 1 unique figure
     %
 
 
