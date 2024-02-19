@@ -1,8 +1,14 @@
 classdef rf_pulse < matlab.unittest.TestCase
 
+
+    %% general paramters
+
     properties
         fig
-    end % props
+    end
+
+
+    %% Executed once BEFORE all Methods
 
     methods(TestClassSetup)
 
@@ -17,6 +23,9 @@ classdef rf_pulse < matlab.unittest.TestCase
 
     end
 
+
+    %% Executed between ClassSetup and Methods
+
     properties(TestParameter)
         pulse
     end
@@ -28,6 +37,9 @@ classdef rf_pulse < matlab.unittest.TestCase
         end
 
     end
+
+
+    %% Execute for each TestParameter
 
     methods(Test)
 

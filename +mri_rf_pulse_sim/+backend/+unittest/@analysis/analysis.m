@@ -1,10 +1,16 @@
 classdef analysis < matlab.unittest.TestCase
 
+
+    %% Executed once BEFORE all Methods
+
     methods(TestClassSetup)
         function prep_close(testCase)
             testCase.addTeardown(@close, 'all')
         end
     end
+
+
+    %% Executed between ClassSetup and Methods
 
     properties(TestParameter)
         to_execute
@@ -19,11 +25,15 @@ classdef analysis < matlab.unittest.TestCase
         end
     end
 
+
+    %% Execute for each TestParameter
+
     methods(Test)
-        function runner(testCase, to_execute)
+        function runner(testCase, to_execute) %#ok<INUSD>
             to_eval = sprintf('mri_rf_pulse_sim.analysis.%s', to_execute);
             eval(to_eval);
         end
     end
+
 
 end % class

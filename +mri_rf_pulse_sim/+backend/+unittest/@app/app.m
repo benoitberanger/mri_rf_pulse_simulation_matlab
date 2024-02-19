@@ -1,20 +1,33 @@
 classdef app < matlab.unittest.TestCase
 
+
+    %% general paramters
+
     properties
-        app_path (1,:) char = 'mri_rf_pulse_sim.app'
-        application
-    end % props
+        app_path    (1,:) char = 'mri_rf_pulse_sim.app'                    % i need to define the *matlab* path of the app
+        application                                                        % this will receive the pointer to the app
+    end
+
+
+    %% Executed once per ClassSetupParameter, then all Methods are executed for EACH ClassSetupParameter
+
+    properties (ClassSetupParameter)
+        opening_args = {'opengui', 'opengui_onefig'};
+    end
 
     methods(TestClassSetup)
 
-        % open the app once at the begining of the test(and prepare it's closing)
-        function open_app(testCase)
+        % open the app at the begining of the test (and prepare it's closing)
+        function open_app(testCase, opening_args)
             testCase.verifyNotEmpty(testCase.app_path)
-            testCase.application = eval(testCase.app_path);
+            testCase.application = feval(testCase.app_path, opening_args);
             testCase.addTeardown(@close, testCase.application.pulse_definition.fig)
         end
 
-    end % meths
+    end
+
+
+    %% Executed each time after Method execution
 
     methods(TestMethodTeardown)
 
@@ -24,6 +37,9 @@ classdef app < matlab.unittest.TestCase
         end
 
     end % meths
+
+
+    %% Execute sequencially each Method once per ClassSetupParameter (see above)
 
     methods(Test)
 
@@ -79,5 +95,6 @@ classdef app < matlab.unittest.TestCase
         end
 
     end % meths
+
 
 end % class
