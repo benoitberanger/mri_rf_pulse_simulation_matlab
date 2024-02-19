@@ -101,13 +101,15 @@ classdef simulation_results < mri_rf_pulse_sim.backend.base_class
             linewidth.st   = 0.5;
 
             fig_pos = mri_rf_pulse_sim.backend.gui.get_fig_pos();
+            fig_col = mri_rf_pulse_sim.backend.gui.get_fig_colors();
 
             if use_onefig
 
                 container = uipanel(self.app.fig,...
-                    'Title'           , 'Simulation results'       , ...
+                    'Title'           , 'Simulation results'     , ...
                     'Units'           , 'normalized'             , ...
-                    'Position'        , fig_pos.(mfilename)      );
+                    'Position'        , fig_pos.(mfilename)      , ...
+                    'BackgroundColor' , fig_col.figureBG         );
 
                 handles = guidata(self.app.fig);
 
@@ -121,20 +123,13 @@ classdef simulation_results < mri_rf_pulse_sim.backend.base_class
                     'NumberTitle'     , 'off'                    , ...
                     'Units'           , 'normalized'             , ...
                     'Position'        , fig_pos.(mfilename)      , ...
-                    'CloseRequestFcn' , @self.callback_cleanup   );
-
-                figureBGcolor = [0.9 0.9 0.9]; set(figHandle,'Color',figureBGcolor);
-                buttonBGcolor = figureBGcolor - 0.1;
-                editBGcolor   = [1.0 1.0 1.0];
+                    'CloseRequestFcn' , @self.callback_cleanup   , ...
+                    'Color'           , fig_col.figureBG         );
 
                 % Create GUI handles : pointers to access the graphic objects
                 handles               = guihandles(figHandle);
                 handles.fig           = figHandle;
-                handles.figureBGcolor = figureBGcolor;
-                handles.buttonBGcolor = buttonBGcolor;
-                handles.editBGcolor   = editBGcolor  ;
-
-                container = figHandle;
+                container             = figHandle;
 
             end
 
@@ -145,13 +140,13 @@ classdef simulation_results < mri_rf_pulse_sim.backend.base_class
                 'Title','Selection',...
                 'Units','Normalized',...
                 'Position',[0 0.95 1 0.05],...
-                'BackgroundColor',handles.figureBGcolor);
+                'BackgroundColor',fig_col.figureBG);
 
             handles.uipanel_dB0 = uipanel(container,...
                 'Title','Selection',...
                 'Units','Normalized',...
                 'Position',[0 0.90 1 0.05],...
-                'BackgroundColor',handles.figureBGcolor);
+                'BackgroundColor',fig_col.figureBG);
 
             dZ  = self.app.simulation_parameters.dZ ;
             dB0 = self.app.simulation_parameters.dB0;
@@ -167,7 +162,7 @@ classdef simulation_results < mri_rf_pulse_sim.backend.base_class
                 'Title','Mxyz(t)',...
                 'Units','Normalized',...
                 'Position',[0 0.6 1 0.3],...
-                'BackgroundColor',handles.figureBGcolor);
+                'BackgroundColor',fig_col.figureBG);
 
             time = self.app.pulse_definition.rf_pulse.time;
 
@@ -213,7 +208,7 @@ classdef simulation_results < mri_rf_pulse_sim.backend.base_class
                 'Title','SliceProfile',...
                 'Units','Normalized',...
                 'Position',[0 0.3 1 0.3],...
-                'BackgroundColor',handles.figureBGcolor);
+                'BackgroundColor',fig_col.figureBG);
 
             handles.axes_SliceProfile = axes(handles.uipanel_SliceProfile);
             self.axes_SliceProfile = handles.axes_SliceProfile;
@@ -242,7 +237,7 @@ classdef simulation_results < mri_rf_pulse_sim.backend.base_class
                 'Title','ChemicalShift',...
                 'Units','Normalized',...
                 'Position',[0 0 1 0.3],...
-                'BackgroundColor',handles.figureBGcolor);
+                'BackgroundColor',fig_col.figureBG);
             handles.axes_ChemicalShift = axes(handles.uipanel_ChemicalShift);
             self.axes_ChemicalShift = handles.axes_ChemicalShift;
             hold(handles.axes_ChemicalShift, 'on')
@@ -270,7 +265,7 @@ classdef simulation_results < mri_rf_pulse_sim.backend.base_class
             if use_onefig
                 self.fig = self.app.fig;
             else
-                self.fig = container;
+                self.fig = figHandle;
             end
 
             % initialize with default values

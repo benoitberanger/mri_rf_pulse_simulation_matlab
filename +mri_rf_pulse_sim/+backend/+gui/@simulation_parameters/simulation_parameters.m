@@ -58,13 +58,15 @@ classdef simulation_parameters < mri_rf_pulse_sim.backend.base_class
             end
 
             fig_pos = mri_rf_pulse_sim.backend.gui.get_fig_pos();
+            fig_col = mri_rf_pulse_sim.backend.gui.get_fig_colors();
 
             if use_onefig
 
                 container = uipanel(self.app.fig,...
                     'Title'           , 'Simulation parameters'  , ...
                     'Units'           , 'normalized'             , ...
-                    'Position'        , fig_pos.(mfilename)      );
+                    'Position'        , fig_pos.(mfilename)      , ...
+                    'BackgroundColor' , fig_col.figureBG         );
 
                 handles = guidata(self.app.fig);
 
@@ -78,20 +80,13 @@ classdef simulation_parameters < mri_rf_pulse_sim.backend.base_class
                     'NumberTitle'     , 'off'                    , ...
                     'Units'           , 'normalized'             , ...
                     'Position'        , fig_pos.(mfilename)      , ...
-                    'CloseRequestFcn' , @self.callback_cleanup   );
-
-                figureBGcolor = [0.9 0.9 0.9]; set(figHandle,'Color',figureBGcolor);
-                buttonBGcolor = figureBGcolor - 0.1;
-                editBGcolor   = [1.0 1.0 1.0];
+                    'CloseRequestFcn' , @self.callback_cleanup   , ...
+                    'Color'           , fig_col.figureBG         );
 
                 % Create GUI handles : pointers to access the graphic objects
                 handles               = guihandles(figHandle);
                 handles.fig           = figHandle;
-                handles.figureBGcolor = figureBGcolor;
-                handles.buttonBGcolor = buttonBGcolor;
-                handles.editBGcolor   = editBGcolor  ;
-
-                container = figHandle;
+                container             = figHandle;
 
             end
 
@@ -99,13 +94,13 @@ classdef simulation_parameters < mri_rf_pulse_sim.backend.base_class
                 'Title','dB0 [ppm] : off-resonance',...
                 'Units','Normalized',...
                 'Position',[0 0 1 0.3],...
-                'BackgroundColor',handles.figureBGcolor);
+                'BackgroundColor',fig_col.figureBG);
 
             handles.uipanel_dZ = uipanel(container,...
                 'Title','dZ [mm] : slice (spin) position',...
                 'Units','Normalized',...
                 'Position',[0 0.3 1 0.3],...
-                'BackgroundColor',handles.figureBGcolor);
+                'BackgroundColor',fig_col.figureBG);
 
             self.dZ .add_uicontrol_setup(handles.uipanel_dZ )
             self.dB0.add_uicontrol_setup(handles.uipanel_dB0)
@@ -114,7 +109,7 @@ classdef simulation_parameters < mri_rf_pulse_sim.backend.base_class
                 'Title','Controls',...
                 'Units','Normalized',...
                 'Position',[0 0.6 1 0.4],...
-                'BackgroundColor',handles.figureBGcolor);
+                'BackgroundColor',fig_col.figureBG);
 
             self.M0.add_uicontrol(handles.uipanel_controls, [0.0 0.0 0.4 0.4])
 
@@ -126,7 +121,7 @@ classdef simulation_parameters < mri_rf_pulse_sim.backend.base_class
                 'String', 'simulate + plot', ...
                 'Units','Normalized',...
                 'Position',[0.3 0.4 0.3 0.6],...
-                'BackgroundColor',handles.buttonBGcolor,...
+                'BackgroundColor',fig_col.buttonBG,...
                 'Callback',@self.callback_simplot);
 
             mri_rf_pulse_sim.ui_prop.scalar.add_uicontrol_multi_scalar(handles.uipanel_controls, ...
@@ -142,7 +137,7 @@ classdef simulation_parameters < mri_rf_pulse_sim.backend.base_class
             if use_onefig
                 self.fig = self.app.fig;
             else
-                self.fig = container;
+                self.fig = figHandle;
             end
 
             % initialize with default values
