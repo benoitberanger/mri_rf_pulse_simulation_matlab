@@ -10,12 +10,10 @@ classdef (Abstract) verse < mri_rf_pulse_sim.backend.rf_pulse.abstract
     methods(Access = public)
 
         function verse_rand(self)
-
             npts = self.n_points.get();
             dt = diff(self.time);
 
             ak = rand(1,npts);
-
             tv = [self.time(1)  (self.time(1) + cumsum(dt./ak(1:npts-1)))];
             bv = ak .* self.B1;
             gv = ak .* self.GZ;
@@ -23,7 +21,9 @@ classdef (Abstract) verse < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.time = tv;
             self.B1   = bv;
             self.GZ   = gv;
+        end % fcn
 
+        function init_verse_gui(self, container)
         end % fcn
 
     end % meths
