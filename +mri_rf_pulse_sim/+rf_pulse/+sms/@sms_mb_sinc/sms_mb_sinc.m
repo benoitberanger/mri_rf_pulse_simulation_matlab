@@ -23,8 +23,8 @@ classdef sms_mb_sinc < mri_rf_pulse_sim.rf_pulse.sinc & mri_rf_pulse_sim.backend
         end % fcn
 
         function txt = summary(self) % #abstract
-            txt = sprintf('[%s] : n_slice=%s  slice_distance=%s  n_side_lobs=%s  flip_angle=%s',...
-                mfilename, self.n_slice.repr, self.slice_distance.repr, self.n_side_lobs.repr, self.flip_angle.repr);
+            txt = summary@mri_rf_pulse_sim.rf_pulse.sinc(self);
+            txt = strrep(txt,'[sinc]', sprintf('[%s]',mfilename));
         end % fcn
 
         function init_specific_gui(self, container) % #abstract

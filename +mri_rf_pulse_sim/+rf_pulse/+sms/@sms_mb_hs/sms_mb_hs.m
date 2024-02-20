@@ -13,7 +13,7 @@ classdef sms_mb_hs < mri_rf_pulse_sim.rf_pulse.hs & mri_rf_pulse_sim.backend.rf_
 
         function generate_sms_mb_hs(self)
 
-            % generate SINC pulse : this is SingleBand pulse waveform
+            % generate HS pulse : this is SingleBand pulse waveform
             self.generate_hs();
 
             % apply multi-band phase modulation to B1
@@ -23,8 +23,8 @@ classdef sms_mb_hs < mri_rf_pulse_sim.rf_pulse.hs & mri_rf_pulse_sim.backend.rf_
         end % fcn
 
         function txt = summary(self) % #abstract
-            txt = sprintf('[%s] : n_slice=%s  slice_distance=%s  BW=%gHz  Amax=%s  beta=%s  mu=%s',...
-                mfilename, self.n_slice.repr, self.slice_distance.repr, self.bandwidth, self.Amax.repr, self.beta.repr, self.mu.repr);
+            txt = summary@mri_rf_pulse_sim.rf_pulse.hs(self);
+            txt = strrep(txt,'[hs]', sprintf('[%s]',mfilename));
         end % fcn
 
         function init_specific_gui(self, container) % #abstract
