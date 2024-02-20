@@ -1,4 +1,8 @@
 classdef sinc_verse < mri_rf_pulse_sim.rf_pulse.sinc
+    % Steven Conolly, Dwight Nishimura, Albert Macovski, Gary Glover,
+    % Variable-rate selective excitation, Journal of Magnetic Resonance
+    % (1969), Volume 78, Issue 3, 1988, Pages 440-458, ISSN 0022-2364,
+    % https://doi.org/10.1016/0022-2364(88)90131-X
 
     properties (GetAccess = public, SetAccess = public)
     end % props
