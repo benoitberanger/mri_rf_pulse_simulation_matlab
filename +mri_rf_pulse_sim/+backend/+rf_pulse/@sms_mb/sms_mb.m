@@ -48,6 +48,13 @@ classdef (Abstract) sms_mb < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
         end
 
+        function init_mb_gui(self, container)
+            mri_rf_pulse_sim.ui_prop.scalar.add_uicontrol_multi_scalar(...
+                container,...
+                [self.n_slice self.slice_distance]...
+                );
+        end % fcn
+
     end % meths
 
 end % class
