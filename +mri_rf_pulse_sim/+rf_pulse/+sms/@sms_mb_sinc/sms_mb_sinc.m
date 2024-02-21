@@ -1,4 +1,4 @@
-classdef sms_mb_sinc < mri_rf_pulse_sim.rf_pulse.sinc & mri_rf_pulse_sim.backend.rf_pulse.sms_mb
+classdef sms_mb_sinc < mri_rf_pulse_sim.backend.rf_pulse.sms_mb & mri_rf_pulse_sim.rf_pulse.sinc
 
     methods (Access = public)
 
