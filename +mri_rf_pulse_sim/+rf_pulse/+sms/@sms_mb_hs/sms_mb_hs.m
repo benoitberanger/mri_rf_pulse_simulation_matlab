@@ -12,6 +12,7 @@ classdef sms_mb_hs < mri_rf_pulse_sim.backend.rf_pulse.sms_mb & mri_rf_pulse_sim
         end % fcn
 
         function generate_sms_mb_hs(self)
+            self.generate_hs();
             self.mb_phase_modulation(); % apply multi-band phase modulation to B1
         end % fcn
 
