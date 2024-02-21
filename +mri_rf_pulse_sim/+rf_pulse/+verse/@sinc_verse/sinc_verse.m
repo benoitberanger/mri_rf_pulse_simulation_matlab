@@ -1,4 +1,4 @@
-classdef sinc_verse < mri_rf_pulse_sim.rf_pulse.sinc & mri_rf_pulse_sim.backend.rf_pulse.verse
+classdef sinc_verse < mri_rf_pulse_sim.backend.rf_pulse.verse & mri_rf_pulse_sim.rf_pulse.sinc
 
     methods (Access = public)
 
@@ -13,25 +13,28 @@ classdef sinc_verse < mri_rf_pulse_sim.rf_pulse.sinc & mri_rf_pulse_sim.backend.
 
         function generate_sinc_verse(self)
             self.generate_sinc();
-            self.verse_rand();
+            self.verse_modulation();
         end % fcn
 
         function txt = summary(self) % #abstract
             txt = summary@mri_rf_pulse_sim.rf_pulse.sinc(self);
-            txt = strrep(txt,'[sinc]', sprintf('[%s::rand]',mfilename));
+            txt = strrep(txt,'[sinc]', sprintf('[%s::%s]',mfilename,self.type.get()));
         end % fcn
 
         function init_specific_gui(self, container) % #abstract
+            pos_sinc  = [0.00 0.00 0.30 1.00];
+            pos_verse = [0.30 0.00 0.70 1.00];
+
             fig_col = mri_rf_pulse_sim.backend.gui.get_fig_colors();
             panel_sinc = uipanel(container,...
                 'Title','sinc',...
                 'Units','Normalized',...
-                'Position',[0.00 0.00 0.30 1.00],...
+                'Position',pos_sinc,...
                 'BackgroundColor',fig_col.figureBG);
             panel_verse = uipanel(container,...
                 'Title','verse',...
                 'Units','Normalized',...
-                'Position',[0.30 0.00 0.70 1.00],...
+                'Position',pos_verse,...
                 'BackgroundColor',fig_col.figureBG);
 
             init_specific_gui@mri_rf_pulse_sim.rf_pulse.sinc(self, panel_sinc);

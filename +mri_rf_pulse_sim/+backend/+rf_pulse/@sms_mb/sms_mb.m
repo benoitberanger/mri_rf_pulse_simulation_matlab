@@ -1,4 +1,4 @@
-classdef (Abstract) sms_mb < mri_rf_pulse_sim.backend.rf_pulse.abstract
+classdef (Abstract) sms_mb < handle
     % Barth M, Breuer F, Koopmans PJ, Norris DG, Poser BA. Simultaneous
     % multislice (SMS) imaging techniques. Magn Reson Med. 2016
     % Jan;75(1):63-81. doi: 10.1002/mrm.25897. Epub 2015 Aug 26. PMID:
