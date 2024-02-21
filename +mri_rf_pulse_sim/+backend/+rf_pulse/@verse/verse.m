@@ -21,61 +21,80 @@ classdef (Abstract) verse < handle
         end % fcn
 
         function verse_modulation(self)
-            npts = self.n_points.get();
-            dt   = diff(self.time);
 
             % adjust time so it starts at 0
-            self.time = self.time + abs(min(self.time));
+            if self.time(1) < 0
+                self.time = self.time - self.time(1);
+            end
+
+            % shortcuts
+            lim_b1  = self.maxB1.get();
+            lim_g   = self.maxGZ.get();
+            lim_s   = self.maxSZ.get();
+
+            % same names as in the article
+            dt = diff(self.time);
+            N  = self.n_points.get();
+            k  = 1 : N;
+            ak = ones(1,N);
+            tk = dt ./ ak(1:N-1);
+            bk = ak .* self.B1;
+            G  = self.GZavg;
+            gk = ak  * G;
 
             switch self.type.get()
 
                 case '<no>'
                     % useful to **not** do VERSE, to check basic pulse
                     % shape and behaviour
-                    ak = ones(1,npts);
 
                 case 'rand'
                     % this `rand` strategy is mostly for testing purpose,
                     % to show that the approach from the article works,
                     % whatever the content of a(k) modulation fuction !
-                    ak = rand(1,npts);
+                    ak = rand(size(ak));
+                    bk = ak .* self.B1;
+                    gk = ak  * G;
 
                 case 'min_time'
                     % Hargreaves BA, Cunningham CH, Nishimura DG, Conolly
                     % SM. Variable-rate selective excitation for rapid MRI
                     % sequences. Magn Reson Med. 2004 Sep;52(3):590-7. doi:
                     % 10.1002/mrm.20168. PMID: 15334579.
-                    ak = ones(1,npts);
 
                     % 1. The RF waveform is uniformly compressed in time
                     % until the maximum RF amplitude is reached.
 
-                    current_maxB1 = self.B1max;
-                    target_maxB1 = self.maxB1.get();
-                    time_compression_factor = target_maxB1/current_maxB1;
-
-                    ak = ak * time_compression_factor;
+                    step1_compression_factor = lim_b1/max(bk);
+                    ak = ak  * step1_compression_factor;
+                    bk = ak .* self.B1;
+                    gk = ak  * G;
 
                     % 2. The constant gradient waveform amplitude (g) for
                     % the initial RF pulse and given slab thickness is
                     % calculated.
 
+                    G  = G * step1_compression_factor;
+
+                    % 3. Ignoring the gradient slew rate limit, the
+                    % gradient waveform and RF are compressed together in
+                    % time so that either the RF or the gradient are always
+                    % at the maximum amplitude.
+
+
 
                 case 'low_SAR'
-                    ak = ones(1,npts);
+                    % TODO
 
                 otherwise
                     error('verse type ?')
 
             end
 
-            tv = [self.time(1)  (self.time(1) + cumsum(dt./ak(1:npts-1)))];
-            bv = ak .* self.B1;
-            gv = ak .* self.GZ;
+            self.time = [self.time(1) cumsum(dt ./ ak(1:N-1))];
+            self.B1   = bk;
+            self.GZ   = gk;
 
-            self.time = tv;
-            self.B1   = bv;
-            self.GZ   = gv;
         end % fcn
 
         function init_verse_gui(self, container)
