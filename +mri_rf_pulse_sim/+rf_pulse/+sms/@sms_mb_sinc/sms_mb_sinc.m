@@ -12,14 +12,7 @@ classdef sms_mb_sinc < mri_rf_pulse_sim.rf_pulse.sinc & mri_rf_pulse_sim.backend
         end % fcn
 
         function generate_sms_mb_sinc(self)
-
-            % generate SINC pulse : this is SingleBand pulse waveform
-            self.generate_sinc();
-
-            % apply multi-band phase modulation to B1
-            self.mb_phase_modulation();
-            % GM is already set using the SINC as base class
-
+            self.mb_phase_modulation(); % apply multi-band phase modulation to B1
         end % fcn
 
         function txt = summary(self) % #abstract

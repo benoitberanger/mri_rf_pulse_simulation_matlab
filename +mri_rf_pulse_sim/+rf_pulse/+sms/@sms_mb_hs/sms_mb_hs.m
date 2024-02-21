@@ -12,14 +12,7 @@ classdef sms_mb_hs < mri_rf_pulse_sim.rf_pulse.hs & mri_rf_pulse_sim.backend.rf_
         end % fcn
 
         function generate_sms_mb_hs(self)
-
-            % generate HS pulse : this is SingleBand pulse waveform
-            self.generate_hs();
-
-            % apply multi-band phase modulation to B1
-            self.mb_phase_modulation();
-            % GM is already set using the HS as base class
-
+            self.mb_phase_modulation(); % apply multi-band phase modulation to B1
         end % fcn
 
         function txt = summary(self) % #abstract
