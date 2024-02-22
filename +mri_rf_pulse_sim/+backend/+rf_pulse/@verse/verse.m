@@ -33,10 +33,10 @@ classdef (Abstract) verse < handle
             lim_s = self.maxSZ.get();
 
             % same names as in the article
-            dt = [0 diff(self.time)];
+            dt = diff(self.time);
             N  = self.n_points.get();
             ak = ones(1,N);
-            tk = dt ./ ak;
+            tk = [dt(1) dt] ./ ak;
             bk = ak .* self.B1;
             G  = self.GZavg;
             gk = ak  * G;
@@ -109,7 +109,7 @@ classdef (Abstract) verse < handle
                     %                     cond = true;
                     %                     while cond
                     %
-                    % %                         sk = abs(diff(gk))./(dt./ak(1:N-1));
+                    %                         sk = abs(diff(gk))./diff(dt./ak);
                     %                         gradient(gk, self.time)
                     %                         s_break = sk > lim_s;
                     %
@@ -119,9 +119,9 @@ classdef (Abstract) verse < handle
                     %
                     %                             for k = 1 : N-1
                     %                                 if s_break(k)
-                    %                                 ak(k) = ak(k) * s_factor(k);
-                    %                                 bk(k) = ak(k) * self.B1(k);
-                    %                                 gk(k) = ak(k) * G;
+                    %                                     ak(k) = ak(k) * s_factor(k);
+                    %                                     bk(k) = ak(k) * self.B1(k);
+                    %                                     gk(k) = ak(k) * G;
                     %                                 end
                     %                             end
                     %
@@ -141,7 +141,7 @@ classdef (Abstract) verse < handle
 
             end
 
-            self.time = [self.time(1) cumsum(dt(1:N-1)./ak(1:N-1))];
+            self.time = [self.time(1) cumsum(dt./ak(1:N-1))];
             self.B1   = bk;
             self.GZ   = gk;
 
