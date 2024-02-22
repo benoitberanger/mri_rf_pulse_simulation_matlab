@@ -17,7 +17,7 @@ classdef (Abstract) verse < handle
             self.type  = mri_rf_pulse_sim.ui_prop.list  (parent=self, name='type' , value= 'rand' , items= {'<no>', 'min_time', 'low_SAR', 'rand'});
             self.maxB1 = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='maxB1', value= 15e-6, scale=1e6, unit='µT'     );
             self.maxGZ = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='maxGZ', value= 40e-3, scale=1e3, unit='mT/m'   );
-            self.maxSZ = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='maxSZ', value=120e-3, scale=1e3, unit='mT/m/ms');
+            self.maxSZ = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='maxSZ', value=120   , scale=1  , unit='mT/m/ms');
         end % fcn
 
         function verse_modulation(self)
@@ -33,11 +33,10 @@ classdef (Abstract) verse < handle
             lim_s = self.maxSZ.get();
 
             % same names as in the article
-            dt = diff(self.time);
+            dt = [0 diff(self.time)];
             N  = self.n_points.get();
-            %             k  = 1 : N;
             ak = ones(1,N);
-            %             tk = dt ./ ak(1:N-1);
+            tk = dt ./ ak;
             bk = ak .* self.B1;
             G  = self.GZavg;
             gk = ak  * G;
@@ -107,6 +106,32 @@ classdef (Abstract) verse < handle
                     % waveform.
 
 
+                    %                     cond = true;
+                    %                     while cond
+                    %
+                    % %                         sk = abs(diff(gk))./(dt./ak(1:N-1));
+                    %                         gradient(gk, self.time)
+                    %                         s_break = sk > lim_s;
+                    %
+                    %                         if any(s_break)
+                    %
+                    %                             s_factor = lim_s ./ sk;
+                    %
+                    %                             for k = 1 : N-1
+                    %                                 if s_break(k)
+                    %                                 ak(k) = ak(k) * s_factor(k);
+                    %                                 bk(k) = ak(k) * self.B1(k);
+                    %                                 gk(k) = ak(k) * G;
+                    %                                 end
+                    %                             end
+                    %
+                    %                         else
+                    %                             cond = false;
+                    %                         end
+                    %
+                    %                     end
+
+
 
                 case 'low_SAR'
                     % TODO
@@ -116,7 +141,7 @@ classdef (Abstract) verse < handle
 
             end
 
-            self.time = [self.time(1) cumsum(dt ./ ak(1:N-1))];
+            self.time = [self.time(1) cumsum(dt(1:N-1)./ak(1:N-1))];
             self.B1   = bk;
             self.GZ   = gk;
 
