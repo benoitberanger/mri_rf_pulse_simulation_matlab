@@ -28,16 +28,16 @@ classdef (Abstract) verse < handle
             end
 
             % shortcuts
-            lim_b1  = self.maxB1.get();
-            lim_g   = self.maxGZ.get();
-            lim_s   = self.maxSZ.get();
+            lim_b = self.maxB1.get();
+            lim_g = self.maxGZ.get();
+            lim_s = self.maxSZ.get();
 
             % same names as in the article
             dt = diff(self.time);
             N  = self.n_points.get();
-            k  = 1 : N;
+            %             k  = 1 : N;
             ak = ones(1,N);
-            tk = dt ./ ak(1:N-1);
+            %             tk = dt ./ ak(1:N-1);
             bk = ak .* self.B1;
             G  = self.GZavg;
             gk = ak  * G;
@@ -65,7 +65,7 @@ classdef (Abstract) verse < handle
                     % 1. The RF waveform is uniformly compressed in time
                     % until the maximum RF amplitude is reached.
 
-                    step1_compression_factor = lim_b1/max(bk);
+                    step1_compression_factor = lim_b/max(abs(bk));
                     ak = ak  * step1_compression_factor;
                     bk = ak .* self.B1;
                     gk = ak  * G;
@@ -74,14 +74,20 @@ classdef (Abstract) verse < handle
                     % the initial RF pulse and given slab thickness is
                     % calculated.
 
-                    G  = G * step1_compression_factor;
+                    % G  = G * step1_compression_factor; % !!! dont need this update !!!
 
                     % 3. Ignoring the gradient slew rate limit, the
                     % gradient waveform and RF are compressed together in
                     % time so that either the RF or the gradient are always
                     % at the maximum amplitude.
 
-
+                    for k = 1 : N
+                        b_factor = lim_b/abs(bk(k));
+                        g_factor = lim_g/abs(gk(k));
+                        ak(k) = ak(k) * min(b_factor,g_factor);
+                    end
+                    bk = ak .* self.B1;
+                    gk = ak  * G;
 
                 case 'low_SAR'
                     % TODO
