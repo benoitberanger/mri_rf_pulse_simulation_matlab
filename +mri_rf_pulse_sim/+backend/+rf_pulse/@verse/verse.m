@@ -89,6 +89,25 @@ classdef (Abstract) verse < handle
                     bk = ak .* self.B1;
                     gk = ak  * G;
 
+                    % 4. The end-points of the gradient and RF are set to
+                    % zero.
+
+                    bk(1) = 0;
+                    bk(N) = 0;
+                    gk(1) = 0;
+                    gk(N) = 0;
+
+                    % 5. At each point in the gradient where the slew rate
+                    % is violated, the gradient and RF waveforms are
+                    % expanded together in time to eliminate the slew-rate
+                    % violation, while maintaining the same excitation
+                    % k-space RF deposition. This step is applied
+                    % recursively, as expanding one time point often
+                    % results in a slew violation elsewhere in the
+                    % waveform.
+
+
+
                 case 'low_SAR'
                     % TODO
 
