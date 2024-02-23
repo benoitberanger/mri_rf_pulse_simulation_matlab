@@ -14,7 +14,7 @@ classdef (Abstract) verse < handle
     methods(Access = public)
 
         function self = verse()
-            self.type  = mri_rf_pulse_sim.ui_prop.list  (parent=self, name='type' , value= 'rand' , items= {'<no>', 'min_time', 'low_SAR', 'rand'});
+            self.type  = mri_rf_pulse_sim.ui_prop.list  (parent=self, name='type' , value= 'rand' , items= {'<no>', 'optimise', 'rand'});
             self.maxB1 = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='maxB1', value= 15e-6, scale=1e6, unit='µT'     );
             self.maxGZ = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='maxGZ', value= 40e-3, scale=1e3, unit='mT/m'   );
             self.maxSZ = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='maxSZ', value=120   , scale=1  , unit='mT/m/ms');
@@ -36,7 +36,6 @@ classdef (Abstract) verse < handle
             dt = diff(self.time);
             N  = self.n_points.get();
             ak = ones(1,N);
-            tk = [dt(1) dt] ./ ak;
             bk = ak .* self.B1;
             G  = self.GZavg;
             gk = ak  * G;
@@ -55,7 +54,7 @@ classdef (Abstract) verse < handle
                     bk = ak .* self.B1;
                     gk = ak  * G;
 
-                case 'min_time'
+                case 'optimise'
                     % Hargreaves BA, Cunningham CH, Nishimura DG, Conolly
                     % SM. Variable-rate selective excitation for rapid MRI
                     % sequences. Magn Reson Med. 2004 Sep;52(3):590-7. doi:
@@ -73,7 +72,7 @@ classdef (Abstract) verse < handle
                     % the initial RF pulse and given slab thickness is
                     % calculated.
 
-                    % G  = G * step1_compression_factor; % !!! dont need this update !!!
+                    % G  = G * step1_compression_factor; % !!! dont need this update ? !!!
 
                     % 3. Ignoring the gradient slew rate limit, the
                     % gradient waveform and RF are compressed together in
@@ -105,35 +104,6 @@ classdef (Abstract) verse < handle
                     % results in a slew violation elsewhere in the
                     % waveform.
 
-
-                    %                     cond = true;
-                    %                     while cond
-                    %
-                    %                         sk = abs(diff(gk))./diff(dt./ak);
-                    %                         gradient(gk, self.time)
-                    %                         s_break = sk > lim_s;
-                    %
-                    %                         if any(s_break)
-                    %
-                    %                             s_factor = lim_s ./ sk;
-                    %
-                    %                             for k = 1 : N-1
-                    %                                 if s_break(k)
-                    %                                     ak(k) = ak(k) * s_factor(k);
-                    %                                     bk(k) = ak(k) * self.B1(k);
-                    %                                     gk(k) = ak(k) * G;
-                    %                                 end
-                    %                             end
-                    %
-                    %                         else
-                    %                             cond = false;
-                    %                         end
-                    %
-                    %                     end
-
-
-
-                case 'low_SAR'
                     % TODO
 
                 otherwise
