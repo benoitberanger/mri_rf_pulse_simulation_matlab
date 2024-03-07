@@ -4,6 +4,8 @@ classdef sinc_verse < mri_rf_pulse_sim.backend.rf_pulse.verse & mri_rf_pulse_sim
 
         % constructor
         function self = sinc_verse()
+            self.n_points.set(1024);
+            self.n_side_lobs.set(5);
             self.generate_sinc_verse();
         end % fcn
 

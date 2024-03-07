@@ -33,13 +33,19 @@ classdef (Abstract) verse < handle
             lim_s = self.maxSZ.get();
 
             % same names as in the article
-            dt = diff(self.time);
             N  = self.n_points.get();
-            ak = ones(1,N);
-            bk = ak .* self.B1;
-            G  = self.GZavg;
-            gk = ak  * G;
+            b = self.B1;
+            g = self.GZ;
+            dt = diff(self.time);
 
+            DEBUG = true;
+            
+            if DEBUG
+                self.type.value = 'optimise';
+                figure(100)
+                clf
+            end
+            
             switch self.type.get()
 
                 case '<no>'
@@ -50,9 +56,10 @@ classdef (Abstract) verse < handle
                     % this `rand` strategy is mostly for testing purpose,
                     % to show that the approach from the article works,
                     % whatever the content of a(k) modulation fuction !
-                    ak = rand(size(ak));
-                    bk = ak .* self.B1;
-                    gk = ak  * G;
+                    a  = rand(size(b));
+                    b  = a  .* self.B1;
+                    g  = a  .* self.GZ;
+                    dt = dt ./ a(1:N-1);
 
                 case 'optimise'
                     % Hargreaves BA, Cunningham CH, Nishimura DG, Conolly
@@ -63,37 +70,37 @@ classdef (Abstract) verse < handle
                     % 1. The RF waveform is uniformly compressed in time
                     % until the maximum RF amplitude is reached.
 
-                    step1_compression_factor = lim_b/max(abs(bk));
-                    ak = ak  * step1_compression_factor;
-                    bk = ak .* self.B1;
-                    gk = ak  * G;
+                    step1_compression_factor = lim_b/max(abs(b));
+                    b  = b  * step1_compression_factor;
+                    g  = g  * step1_compression_factor;
+                    dt = dt / step1_compression_factor;
 
                     % 2. The constant gradient waveform amplitude (g) for
                     % the initial RF pulse and given slab thickness is
                     % calculated.
 
-                    % G  = G * step1_compression_factor; % !!! dont need this update ? !!!
+                    % !!! dont need this !!!
 
                     % 3. Ignoring the gradient slew rate limit, the
                     % gradient waveform and RF are compressed together in
                     % time so that either the RF or the gradient are always
                     % at the maximum amplitude.
 
+                    step2_compression_factor = zeros(size(b));
                     for k = 1 : N
-                        b_factor = lim_b/abs(bk(k));
-                        g_factor = lim_g/abs(gk(k));
-                        ak(k) = ak(k) * min(b_factor,g_factor);
+                        b_factor = lim_b/abs(b(k));
+                        g_factor = lim_g/abs(g(k));
+                        step2_compression_factor(k) = min(b_factor,g_factor);
                     end
-                    bk = ak .* self.B1;
-                    gk = ak  * G;
+                    b  = b  .* step2_compression_factor;
+                    g  = g  .* step2_compression_factor;
+                    dt = dt ./ step2_compression_factor(1:N-1);
 
                     % 4. The end-points of the gradient and RF are set to
                     % zero.
 
-                    bk(1) = 0;
-                    bk(N) = 0;
-                    gk(1) = 0;
-                    gk(N) = 0;
+                    b(1) = 0; b(N) = 0;
+                    g(1) = 0; g(N) = 0;
 
                     % 5. At each point in the gradient where the slew rate
                     % is violated, the gradient and RF waveforms are
@@ -103,18 +110,189 @@ classdef (Abstract) verse < handle
                     % recursively, as expanding one time point often
                     % results in a slew violation elsewhere in the
                     % waveform.
+                    if DEBUG
 
-                    % TODO
+                        self.time = [self.time(1) cumsum(dt)];
+                        self.B1   = b;
+                        self.GZ   = g;
+                        self
+                        clf
+                        self.plot(gcf)
+
+                        TOL = 1e-3;
+                        CONDITION = true;
+                        ITER = 0;
+                        LIM = 0.99;
+                        while CONDITION
+                            
+                            ITER = ITER + 1;
+
+                            if mod(ITER,2) == 0
+                                STATE = 'forward';
+                            else
+                                STATE = 'backward';
+                            end
+                            
+                            switch STATE
+                                case 'forward'
+                                    VECT = 1   : +1 : N-1;
+                                case 'backward'
+                                    VECT = N-1 : -1 : 2;
+                            end
+
+                            for k = VECT
+
+                                sr_k = (g(k+1)-g(k)) / dt(k);
+                                s_break = abs(sr_k) > lim_s;
+
+                                if s_break
+
+                                    % We need to solve this equation to find the new a(k), which will respect the SlewRate :
+                                    %
+                                    % FOWARD :
+                                    % lim_s = (g(k+1)*ak-g(k)) / dt(k)
+                                    % preserving g(1)=0 forces us to change g(2)
+                                    % This a first order polynome : Ax + B = 0
+                                    %
+                                    % BACKWARD :
+                                    % lim_s = (g(k+1)-g(k)*ak) / (dt(k)/ak)
+                                    % preserving g(N)=0 forces us to change g(N-1)
+                                    % This a second order polynome : Ax² + Bx + C  = 0
+                                    %
+                                    
+                                    sgn = sign(sr_k);
+                                    
+                                    switch STATE
+                                        case 'forward'
+
+                                            ak = [
+                                                (g(k)+sgn*lim_s*dt(k))/g(k+1)
+                                                LIM
+                                                ];
+                                            
+                                            
+                                            ak = max(ak(:)); % keep minimal decompression factor;
+
+                                            b (k+1) =  b(k+1) * ak;
+                                            g (k+1) =  g(k+1) * ak;
+                                            if k < N-1
+                                                dt(k+1) = dt(k+1) / ak;
+                                            end
+
+                                            % regularization
+                                            b_factor = abs(b(k+1))/lim_b;
+                                            g_factor = abs(g(k+1))/lim_g;
+                                            if b_factor>1 || g_factor>1
+                                                
+%                                                                             self.time = [self.time(1) cumsum(dt)];
+%                                                                             self.B1   = b;
+%                                                                             self.GZ   = g;
+%                                                                             clf
+%                                                                             self.plot(gcf)
+                                                                            
+                                                ak = min(b_factor,g_factor);
+                                                b (k+1) =  b(k+1) * ak;
+                                                g (k+1) =  g(k+1) * ak;
+                                                if k < N-1
+                                                    dt(k+1) = dt(k+1) / ak;
+                                                end
+                                                
+%                                                                             self.time = [self.time(1) cumsum(dt)];
+%                                                                             self.B1   = b;
+%                                                                             self.GZ   = g;
+%                                                                             clf
+%                                                                             self.plot(gcf)
+                                            end
+
+                                        case 'backward'
+
+
+                                            A = -g(k);
+                                            B = +g(k+1);
+                                            C = -sgn*lim_s*(dt(k));
+
+                                            DELTA = B^2 - 4*A*C;
+                                            ak = [
+                                                (-B +sqrt(DELTA))/(2*A)
+                                                (-B -sqrt(DELTA))/(2*A)
+                                                LIM
+                                                ];
+                                            
+                                            
+                                            ak = max(ak(:)); % keep minimal decompression factor;
+
+                                            b (k) =  b(k) * ak;
+                                            g (k) =  g(k) * ak;
+                                            dt(k) = dt(k) / ak;                         
+
+                                            % regularization
+                                            idx_reg = k;
+                                            b_factor = abs(b(idx_reg))/lim_b;
+                                            g_factor = abs(g(idx_reg))/lim_g;
+                                            if b_factor>1 || g_factor>1
+                                                
+%                                                                             self.time = [self.time(1) cumsum(dt)];
+%                                                                             self.B1   = b;
+%                                                                             self.GZ   = g;
+%                                                                             clf
+%                                                                             self.plot(gcf)
+                                                
+                                                ak = min(b_factor,g_factor);
+                                                b (idx_reg) =  b(idx_reg) * ak;
+                                                g (idx_reg) =  g(idx_reg) * ak;
+                                                dt(idx_reg) = dt(idx_reg) / ak;
+                                                
+%                                                                             self.time = [self.time(1) cumsum(dt)];
+%                                                                             self.B1   = b;
+%                                                                             self.GZ   = g;
+%                                                                             clf
+%                                                                             self.plot(gcf)
+                                            end
+                                            
+                                    end
+                                    
+%                                     fprintf('%03d %8s %f %03d \n', ITER, STATE, ak, k)
+                                   
+
+                                end
+
+                            end % FOR::k
+
+
+                            b(1) = 0; b(N) = 0;
+                            g(1) = 0; g(N) = 0;
+
+                            if mod(ITER,100) == 0 || mod(ITER,100) == 1
+                                fprintf('%03d %8s %g \n', ITER, STATE, sum(dt)*1e3)
+
+                                self.time = [self.time(1) cumsum(dt)];
+                                self.B1   = b;
+                                self.GZ   = g;
+                                clf
+                                self.plot(gcf)
+                            end
+
+                            s = diff(g) ./ dt;
+                            CONDITION = abs(max(abs(s)) - lim_s) > TOL;
+
+                        end % WHILE
+
+                    end % DEBUG
 
                 otherwise
                     error('verse type ?')
 
+            end % switch
+
+            t = [self.time(1) cumsum(dt)];
+
+            self.time = t;
+            self.B1   = b;
+            self.GZ   = g;
+            if DEBUG
+                clf
+                self.plot(gcf)
             end
-
-            self.time = [self.time(1) cumsum(dt./ak(1:N-1))];
-            self.B1   = bk;
-            self.GZ   = gk;
-
         end % fcn
 
         function init_verse_gui(self, container)
