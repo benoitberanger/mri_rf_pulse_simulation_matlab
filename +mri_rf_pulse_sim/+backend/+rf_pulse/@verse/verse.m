@@ -37,6 +37,7 @@ classdef (Abstract) verse < handle
             b  = self.B1;
             g  = self.GZ;
             dt = diff(self.time);
+            t  = [self.time(1) cumsum(dt)];
 
             switch self.type.get()
 
@@ -52,6 +53,7 @@ classdef (Abstract) verse < handle
                     b  = a  .* self.B1;
                     g  = a  .* self.GZ;
                     dt = dt ./ a(1:N-1);
+                    t  = [self.time(1) cumsum(dt)]
 
                 case 'optimise'
 
@@ -190,14 +192,21 @@ classdef (Abstract) verse < handle
 
                     end % WHILE
 
-%                     interp1
+                    t = [self.time(1) cumsum(dt)];
+                    %                     % resample time so it is linearly spaced
+                    %                     tv = [self.time(1) cumsum(dt)];
+                    %                     T0 = tv(1);
+                    %                     Tp = tv(N);
+                    %                     t  = linspace(T0,Tp,N);
+                    %                     b  = interp1(tv, b, t, 'linear');
+                    %                     g  = interp1(tv, g, t, 'linear');
 
                 otherwise
                     error('verse type ?')
 
             end % switch
 
-            self.time = [self.time(1) cumsum(dt)];
+            self.time = t;
             self.B1   = b;
             self.GZ   = g;
 
