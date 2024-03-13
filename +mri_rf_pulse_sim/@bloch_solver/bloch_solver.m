@@ -241,7 +241,7 @@ classdef bloch_solver < handle & matlab.mixin.CustomCompactDisplayProvider
             end
         end
 
-        % solve bloch simplified equations equation : no T2 relaxation, no T1 relaxation, no diffusion -> only B1 field and GZ
+        % solve bloch equations equation : RF field, GZ gradient, T1 & T2 relaxation, but no diffusion
         function solve(self)
             assert(~isempty(self.rf_pulse), '[%s]: missing rf_pulse', mfilename)
 
@@ -336,7 +336,53 @@ classdef bloch_solver < handle & matlab.mixin.CustomCompactDisplayProvider
 
         end % fcn
 
+        function [F, Y_scaled] = getFFTApproxPerp(self)
+            [F, Y] = getFFTApprox(self);
+            y = self.getChemicalShiftPerp();
+            Y_scaled = Y * y(round(end/2));
+        end % fcn
+        function [F, Y_scaled] = getFFTApproxPara(self)
+            [F, Y] = getFFTApprox(self);
+            y = self.getChemicalShiftPara();
+            Y_scaled = Y * y(round(end/2));
+        end % fcn
+
+        function plotFFTApproxPerp(self)
+            [F, Y] = getFFTApproxPerp(self);
+            figure
+            hold
+            plot(F, Y, 'DisplayName', 'FFT')
+            plot(self.B0.get()*self.DeltaB0.getScaled()*self.rf_pulse.gamma*1e-6/(2*pi), self.getChemicalShiftPerp(), 'DisplayName', 'Bloch')
+            legend
+            xlim([-self.rf_pulse.bandwidth +self.rf_pulse.bandwidth]*2)
+        end % fcn
+        function plotFFTApproxPara(self)
+            [F, Y] = getFFTApproxPara(self);
+            figure
+            hold
+            plot(F, Y, 'DisplayName', 'FFT')
+            plot(self.B0.get()*self.DeltaB0.getScaled()*self.rf_pulse.gamma*1e-6/(2*pi), self.getChemicalShiftPara(), 'DisplayName', 'Bloch')
+            legend
+            xlim([-self.rf_pulse.bandwidth +self.rf_pulse.bandwidth]*2)
+        end % fcn
+
     end % meths
+
+    methods (Access = protected)
+
+        function [F, Y_scaled] = getFFTApprox(self)
+            assert(~isempty(self.rf_pulse), '[%s]: missing rf_pulse', mfilename)
+
+            L = self.rf_pulse.n_points.get();
+            N = L*100;
+            Y = fftshift(fft(self.rf_pulse.B1,N));
+            dt = mean(diff(self.rf_pulse.time));
+            F = 1/dt * (-N/2 : (N/2-1)) / N;
+            Y_scaled = abs(Y);
+            Y_scaled = Y_scaled / Y_scaled(round(end/2));
+        end % fcn
+
+    end
 
 end % class
 
