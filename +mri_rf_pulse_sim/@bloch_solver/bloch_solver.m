@@ -338,48 +338,47 @@ classdef bloch_solver < handle & matlab.mixin.CustomCompactDisplayProvider
 
         function [F, Y_scaled] = getFFTApproxPerp(self)
             [F, Y] = getFFTApprox(self);
+            Y = Y / Y(round(end/2));
             y = self.getChemicalShiftPerp();
             Y_scaled = Y * y(round(end/2));
         end % fcn
         function [F, Y_scaled] = getFFTApproxPara(self)
             [F, Y] = getFFTApprox(self);
+            Y_scaled = (Y/Y(round(end/2))*2-1);
             y = self.getChemicalShiftPara();
-            Y_scaled = Y * y(round(end/2));
+            Y_scaled = Y_scaled * y(round(end/2));
         end % fcn
 
         function plotFFTApproxPerp(self)
             [F, Y] = getFFTApproxPerp(self);
-            figure
-            hold
-            plot(F, Y, 'DisplayName', 'FFT')
-            plot(self.B0.get()*self.DeltaB0.getScaled()*self.rf_pulse.gamma*1e-6/(2*pi), self.getChemicalShiftPerp(), 'DisplayName', 'Bloch')
-            legend
-            xlim([-self.rf_pulse.bandwidth +self.rf_pulse.bandwidth]*2)
+            self.plotFFTApprox(F, Y, self.getChemicalShiftPerp());
         end % fcn
         function plotFFTApproxPara(self)
             [F, Y] = getFFTApproxPara(self);
-            figure
-            hold
-            plot(F, Y, 'DisplayName', 'FFT')
-            plot(self.B0.get()*self.DeltaB0.getScaled()*self.rf_pulse.gamma*1e-6/(2*pi), self.getChemicalShiftPara(), 'DisplayName', 'Bloch')
-            legend
-            xlim([-self.rf_pulse.bandwidth +self.rf_pulse.bandwidth]*2)
+            self.plotFFTApprox(F, Y, self.getChemicalShiftPara());
         end % fcn
 
     end % meths
 
     methods (Access = protected)
 
-        function [F, Y_scaled] = getFFTApprox(self)
+        function [F, Y] = getFFTApprox(self)
             assert(~isempty(self.rf_pulse), '[%s]: missing rf_pulse', mfilename)
-
             L = self.rf_pulse.n_points.get();
             N = L*100;
             Y = fftshift(fft(self.rf_pulse.B1,N));
             dt = mean(diff(self.rf_pulse.time));
             F = 1/dt * (-N/2 : (N/2-1)) / N;
-            Y_scaled = abs(Y);
-            Y_scaled = Y_scaled / Y_scaled(round(end/2));
+            Y = abs(Y);
+        end % fcn
+
+        function plotFFTApprox(self, freq, y_fft, y_block)
+            figure
+            hold on
+            plot(freq, y_fft, 'DisplayName', 'FFT')
+            plot(self.B0.get()*self.DeltaB0.getScaled()*self.rf_pulse.gamma*1e-6/(2*pi), y_block, 'DisplayName', 'Bloch')
+            legend
+            xlim([-self.rf_pulse.bandwidth +self.rf_pulse.bandwidth]*2)
         end % fcn
 
     end
