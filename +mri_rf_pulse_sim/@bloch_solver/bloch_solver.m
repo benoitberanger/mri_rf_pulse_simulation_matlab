@@ -9,7 +9,7 @@ classdef bloch_solver < handle & matlab.mixin.CustomCompactDisplayProvider
         T1                    mri_rf_pulse_sim.ui_prop.scalar              % [s] T1 relaxtion coefficient : set to +Inf by default
         T2                    mri_rf_pulse_sim.ui_prop.scalar              % [s] T2 relaxtion coefficient : set to +Inf by default
         % gamma -> from rf_pulse
-        % time -> from rf_pulse
+        % time  -> from rf_pulse
     end % pros
 
     properties (GetAccess = public, SetAccess = protected)
@@ -373,7 +373,7 @@ classdef bloch_solver < handle & matlab.mixin.CustomCompactDisplayProvider
         end % fcn
 
         function plotFFTApprox(self, freq, y_fft, y_block)
-            figure
+            figure('NumberTitle','off', 'Name',sprintf('FFT apprixmation : %s', class(self.rf_pulse)))
             hold on
             plot(freq, y_fft, 'DisplayName', 'FFT')
             plot(self.B0.get()*self.DeltaB0.getScaled()*self.rf_pulse.gamma*1e-6/(2*pi), y_block, 'DisplayName', 'Bloch')
