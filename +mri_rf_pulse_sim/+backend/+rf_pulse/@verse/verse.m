@@ -50,10 +50,10 @@ classdef (Abstract) verse < handle
                     % to show that the approach from the article works,
                     % whatever the content of a(k) modulation fuction !
                     a  = rand(size(b));
-                    b  = a  .* self.B1;
-                    g  = a  .* self.GZ;
+                    b  = a  .* b;
+                    g  = a  .* g;
                     dt = dt ./ a(1:N-1);
-                    t  = [self.time(1) cumsum(dt)]
+                    t  = [self.time(1) cumsum(dt)];
 
                 case 'optimise'
 
@@ -150,13 +150,13 @@ classdef (Abstract) verse < handle
                             % after decompression, we might have broken B1max and GZmax
                             % so need to regulirize
                             if abs(b(k-1)) > lim_b
-                                alpha   = b (k-1) / lim_b;
+                                alpha   = abs(b(k-1)) / lim_b;
                                 g (k-1) = g (k-1) / alpha;
                                 b (k-1) = b (k-1) / alpha;
                                 dt(k-1) = dt(k-1) * alpha;
                             end
                             if abs(g(k-1)) > lim_g
-                                alpha   = g (k-1) / lim_g;
+                                alpha   = abs(g(k-1)) / lim_g;
                                 g (k-1) = g (k-1) / alpha;
                                 b (k-1) = b (k-1) / alpha;
                                 dt(k-1) = dt(k-1) * alpha;
