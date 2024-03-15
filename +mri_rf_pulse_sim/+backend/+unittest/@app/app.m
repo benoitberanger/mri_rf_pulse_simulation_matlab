@@ -94,6 +94,16 @@ classdef app < matlab.unittest.TestCase
             testCase.application.simulation_parameters.T2.set(0.010);
         end
 
+        % FFT approximation
+        function plot_FFT_approx_para(testCase)
+            testCase.application.bloch_solver.plotFFTApproxPara();
+            close(gcf);
+        end
+        function plot_FFT_approx_perp(testCase)
+            testCase.application.bloch_solver.plotFFTApproxPerp();
+            close(gcf);
+        end
+
     end % meths
 
 
