@@ -15,7 +15,7 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
             self.rf_pulse = value;
         end
     end
-    
+
     methods (Access = public)
 
         function plot(self, container)

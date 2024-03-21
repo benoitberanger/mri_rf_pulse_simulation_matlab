@@ -9,7 +9,15 @@ classdef hanning < mri_rf_pulse_sim.backend.window.abstract
 
     methods % no attribute for dependent properties
         function value = get.shape(self)
-            value = self.a0 + self.a1 * cos(2*pi*self.rf_pulse.time/self.rf_pulse.duration);
+            % adjust time so it is symetrical
+            if self.rf_pulse.time(1) == 0
+                t = self.rf_pulse.time - self.rf_pulse.time(end)/2; % useful for VERSE
+                d = t(end)-t(1);
+            else
+                t = self.rf_pulse.time;
+                d = self.rf_pulse.duration.get();
+            end
+            value = self.a0 + self.a1 * cos(2*pi*t/d);
         end % fcn
     end % meths
 
