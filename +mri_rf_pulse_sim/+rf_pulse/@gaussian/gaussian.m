@@ -15,11 +15,16 @@ classdef gaussian < mri_rf_pulse_sim.backend.rf_pulse.abstract
     properties (GetAccess = public, SetAccess = protected, Dependent)
         bandwidth                                                          % [Hz]  #abstract
         sigma                                                              % []
+        Ag                                                                 % [T] amplitude
     end % props
 
     methods % no attribute for dependent properties
         function value = get.sigma    (self); value = self.duration/7.734; end
         function value = get.bandwidth(self); value = 0.3748/self.sigma  ; end
+        function value = get.Ag       (self)
+            value = deg2rad(self.flip_angle.get()) / ...
+                (self.gamma * self.sigma * sqrt(2*pi));
+        end
     end % meths
 
     methods (Access = public)
@@ -36,15 +41,9 @@ classdef gaussian < mri_rf_pulse_sim.backend.rf_pulse.abstract
         end % fcn
 
         function generate_gaussian(self)
-
             self.time = linspace(-self.duration/2, +self.duration/2, self.n_points.get());
-
-            waveform = exp(-self.time.^2 / (2*self.sigma^2)); % base waveform
-            waveform = waveform / trapz(self.time, waveform); % normalize integral
-            waveform = waveform * deg2rad(self.flip_angle.get()) / self.gamma; % scale integrale with flip angle
-
-            self.B1 = waveform .* exp(1j * 2*pi*self.frequency_offcet * self.time); % add frequency offcet scaled waveform
-            self.GZ  = ones(size(self.time)) * self.GZavg;
+            self.B1   = self.Ag * exp(-self.time.^2/(2*self.sigma^2)) .* exp(1j*2*pi*self.frequency_offcet*self.time);
+            self.GZ   = ones(size(self.time)) * self.GZavg;
         end % fcn
 
         function txt = summary(self) % #abstract
