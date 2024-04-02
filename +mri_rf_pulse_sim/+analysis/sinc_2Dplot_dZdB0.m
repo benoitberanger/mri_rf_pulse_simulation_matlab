@@ -17,7 +17,7 @@ solver.DeltaB0.N = n_db0;
 
 %% Computation
 
-% slove and store
+% solve and store
 solver.solve();
 DZxDB0 = solver.getSliceProfilePerp(solver.DeltaB0.vect);
 DZxDB0 = squeeze(DZxDB0); % ?? why there is an empty dimension
