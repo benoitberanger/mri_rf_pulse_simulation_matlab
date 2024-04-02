@@ -1,4 +1,4 @@
-function compare_ChemicalShift_SLRinv_vs_HS()
+function compare_ChemicalShift_SLRinv_vs_HS_vs_FOCI()
 % This function will compare the spatial displacement due to chemical shift between 2 pulses
 
 
