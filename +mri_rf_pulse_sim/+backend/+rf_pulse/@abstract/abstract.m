@@ -18,6 +18,7 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
         tbwp            (1,1) double                                       % []      time-bandwidth product -> in the literature, it represents a "quality" factor
         energy          (1,1) double                                       % []      ~Joules (J)
         power           (1,1) double                                       % []      ~Watts  (W) !! average power (not instantaneous)
+        B1rms           (1,1) double                                       % [T]     B1 Root Mean Square
         gradB1max       (1,1) double                                       % [T/s]   max(dB1/dt)
         gradGZmax       (1,1) double                                       % [T/m/s] max(dGZ/dt)
     end % props
@@ -30,6 +31,7 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
         function value = get.tbwp     (self); value = self.duration * self.bandwidth;                          end
         function value = get.energy   (self); value = trapz(self.time,self.magnitude.^2);                      end
         function value = get.power    (self); value = self.energy/self.duration;                               end
+        function value = get.B1rms    (self); value = sqrt(self.power);                                        end
         function value = get.gradB1max(self); value = max(gradient(self.magnitude,self.time));                 end
         function value = get.gradGZmax(self); value = max(gradient(self.GZ       ,self.time));                 end
     end % meths
@@ -127,7 +129,7 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
             axis(a(6),'tight')
 
             linkaxes(a,'x');
-            
+
             if nargout
                 varargout{1} = container;
             end
@@ -147,7 +149,7 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
                 [self.n_points, self.duration, self.slice_thickness] ...
                 );
         end % fcn
-        
+
         function displayRep = compactRepresentationForSingleLine(self,displayConfiguration,width)
             txt = sprintf('%s', self.summary());
             displayRep = widthConstrainedDataRepresentation(self,displayConfiguration,width,...
