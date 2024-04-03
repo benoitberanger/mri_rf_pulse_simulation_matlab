@@ -1,43 +1,45 @@
 classdef simulation_results < mri_rf_pulse_sim.backend.base_class
 
     properties(GetAccess = public, SetAccess = ?mri_rf_pulse_sim.app)
-        fig matlab.ui.Figure
+        fig                   matlab.ui.Figure
 
-        axes_Mxyz          matlab.graphics.axis.Axes
-        line_M_x           matlab.graphics.chart.primitive.Line
-        line_M_y           matlab.graphics.chart.primitive.Line
-        line_M_para        matlab.graphics.chart.primitive.Line
-        line_M_perp        matlab.graphics.chart.primitive.Line
-        line_M_up          matlab.graphics.chart.primitive.Line
-        line_M_mid         matlab.graphics.chart.primitive.Line
-        line_M_down        matlab.graphics.chart.primitive.Line
+        axes_Mxyz             matlab.graphics.axis.Axes
+        line_M_x              matlab.graphics.chart.primitive.Line
+        line_M_y              matlab.graphics.chart.primitive.Line
+        line_M_para           matlab.graphics.chart.primitive.Line
+        line_M_perp           matlab.graphics.chart.primitive.Line
+        line_M_up             matlab.graphics.chart.primitive.Line
+        line_M_mid            matlab.graphics.chart.primitive.Line
+        line_M_down           matlab.graphics.chart.primitive.Line
 
-        axes_Sphere        matlab.graphics.axis.Axes
-        surface_Sphere     matlab.graphics.chart.primitive.Surface
-        line3_Mxyz         matlab.graphics.chart.primitive.Line
-        q3_Mxyz_end        matlab.graphics.chart.primitive.Quiver
+        axes_Sphere           matlab.graphics.axis.Axes
+        surface_Sphere        matlab.graphics.chart.primitive.Surface
+        line3_Mxyz            matlab.graphics.chart.primitive.Line
+        q3_Mxyz_end           matlab.graphics.chart.primitive.Quiver
 
-        axes_SliceProfile  matlab.graphics.axis.Axes
-        line_S_Mx          matlab.graphics.chart.primitive.Line
-        line_S_My          matlab.graphics.chart.primitive.Line
-        line_S_Mpara       matlab.graphics.chart.primitive.Line
-        line_S_Mperp       matlab.graphics.chart.primitive.Line
-        line_S_up          matlab.graphics.chart.primitive.Line
-        line_S_mid         matlab.graphics.chart.primitive.Line
-        line_S_down        matlab.graphics.chart.primitive.Line
-        line_S_vert        matlab.graphics.chart.primitive.Line
-        line_S_stL         matlab.graphics.chart.primitive.Line
-        line_S_stR         matlab.graphics.chart.primitive.Line
+        axes_SliceProfile     matlab.graphics.axis.Axes
+        line_S_Mx             matlab.graphics.chart.primitive.Line
+        line_S_My             matlab.graphics.chart.primitive.Line
+        line_S_Mpara          matlab.graphics.chart.primitive.Line
+        line_S_Mperp          matlab.graphics.chart.primitive.Line
+        line_S_up             matlab.graphics.chart.primitive.Line
+        line_S_mid            matlab.graphics.chart.primitive.Line
+        line_S_down           matlab.graphics.chart.primitive.Line
+        line_S_vert           matlab.graphics.chart.primitive.Line
+        line_S_stL            matlab.graphics.chart.primitive.Line
+        line_S_stR            matlab.graphics.chart.primitive.Line
 
-        axes_ChemicalShift matlab.graphics.axis.Axes
-        line_C_Mx          matlab.graphics.chart.primitive.Line
-        line_C_My          matlab.graphics.chart.primitive.Line
-        line_C_Mpara       matlab.graphics.chart.primitive.Line
-        line_C_Mperp       matlab.graphics.chart.primitive.Line
-        line_C_up          matlab.graphics.chart.primitive.Line
-        line_C_mid         matlab.graphics.chart.primitive.Line
-        line_C_down        matlab.graphics.chart.primitive.Line
-        line_C_vert        matlab.graphics.chart.primitive.Line
+        axes_ChemicalShiftPPM matlab.graphics.axis.Axes
+        line_C_Mx             matlab.graphics.chart.primitive.Line
+        line_C_My             matlab.graphics.chart.primitive.Line
+        line_C_Mpara          matlab.graphics.chart.primitive.Line
+        line_C_Mperp          matlab.graphics.chart.primitive.Line
+        line_C_up             matlab.graphics.chart.primitive.Line
+        line_C_mid            matlab.graphics.chart.primitive.Line
+        line_C_down           matlab.graphics.chart.primitive.Line
+        line_C_vert           matlab.graphics.chart.primitive.Line
+        axes_ChemicalShiftHz  matlab.graphics.axis.Axes
+
     end % props
 
     methods (Access = public)
@@ -225,7 +227,7 @@ classdef simulation_results < mri_rf_pulse_sim.backend.base_class
                 'Position',[0 0.3 1 0.3],...
                 'BackgroundColor',fig_col.figureBG);
 
-            handles.axes_SliceProfile = axes(handles.uipanel_SliceProfile);
+            handles.axes_SliceProfile = axes(handles.uipanel_SliceProfile, 'Units','normalized', 'OuterPosition',[0.0 0.0 1.05 1.0]);
             self.axes_SliceProfile = handles.axes_SliceProfile;
             hold(handles.axes_SliceProfile, 'on')
 
@@ -253,23 +255,29 @@ classdef simulation_results < mri_rf_pulse_sim.backend.base_class
                 'Units','Normalized',...
                 'Position',[0 0 1 0.3],...
                 'BackgroundColor',fig_col.figureBG);
-            handles.axes_ChemicalShift = axes(handles.uipanel_ChemicalShift);
-            self.axes_ChemicalShift = handles.axes_ChemicalShift;
-            hold(handles.axes_ChemicalShift, 'on')
-            self.line_C_Mx    = plot(handles.axes_ChemicalShift,                   0,         NaN, 'Color',color.x   , 'LineStyle',linestyle.x   , 'LineWidth',linewidth.x   );
-            self.line_C_My    = plot(handles.axes_ChemicalShift,                   0,         NaN, 'Color',color.y   , 'LineStyle',linestyle.y   , 'LineWidth',linewidth.y   );
-            self.line_C_Mpara = plot(handles.axes_ChemicalShift,                   0,         NaN, 'Color',color.para, 'LineStyle',linestyle.para, 'LineWidth',linewidth.para);
-            self.line_C_Mperp = plot(handles.axes_ChemicalShift,                   0,         NaN, 'Color',color.perp, 'LineStyle',linestyle.perp, 'LineWidth',linewidth.perp);
-            self.line_C_up    = plot(handles.axes_ChemicalShift, [time(1) time(end)], [+1   +1  ], 'Color',color.ref , 'LineStyle',linestyle.ref , 'LineWidth',linewidth.ref );
-            self.line_C_mid   = plot(handles.axes_ChemicalShift, [time(1) time(end)], [ 0    0  ], 'Color',color.ref , 'LineStyle',linestyle.ref , 'LineWidth',linewidth.ref );
-            self.line_C_down  = plot(handles.axes_ChemicalShift, [time(1) time(end)], [-1   -1  ], 'Color',color.ref , 'LineStyle',linestyle.ref , 'LineWidth',linewidth.ref );
-            self.line_C_vert  = plot(handles.axes_ChemicalShift, [0       0        ], [-1.2 +1.2], 'Color',color.vert, 'LineStyle',linestyle.vert, 'LineWidth',linewidth.vert);
-            legend(handles.axes_ChemicalShift, {'M_x', 'M_y', 'M\mid\mid', 'M\perp'})
-            xlabel(handles.axes_ChemicalShift, '\DeltaB_0 [ppm]');
-            ylabel(handles.axes_ChemicalShift, 'final M_x_y_z');
-            ylim  (handles.axes_ChemicalShift, [-1.2 +1.2])
-            handles.axes_ChemicalShift.YLabel.Rotation = 0;
-            handles.axes_ChemicalShift.YLabel.HorizontalAlignment = 'right';
+            % PPM
+            handles.axes_ChemicalShiftPPM = axes(handles.uipanel_ChemicalShift, 'Units','normalized', 'OuterPosition',[0.0 0.0 1.05 0.9]);
+            self.axes_ChemicalShiftPPM = handles.axes_ChemicalShiftPPM;
+            hold(handles.axes_ChemicalShiftPPM, 'on')
+            self.line_C_Mx    = plot(handles.axes_ChemicalShiftPPM,                   0,         NaN, 'Color',color.x   , 'LineStyle',linestyle.x   , 'LineWidth',linewidth.x   );
+            self.line_C_My    = plot(handles.axes_ChemicalShiftPPM,                   0,         NaN, 'Color',color.y   , 'LineStyle',linestyle.y   , 'LineWidth',linewidth.y   );
+            self.line_C_Mpara = plot(handles.axes_ChemicalShiftPPM,                   0,         NaN, 'Color',color.para, 'LineStyle',linestyle.para, 'LineWidth',linewidth.para);
+            self.line_C_Mperp = plot(handles.axes_ChemicalShiftPPM,                   0,         NaN, 'Color',color.perp, 'LineStyle',linestyle.perp, 'LineWidth',linewidth.perp);
+            self.line_C_up    = plot(handles.axes_ChemicalShiftPPM, [time(1) time(end)], [+1   +1  ], 'Color',color.ref , 'LineStyle',linestyle.ref , 'LineWidth',linewidth.ref );
+            self.line_C_mid   = plot(handles.axes_ChemicalShiftPPM, [time(1) time(end)], [ 0    0  ], 'Color',color.ref , 'LineStyle',linestyle.ref , 'LineWidth',linewidth.ref );
+            self.line_C_down  = plot(handles.axes_ChemicalShiftPPM, [time(1) time(end)], [-1   -1  ], 'Color',color.ref , 'LineStyle',linestyle.ref , 'LineWidth',linewidth.ref );
+            self.line_C_vert  = plot(handles.axes_ChemicalShiftPPM, [0       0        ], [-1.2 +1.2], 'Color',color.vert, 'LineStyle',linestyle.vert, 'LineWidth',linewidth.vert);
+            legend(handles.axes_ChemicalShiftPPM, {'M_x', 'M_y', 'M\mid\mid', 'M\perp'})
+            xlabel(handles.axes_ChemicalShiftPPM, '\DeltaB_0 [ppm]');
+            ylabel(handles.axes_ChemicalShiftPPM, 'final M_x_y_z');
+            ylim  (handles.axes_ChemicalShiftPPM, [-1.2 +1.2])
+            handles.axes_ChemicalShiftPPM.YLabel.Rotation = 0;
+            handles.axes_ChemicalShiftPPM.YLabel.HorizontalAlignment = 'right';
+            % Hz
+            handles.axes_ChemicalShiftHz = axes(handles.uipanel_ChemicalShift, 'Units','normalized', 'Position',handles.axes_ChemicalShiftPPM.Position, ...
+                'XAxisLocation','top', 'YAxisLocation','right', 'Color','none', 'Box','off', 'YTick',[]);
+            self.axes_ChemicalShiftHz = handles.axes_ChemicalShiftHz;
+            xlabel(handles.axes_ChemicalShiftHz, 'Hz')
 
             % IMPORTANT
             guidata(container,handles)
