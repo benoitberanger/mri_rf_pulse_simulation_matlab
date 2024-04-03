@@ -21,7 +21,7 @@ classdef fermi < mri_rf_pulse_sim.backend.rf_pulse.abstract
     end % props
 
     methods % no attribute for dependent properties
-        function value = get.bandwidth(self); value = 1/self.duration * (2/(1-(1/self.transition_factor)));end % !!! wrong : very rough handmade approximation !!!
+        function value = get.bandwidth(self); value = 1/self.duration * (1/(1-(1/self.transition_factor)));end % !!! wrong : very rough handmade approximation !!!
         function value = get.t0       (self); value = self.duration / (2 + 13.81/self.transition_factor);  end
         function value = get.a        (self); value = self.t0/self.transition_factor;                      end
         function value = get.Af       (self)

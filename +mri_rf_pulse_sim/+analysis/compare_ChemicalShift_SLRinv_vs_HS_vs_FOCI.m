@@ -1,5 +1,12 @@
 function compare_ChemicalShift_SLRinv_vs_HS_vs_FOCI()
 % This function will compare the spatial displacement due to chemical shift between 2 pulses
+%
+% REMINDER
+%
+% CSDE is Chemichal Shift Displacement Error
+% dW = dB0 is chemical shift
+%
+% CSDE = (dW * B0) / BW
 
 
 %% Parameters
