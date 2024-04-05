@@ -16,7 +16,7 @@ classdef goia_hs < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
         bw    mri_rf_pulse_sim.ui_prop.scalar                              % [Hz] target bandwidth of the pulse, in kilo Hertz
         beta  mri_rf_pulse_sim.ui_prop.scalar                              % [rad/s]
-        b1max mri_rf_pulse_sim.ui_prop.scalar                              % [T] pulse max RF amplitude
+        b1max mri_rf_pulse_sim.ui_prop.scalar                              % [T] RF waveform amplitude amplitude
 
         f mri_rf_pulse_sim.ui_prop.scalar                                  % dip in the gradient profile : 0 is 100% dip, 1 is no dip == flat gradient
         n mri_rf_pulse_sim.ui_prop.scalar                                  % power factor of the magnitude shape
@@ -68,7 +68,7 @@ classdef goia_hs < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
         % synthesis text
         function txt = summary(self)
-            txt = sprintf('[%s] : BW=%s B1max=%s  beta=%s  f=%s  n=%s  m=%s', ...
+            txt = sprintf('[%s] : BW=%s  B1max=%s  beta=%s  f=%s  n=%s  m=%s', ...
                 mfilename, self.bw.repr, self.b1max.repr, self.beta.repr, self.f.repr, self.n.repr, self.m.repr);
         end % fcn
 

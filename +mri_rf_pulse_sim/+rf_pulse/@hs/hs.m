@@ -2,34 +2,29 @@ classdef hs < mri_rf_pulse_sim.backend.rf_pulse.abstract
     % Hyperbolic Secant
 
     properties (GetAccess = public, SetAccess = public)
-        Amax mri_rf_pulse_sim.ui_prop.scalar                               % [T] B1max
-        beta mri_rf_pulse_sim.ui_prop.scalar                               % [rad/s]
-        mu   mri_rf_pulse_sim.ui_prop.scalar                               % [] frequency sweep factor
+        bw    mri_rf_pulse_sim.ui_prop.scalar                              % [Hz] target bandwidth of the pulse, in kilo Hertz
+        b1max mri_rf_pulse_sim.ui_prop.scalar                              % [T] RF waveform amplitude amplitude
+        b1cutoff mri_rf_pulse_sim.ui_prop.scalar                           % [] RF waveform cutoff, in percentage (%)
     end % props
 
     properties (GetAccess = public, SetAccess = protected, Dependent)
         bandwidth                                                          % [Hz]  #abstract
-        adiabatic_condition (1,1) double                                   % [T] B1max (Amax) minimal to be adiabatic
+        beta                                                               % [rad/s]
     end % props
 
     methods % no attribute for dependent properties
-        function value = get.bandwidth(self)
-            value = self.beta * self.mu  / pi;
-        end% % fcn
-        function value = get.adiabatic_condition(self)
-            value = sqrt(self.mu.value) * self.beta / self.gamma;
-        end % fcl
+        function value = get.bandwidth          (self); value = self.bw.get();                          end
+        function value = get.beta               (self); value = asech(self.b1cutoff.get());             end
     end % meths
 
     methods (Access = public)
 
         % constructor
         function self = hs()
-            self.duration.value = 7.68 * 1e-3;
-            self.Amax = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='Amax', value= 20 * 1e-6, unit='µT', scale=1e6);
-            self.beta = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='beta', value=1618      , unit='rad/s'        );
-            BW = 2000; % Hz
-            self.mu   = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='mu'  , value=BW*pi/self.beta                 );
+            self.duration.set(0.010);
+            self.bw       = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='bw'      , value=2000   , scale=1e-3, unit='kHz');
+            self.b1max    = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='b1max'   , value=  20e-6, scale=1e6 , unit='µT' );
+            self.b1cutoff = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='b1cutoff', value=   0.01, scale=1e2 , unit='%'  );
             self.generate_hs();
         end % fcn
 
@@ -38,36 +33,34 @@ classdef hs < mri_rf_pulse_sim.backend.rf_pulse.abstract
         end % fcn
 
         function generate_hs(self)
-            self.assert_nonempty_prop({'Amax', 'beta', 'mu'})
+            self.time = linspace(0, self.duration, self.n_points);
 
-            self.time = linspace(-self.duration/2, +self.duration/2, self.n_points);
+            % reshape time so the magnitude waveform only depends on the cutoff
+            T = (2*self.time / self.duration) - 1;
 
-            magnitude = self.Amax*sech(self.beta * self.time);
+            % base waveforms
+            magnitude = self.b1max*sech(self.beta * T);
+            freq      = tanh(self.beta*T);
 
-            % some articles define the HS using frequency modulation :
-            % freq = - self.mu * self.beta * tanh(self.beta * self.time);
-            % phase = self.freq2phase(freq); % for integration
-            % other define phase analyticaly (faster?) :
-            % phase = self.mu * log( sech(self.beta * self.time) ) + self.mu * self.Amax;
+            % get phase from freq
+            freq      = freq/max(freq) * self.bw*pi;
+            phase     = self.freq2phase(freq);
 
-            % the 2 computation methods only differ by the phase constat, at the origin
-            % but it does not affect the slice profile in this simulation
-
-            phase = self.mu * log( sech(self.beta * self.time) ) + self.mu * self.Amax;
-
+            % final pulse shape
             self.B1 = magnitude .* exp(1j * phase);
             self.GZ = ones(size(self.time)) * self.GZavg;
         end % fcn
 
-        function txt = summary(self) % #abstract
-            txt = sprintf('[%s]  BW=%gHz  Amax=%s  beta=%s  mu=%s',...
-                mfilename, self.bandwidth, self.Amax.repr, self.beta.repr, self.mu.repr);
+        % synthesis text
+        function txt = summary(self)
+            txt = sprintf('[%s] : BW=%s  B1max=%s  cutoff=%s', ...
+                mfilename, self.bw.repr, self.b1max.repr, self.b1cutoff.repr);
         end % fcn
 
-        function init_specific_gui(self, container) % #abstract
+        function init_specific_gui(self, container)
             mri_rf_pulse_sim.ui_prop.scalar.add_uicontrol_multi_scalar(...
                 container,...
-                [self.Amax, self.beta, self.mu]...
+                [self.bw, self.b1max, self.b1cutoff]...
                 );
         end % fcn
 

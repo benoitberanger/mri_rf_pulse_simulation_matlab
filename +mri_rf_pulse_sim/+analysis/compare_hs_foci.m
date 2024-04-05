@@ -23,19 +23,19 @@ solver.setDeltaB0(0); % in this exemple, assume no dB0
 
 % Evaluate slice profile over these deferent max amplitude :
 vect = 2 : 2 : 18; % µT
-Amax_range = mri_rf_pulse_sim.ui_prop.range(name='Amax', vect=vect*1e-6, unit='µT', scale=1e6);
+b1max_range = mri_rf_pulse_sim.ui_prop.range(name='b1max', vect=vect*1e-6, unit='µT', scale=1e6);
 
 
 %% Computation (and plot)
 
 % pre-allocation
-all_slice_profile = zeros(2,solver.SpatialPosition.N,Amax_range.N);
-mid_slice_profile = zeros(2,1                       ,Amax_range.N);
+all_slice_profile = zeros(2,solver.SpatialPosition.N,b1max_range.N);
+mid_slice_profile = zeros(2,1                       ,b1max_range.N);
 
-for idx = 1 : Amax_range.N
+for idx = 1 : b1max_range.N
 
     % update pulse (the solver has a reference to the pulse object)
-    pulse.Amax.value = Amax_range.vect(idx);
+    pulse.b1max.value = b1max_range.vect(idx);
 
     pulse.generate_hs();
     solver.solve();
@@ -56,7 +56,7 @@ efficiency = round(abs(squeeze(mid_slice_profile)-1)/2 *100); % convert Mz from 
 
 % and now print efficiency in a nice way
 efficiency_table = array2table(efficiency);
-efficiency_table.Properties.VariableNames = string(Amax_range.getScaled()) + " µT";
+efficiency_table.Properties.VariableNames = string(b1max_range.getScaled()) + " µT";
 efficiency_table.Properties.RowNames = {'efficiency HS (%)', 'efficiency FOCI (%)'};
 disp(efficiency_table)
 
@@ -68,15 +68,15 @@ fig = figure('Name',mfilename,'NumberTitle','off');
 ax1 = subplot('Position', [0.10 0.40 0.35 0.50]);
 ax2 = subplot('Position', [0.55 0.40 0.35 0.50]);
 hold([ax1 ax2], 'on');
-colors = jet(Amax_range.N);
-for idx = 1 : Amax_range.N
+colors = jet(b1max_range.N);
+for idx = 1 : b1max_range.N
     plot(ax1, solver.SpatialPosition.getScaled, all_slice_profile(1,:,idx), ...
         'Color', colors(idx,:), ...
-        'DisplayName', sprintf('%g %s', Amax_range.vect(idx)*Amax_range.scale, Amax_range.unit), ...
+        'DisplayName', sprintf('%g %s', b1max_range.vect(idx)*b1max_range.scale, b1max_range.unit), ...
         'LineWidth',2)
     plot(ax2, solver.SpatialPosition.getScaled, all_slice_profile(2,:,idx), ...
         'Color', colors(idx,:), ...
-        'DisplayName', sprintf('%g %s', Amax_range.vect(idx)*Amax_range.scale, Amax_range.unit), ...
+        'DisplayName', sprintf('%g %s', b1max_range.vect(idx)*b1max_range.scale, b1max_range.unit), ...
         'LineWidth',2)
 end
 legend(ax1)
@@ -87,7 +87,7 @@ title(ax1, 'HS')
 title(ax2, 'FOCI')
 
 ax3 = subplot('Position', [0.1 0.1 0.8 0.2]);
-plot(ax3, Amax_range.getScaled(), efficiency, 'Marker', 'x', 'LineWidth',2);
+plot(ax3, b1max_range.getScaled(), efficiency, 'Marker', 'x', 'LineWidth',2);
 xlabel('µT')
 ylabel('efficiency (%)')
 legend({'HS', 'FOCI'})
