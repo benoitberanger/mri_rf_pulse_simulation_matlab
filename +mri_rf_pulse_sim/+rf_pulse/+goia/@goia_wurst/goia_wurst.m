@@ -34,7 +34,7 @@ classdef goia_wurst < mri_rf_pulse_sim.backend.rf_pulse.abstract
     methods (Access = public)
 
         function self = goia_wurst()
-            self.bw    = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='bw'   , value=5000   , scale=1e-3 , unit='kHz'  );
+            self.bw    = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='bw'   , value=4000   , scale=1e-3 , unit='kHz'  );
             self.b1max = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='b1max', value=  20e-6, scale=1e6  , unit='µT'   );
             self.f     = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='f'    , value=0.9                               );
             self.n     = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='n'    , value=4                                 );

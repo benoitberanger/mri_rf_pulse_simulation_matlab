@@ -38,6 +38,8 @@ classdef simulation_results < mri_rf_pulse_sim.backend.base_class
         line_C_mid            matlab.graphics.chart.primitive.Line
         line_C_down           matlab.graphics.chart.primitive.Line
         line_C_vert           matlab.graphics.chart.primitive.Line
+        line_C_bwL            matlab.graphics.chart.primitive.Line
+        line_C_bwR            matlab.graphics.chart.primitive.Line
         axes_ChemicalShiftHz  matlab.graphics.axis.Axes
 
     end % props
@@ -83,6 +85,7 @@ classdef simulation_results < mri_rf_pulse_sim.backend.base_class
             color.ref  = [150 150 150]/255;
             color.vert = [150 150 150]/255;
             color.st   = [200 200 200]/255;
+            color.bw   = color.st;
 
             linestyle = struct;
             linestyle.x    = ':';
@@ -92,6 +95,7 @@ classdef simulation_results < mri_rf_pulse_sim.backend.base_class
             linestyle.ref  = ':';
             linestyle.vert = '-';
             linestyle.st   = '-';
+            linestyle.bw   = linestyle.st;
 
             linewidth = struct;
             linewidth.x    = 1.0;
@@ -101,6 +105,7 @@ classdef simulation_results < mri_rf_pulse_sim.backend.base_class
             linewidth.ref  = 0.5;
             linewidth.vert = 1.0;
             linewidth.st   = 0.5;
+            linewidth.bw   = linewidth.st;
 
             fig_pos = mri_rf_pulse_sim.backend.gui.get_fig_pos(use_onefig);
             fig_col = mri_rf_pulse_sim.backend.gui.get_fig_colors();
@@ -267,6 +272,8 @@ classdef simulation_results < mri_rf_pulse_sim.backend.base_class
             self.line_C_mid   = plot(handles.axes_ChemicalShiftPPM, [time(1) time(end)], [ 0    0  ], 'Color',color.ref , 'LineStyle',linestyle.ref , 'LineWidth',linewidth.ref );
             self.line_C_down  = plot(handles.axes_ChemicalShiftPPM, [time(1) time(end)], [-1   -1  ], 'Color',color.ref , 'LineStyle',linestyle.ref , 'LineWidth',linewidth.ref );
             self.line_C_vert  = plot(handles.axes_ChemicalShiftPPM, [0       0        ], [-1.2 +1.2], 'Color',color.vert, 'LineStyle',linestyle.vert, 'LineWidth',linewidth.vert);
+            self.line_C_bwL   = plot(handles.axes_ChemicalShiftPPM, [NaN     NaN      ], [-1.2 +1.2], 'Color',color.bw  , 'LineStyle',linestyle.bw  , 'LineWidth',linewidth.bw  );
+            self.line_C_bwR   = plot(handles.axes_ChemicalShiftPPM, [NaN     NaN      ], [-1.2 +1.2], 'Color',color.bw  , 'LineStyle',linestyle.bw  , 'LineWidth',linewidth.bw  );
             legend(handles.axes_ChemicalShiftPPM, {'M_x', 'M_y', 'M\mid\mid', 'M\perp'})
             xlabel(handles.axes_ChemicalShiftPPM, '\DeltaB_0 [ppm]');
             ylabel(handles.axes_ChemicalShiftPPM, 'final M_x_y_z');
