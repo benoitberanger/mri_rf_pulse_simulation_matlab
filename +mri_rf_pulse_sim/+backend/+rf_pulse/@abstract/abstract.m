@@ -4,6 +4,7 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
         n_points        mri_rf_pulse_sim.ui_prop.scalar                    % []  number of points defining the pulse
         duration        mri_rf_pulse_sim.ui_prop.scalar                    % [s] pulse duration
         slice_thickness mri_rf_pulse_sim.ui_prop.scalar                    % [m] slice width
+        gz_rewinder     mri_rf_pulse_sim.ui_prop.bool                      % add a selective selective gradient rewinder automatically
         time           (1,:) double                                        % [s] time vector
         B1             (1,:) double                                        % [T] complex waveform of the pulse
         GZ             (1,:) double                                        % [T/m] slice gradient
@@ -43,6 +44,7 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
             self.n_points        = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='n_points'       , value=256                             );
             self.duration        = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='duration'       , value=  5 * 1e-3, unit='ms', scale=1e3);
             self.slice_thickness = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='slice_thickness', value=  4 * 1e-3, unit='mm', scale=1e3);
+            self.gz_rewinder     = mri_rf_pulse_sim.ui_prop.bool  (parent=self, name='gz_rewinder'    , value=false     , text='GZrewinder', visible='off');
         end
 
         % EZ maths
@@ -146,14 +148,27 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
         function init_base_gui(self, container)
             mri_rf_pulse_sim.ui_prop.scalar.add_uicontrol_multi_scalar( ...
                 container, ...
-                [self.n_points, self.duration, self.slice_thickness] ...
+                [self.n_points, self.duration, self.slice_thickness], ...
+                [0.00 0.00 0.60 1.00]...
                 );
+            self.gz_rewinder.add_uicontrol(container, [0.60 0.60 0.40 0.40])
         end % fcn
 
         function displayRep = compactRepresentationForSingleLine(self,displayConfiguration,width)
             txt = sprintf('%s', self.summary());
             displayRep = widthConstrainedDataRepresentation(self,displayConfiguration,width,...
                 StringArray=txt,AllowTruncatedDisplayForScalar=true);
+        end % fcn
+
+        function add_gz_rewinder(self, status)
+            self.gz_rewinder.visible = "on";
+            if nargin == 1, status = self.gz_rewinder.get(); end
+            if ~status    , return                         , end
+
+            n_new_points = round(self.n_points/2);
+            self.time = [self.time linspace(self.time(end), self.time(end)+self.duration/2, n_new_points)];
+            self.B1   = [self.B1   zeros(1,n_new_points)                                                 ];
+            self.GZ   = [self.GZ   -self.GZ(n_new_points+1:end)                                          ];
         end % fcn
 
     end % meths

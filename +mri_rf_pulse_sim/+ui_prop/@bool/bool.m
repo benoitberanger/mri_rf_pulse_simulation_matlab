@@ -1,9 +1,10 @@
 classdef bool < mri_rf_pulse_sim.backend.base_class
 
     properties(GetAccess = public, SetAccess = public, SetObservable, AbortSet)
-        name   (1,:) char
-        value  (1,1) logical
-        text   (1,:) char
+        name    (1,:) char
+        value   (1,1) logical
+        text    (1,:) char
+        visible (1,1) string {mustBeMember(visible,["on","off"])} = "on"
     end % props
 
     properties (GetAccess = public, SetAccess = protected, Dependent)
@@ -28,6 +29,7 @@ classdef bool < mri_rf_pulse_sim.backend.base_class
                 args.name
                 args.text
                 args.value
+                args.visible
                 args.parent
             end % args
 
@@ -38,9 +40,10 @@ classdef bool < mri_rf_pulse_sim.backend.base_class
             assert(isfield(args, 'name'), 'name is required')
             self.name = args.name;
 
-            if isfield(args, 'text'  ), self.text   = args.text  ; end
-            if isfield(args, 'value' ), self.value  = args.value ; end
-            if isfield(args, 'parent'), self.parent = args.parent; end
+            if isfield(args, 'text'   ), self.text    = args.text   ; end
+            if isfield(args, 'value'  ), self.value   = args.value  ; end
+            if isfield(args, 'visible'), self.visible = args.visible; end
+            if isfield(args, 'parent' ), self.parent  = args.parent ; end
         end % fcn
 
         function out = get(self)
@@ -70,6 +73,7 @@ classdef bool < mri_rf_pulse_sim.backend.base_class
                 'Units'              , 'normalized'               ,...
                 'Position'           , pos_chk                    ,...
                 'Value'              , self.value                 ,...
+                'Visible'            , self.visible               ,...
                 'BackgroundColor'    , container.BackgroundColor  ,...
                 'Callback'           , @self.callback_update       ...
                 );
@@ -80,6 +84,7 @@ classdef bool < mri_rf_pulse_sim.backend.base_class
                 'Units'              , 'normalized'              ,...
                 'Position'           , pos_txt                   ,...
                 'HorizontalAlignment','left'                     ,...
+                'Visible'            , self.visible              ,...
                 'BackgroundColor'    , container.BackgroundColor  ...
                 );
 

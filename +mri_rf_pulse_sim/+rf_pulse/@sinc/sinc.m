@@ -48,6 +48,8 @@ classdef sinc < mri_rf_pulse_sim.backend.rf_pulse.abstract
             waveform = waveform * deg2rad(self.flip_angle.get()) / self.gamma; % scale integrale with flip angle
             self.B1  = waveform;
             self.GZ  = ones(size(self.time)) * self.GZavg;
+
+            self.add_gz_rewinder();
         end % fcn
 
         function txt = summary(self) % #abstract
