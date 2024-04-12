@@ -1,15 +1,14 @@
 classdef simulation_parameters < mri_rf_pulse_sim.backend.base_class
 
     properties(GetAccess = public, SetAccess = public)
-        dZ  mri_rf_pulse_sim.ui_prop.range                                 % [m] slice (spin) position
-        dB0 mri_rf_pulse_sim.ui_prop.range                                 % [ppm] off-resonance vector
-        B0  mri_rf_pulse_sim.ui_prop.scalar                                % [T] static magnetic field strength
-        T1  mri_rf_pulse_sim.ui_prop.scalar                                % [s] T1 relaxtion coefficient : set to +Inf by default
-        T2  mri_rf_pulse_sim.ui_prop.scalar                                % [s] T2 relaxtion coefficient : set to +Inf by default
-        M0  mri_rf_pulse_sim.ui_prop.vec3                                  % initial magnetization vector
-
-        auto_simplot     mri_rf_pulse_sim.ui_prop.bool
-        auto_disp_pulse  mri_rf_pulse_sim.ui_prop.bool
+        dZ              mri_rf_pulse_sim.ui_prop.range                     % [m] slice (spin) position
+        dB0             mri_rf_pulse_sim.ui_prop.range                     % [ppm] off-resonance vector
+        B0              mri_rf_pulse_sim.ui_prop.scalar                    % [T] static magnetic field strength
+        T1              mri_rf_pulse_sim.ui_prop.scalar                    % [s] T1 relaxtion coefficient : set to +Inf by default
+        T2              mri_rf_pulse_sim.ui_prop.scalar                    % [s] T2 relaxtion coefficient : set to +Inf by default
+        M0              mri_rf_pulse_sim.ui_prop.vec3                      % initial magnetization vector
+        auto_simplot    mri_rf_pulse_sim.ui_prop.bool
+        auto_disp_pulse mri_rf_pulse_sim.ui_prop.bool
     end % props
 
     properties(GetAccess = public, SetAccess = ?mri_rf_pulse_sim.app)
@@ -36,10 +35,10 @@ classdef simulation_parameters < mri_rf_pulse_sim.backend.base_class
 
             if length(fieldnames(args)) < 1
                 return
-            else
-                if isfield(args, 'action'), action   = args.action; end
-                if isfield(args, 'app'   ), self.app = args.app   ; end
             end
+
+            if isfield(args, 'action'), action   = args.action; end
+            if isfield(args, 'app'   ), self.app = args.app   ; end
 
             switch lower(action)
                 case 'opengui'
@@ -90,43 +89,38 @@ classdef simulation_parameters < mri_rf_pulse_sim.backend.base_class
 
             end
 
-            handles.uipanel_dB0 = uipanel(container,...
-                'Title','dB0 [ppm] : off-resonance',...
-                'Units','Normalized',...
-                'Position',[0 0 1 0.3],...
-                'BackgroundColor',fig_col.figureBG);
+            % ALL PANELS
+            handles.uipanel_range = uipanel(container,'Units','Normalized','Position',[0.00 0.25 0.60 0.75],'BackgroundColor',fig_col.figureBG);
+            handles.uipanel_param = uipanel(container,'Units','Normalized','Position',[0.60 0.40 0.40 0.60],'BackgroundColor',fig_col.figureBG);
+            handles.uipanel_contr = uipanel(container,'Units','Normalized','Position',[0.00 0.00 0.60 0.25],'BackgroundColor',fig_col.figureBG);
+            handles.uipanel_pushb = uipanel(container,'Units','Normalized','Position',[0.60 0.00 0.40 0.40],'BackgroundColor',fig_col.figureBG);
 
-            handles.uipanel_dZ = uipanel(container,...
-                'Title','dZ [mm] : slice (spin) position',...
-                'Units','Normalized',...
-                'Position',[0 0.3 1 0.3],...
-                'BackgroundColor',fig_col.figureBG);
-
+            % range
+            handles.uipanel_dZ  = uipanel(handles.uipanel_range,'Units','Normalized','Position',[0.00 0.50 1.00 0.50],'BackgroundColor',fig_col.figureBG,...
+                'Title','dZ [mm] : slice (spin) position');
+            handles.uipanel_dB0 = uipanel(handles.uipanel_range,'Units','Normalized','Position',[0.00 0.00 1.00 0.50],'BackgroundColor',fig_col.figureBG,...
+                'Title','dB0 [ppm] : off-resonance');
             self.dZ .add_uicontrol_setup(handles.uipanel_dZ )
             self.dB0.add_uicontrol_setup(handles.uipanel_dB0)
 
-            handles.uipanel_controls = uipanel(container,...
-                'Title','Controls',...
-                'Units','Normalized',...
-                'Position',[0 0.6 1 0.4],...
-                'BackgroundColor',fig_col.figureBG);
-
-            self.M0.add_uicontrol(handles.uipanel_controls, [0.0 0.0 0.4 0.4])
-
-            self.auto_simplot   .add_uicontrol(handles.uipanel_controls,[0.0 0.7 0.3 0.3])
-            self.auto_disp_pulse.add_uicontrol(handles.uipanel_controls,[0.0 0.4 0.3 0.3])
-
-            handles.pushbutton_simplot = uicontrol(handles.uipanel_controls, ...
-                'Style', 'pushbutton', ...
-                'String', 'simulate + plot', ...
-                'Units','Normalized',...
-                'Position',[0.3 0.4 0.3 0.6],...
-                'BackgroundColor',fig_col.buttonBG,...
-                'Callback',@self.callback_simplot);
-
-            mri_rf_pulse_sim.ui_prop.scalar.add_uicontrol_multi_scalar(handles.uipanel_controls, ...
+            % param
+            mri_rf_pulse_sim.ui_prop.scalar.add_uicontrol_multi_scalar(handles.uipanel_param, ...
                 [self.B0 self.T1 self.T2], ...
-                [0.6 0 0.4 1])
+                [0.00 0.25 1.00 0.75])
+            self.M0.add_uicontrol(handles.uipanel_param, [0.00 0.00 1.00 0.25])
+
+            % controls
+            self.auto_simplot   .add_uicontrol(handles.uipanel_contr,[0.00 0.50 0.50 0.50])
+            self.auto_disp_pulse.add_uicontrol(handles.uipanel_contr,[0.00 0.00 0.50 0.50])
+
+            % push buttons
+            handles.pushbutton_simplot = uicontrol(handles.uipanel_pushb, ...
+                'Style'          , 'pushbutton'           ,...
+                'String'         , 'simulate + plot'      ,...
+                'Units'          , 'Normalized'           ,...
+                'Position'       , [0.10 0.10 0.80 0.80]  ,...
+                'BackgroundColor', fig_col.buttonBG       ,...
+                'Callback'       , @self.callback_simplot );
 
             % IMPORTANT
             guidata(container,handles)
