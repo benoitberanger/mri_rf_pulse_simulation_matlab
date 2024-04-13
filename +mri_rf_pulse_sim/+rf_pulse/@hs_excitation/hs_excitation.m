@@ -18,7 +18,7 @@ classdef hs_excitation < mri_rf_pulse_sim.backend.rf_pulse.abstract
     methods % no attribute for dependent properties
         
         function value = get.bandwidth(self)
-            % Analytic expression for the bandwidth, depdending on the flip angle.
+            % Analytic expression for the bandwidth, depending on the flip angle.
             FA = deg2rad(self.flip_angle.get());
             value = self.beta/pi^2 * ...
                 acosh( ...

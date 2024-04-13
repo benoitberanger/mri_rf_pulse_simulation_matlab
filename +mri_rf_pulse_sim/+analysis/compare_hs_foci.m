@@ -1,12 +1,12 @@
 function varargout = compare_hs_foci()
-% This function eveluate the slice profile of HS vs. FOCI at differnet maximum RF amplitude
+% This function evaluate the slice profile of HS vs. FOCI at different maximum RF amplitude
 
 
 %% Parameters
 
-% generate FOCI pulse with default paramters
+% generate FOCI pulse with default parameters
 % since FOCI herits from HS, the FOCI object can call both generate_hs() and genertage_foci()
-% using the exact same paramters.
+% using the exact same parameters.
 pulse = mri_rf_pulse_sim.rf_pulse.foci();
 
 pulse.generate_foci();
@@ -19,7 +19,7 @@ solver = mri_rf_pulse_sim.bloch_solver();
 solver.setPulse(pulse);
 n_dz = 301;
 solver.setSpatialPosition(linspace(-pulse.slice_thickness.get(),+pulse.slice_thickness.get(),n_dz));
-solver.setDeltaB0(0); % in this exemple, assume no dB0
+solver.setDeltaB0(0); % in this example, assume no dB0
 
 % Evaluate slice profile over these deferent max amplitude :
 vect = 2 : 2 : 18; % µT
@@ -50,7 +50,7 @@ for idx = 1 : b1max_range.N
 end
 
 
-%%  Display inversion efficieny
+%%  Display inversion efficiency
 
 efficiency = round(abs(squeeze(mid_slice_profile)-1)/2 *100); % convert Mz from [-1 to +1] into [0% to 100%]
 

@@ -1,7 +1,7 @@
 classdef rf_pulse < matlab.unittest.TestCase
 
 
-    %% general paramters
+    %% general parameters
 
     properties
         fig

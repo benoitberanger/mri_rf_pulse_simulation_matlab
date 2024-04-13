@@ -18,7 +18,7 @@ factor = 4; % to visualize larger than just the expected slice profile
 solver = mri_rf_pulse_sim.bloch_solver();
 n_dz = 1001;
 solver.setSpatialPosition(linspace(-slice_thickness*factor,+slice_thickness*factor,n_dz));
-solver.setDeltaB0(0); % in this exemple, assume no dB0
+solver.setDeltaB0(0); % in this example, assume no dB0
 
 
 %% Computation

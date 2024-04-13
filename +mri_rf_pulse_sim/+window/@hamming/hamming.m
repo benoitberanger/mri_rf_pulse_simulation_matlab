@@ -8,7 +8,7 @@ classdef hamming < mri_rf_pulse_sim.window.hanning
                 args.rf_pulse
             end % args
 
-            % default paramters
+            % default parameters
             self@mri_rf_pulse_sim.window.hanning()
             self.name = mfilename;
             self.a0.set(0.53836)

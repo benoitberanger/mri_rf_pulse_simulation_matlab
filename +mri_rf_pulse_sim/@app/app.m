@@ -5,7 +5,7 @@ classdef app < handle
     %         mri_rf_pulse_sim.app                                         % for only GUI operations
     %   app = mri_rf_pulse_sim.app()                                       % to keep a handle to the application, for later Scripting or CommandWindow operations
     %   app = mri_rf_pulse_sim.app('opengui')                              % same as above : `opengui` is the default action
-    %   app = mri_rf_pulse_sim.app('opengui_onefig')                       % instead of 3 seperated figures, use 1 unique figure
+    %   app = mri_rf_pulse_sim.app('opengui_onefig')                       % instead of 3 separated figures, use 1 unique figure
     %
 
 
@@ -28,13 +28,13 @@ classdef app < handle
         % basic methods
         %------------------------------------------------------------------
 
-        % contructor
+        % constructor
         function self = app(action)
             arguments
                 action (1,:) {mustBeTextScalar} = "opengui"
             end
 
-            addpath(fileparts(mri_rf_pulse_sim.get_package_dir())); % recommanded for a clean app close
+            addpath(fileparts(mri_rf_pulse_sim.get_package_dir())); % recommended for a clean app close
 
             self.bloch_solver = mri_rf_pulse_sim.bloch_solver();
 

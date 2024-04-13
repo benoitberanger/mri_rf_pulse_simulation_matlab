@@ -1,7 +1,7 @@
 classdef app < matlab.unittest.TestCase
 
 
-    %% general paramters
+    %% general parameters
 
     properties
         app_path    (1,:) char = 'mri_rf_pulse_sim.app'                    % i need to define the *matlab* path of the app
@@ -17,7 +17,7 @@ classdef app < matlab.unittest.TestCase
 
     methods(TestClassSetup)
 
-        % open the app at the begining of the test (and prepare it's closing)
+        % open the app at the beginning of the test (and prepare it's closing)
         function open_app(testCase, opening_args)
             testCase.verifyNotEmpty(testCase.app_path)
             testCase.application = feval(testCase.app_path, opening_args);
@@ -39,7 +39,7 @@ classdef app < matlab.unittest.TestCase
     end % meths
 
 
-    %% Execute sequencially each Method once per ClassSetupParameter (see above)
+    %% Execute sequentially each Method once per ClassSetupParameter (see above)
 
     methods(Test)
 
@@ -55,7 +55,7 @@ classdef app < matlab.unittest.TestCase
         function setPulse(testCase)
             target_pulse = 'foci'; % FOCI is derived from HS, it's a nice crash test
             testCase.verifyNotEmpty(testCase.application.setPulse(target_pulse))
-            handles = guidata(testCase.application.pulse_definition.fig); % now check if listbox is correclty updated
+            handles = guidata(testCase.application.pulse_definition.fig); % now check if listbox is correctly updated
             testCase.verifyEqual(handles.listbox_rf_pulse.String{handles.listbox_rf_pulse.Value}, target_pulse)
         end
         function set_duration(testCase)

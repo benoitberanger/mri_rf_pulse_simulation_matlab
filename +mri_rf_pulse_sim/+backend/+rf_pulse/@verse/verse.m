@@ -48,7 +48,7 @@ classdef (Abstract) verse < handle
                 case 'rand'
                     % this `rand` strategy is mostly for testing purpose,
                     % to show that the approach from the article works,
-                    % whatever the content of a(k) modulation fuction !
+                    % whatever the content of a(k) modulation function !
                     a  = rand(size(b));
                     b  = a  .* b;
                     g  = a  .* g;
@@ -109,9 +109,9 @@ classdef (Abstract) verse < handle
                     ALPHA_MAX = 1.01;
                     TOLERANCE = 1e-3;
                     ITER = 0;
-                    CONDITON = true;
+                    CONDITION = true;
 
-                    while CONDITON
+                    while CONDITION
 
                         ITER = ITER + 1;
 
@@ -188,7 +188,7 @@ classdef (Abstract) verse < handle
                         %----------------------------------------------
                         % Check SlewRate
                         s = diff(g) ./ dt;
-                        CONDITON = abs(max(abs(s)) - lim_s) > TOLERANCE;
+                        CONDITION = abs(max(abs(s)) - lim_s) > TOLERANCE;
 
                     end % WHILE
 

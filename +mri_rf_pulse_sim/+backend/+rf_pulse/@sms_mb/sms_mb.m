@@ -37,7 +37,7 @@ classdef (Abstract) sms_mb < handle
             end
 
             % compute the phase modution : each slice has its own delta of central frequency.
-            % central frequency + gradient = slice postion in space
+            % central frequency + gradient = slice position in space
             % bandwidth + gradient = slice width
             mb_phase_mudulation = 0;
             for n = vect

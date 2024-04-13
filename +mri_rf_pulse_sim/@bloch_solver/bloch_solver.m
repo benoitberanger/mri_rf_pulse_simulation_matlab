@@ -14,7 +14,7 @@ classdef bloch_solver < handle & matlab.mixin.CustomCompactDisplayProvider
 
     properties (GetAccess = public, SetAccess = protected)
         M                     double                                       % result of the simulation
-        dim             (1,1) struct                                       % labels for M dimentions
+        dim             (1,1) struct                                       % labels for M dimensions
     end % props
 
     methods (Access = public)
@@ -314,7 +314,7 @@ classdef bloch_solver < handle & matlab.mixin.CustomCompactDisplayProvider
                 m(:,2,t) =  sin_phy .* Mprev(:,1) + cos_phy .* Mprev(:,2);
 
                 % Relaxation
-                % !!! Seperation of Rotation THEN Relaxation induce an error linear with 'dt' !!!
+                % !!! Separation of Rotation THEN Relaxation induce an error linear with 'dt' !!!
                 if use_T2_relaxiation
                     m(:,1,t) = m(:,1,t)              .* exp( -dt / self.T2 );
                     m(:,2,t) = m(:,2,t)              .* exp( -dt / self.T2 );

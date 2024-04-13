@@ -1,6 +1,6 @@
 function varargout = sinc_n_lob()
 % This function compares shows the effet of number of side lobs of the
-% SINC, keep all other paramters constant.
+% SINC, keep all other parameters constant.
 
 
 %% Parameters
@@ -13,7 +13,7 @@ solver = mri_rf_pulse_sim.bloch_solver();
 n_dz = 301;
 solver.setPulse(SINC);
 solver.setSpatialPosition(linspace(-SINC.slice_thickness.get(),+SINC.slice_thickness.get(),n_dz));
-solver.setDeltaB0(0); % in this exemple, assume no dB0
+solver.setDeltaB0(0); % in this example, assume no dB0
 
 % number of side lobs : TBWP = 2*n_side_lob
 n_side_lob = [1 2 4 6 8 10];

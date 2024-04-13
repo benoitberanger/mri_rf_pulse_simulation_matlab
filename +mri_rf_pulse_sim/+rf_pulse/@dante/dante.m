@@ -79,7 +79,7 @@ classdef dante < mri_rf_pulse_sim.backend.rf_pulse.abstract
                     continue
                 end
 
-                if n_subpulse == 0 % initilization : start with a subpulse
+                if n_subpulse == 0 % initialization : start with a subpulse
 
                     if idx <= sample_subpulse
                         MAG(idx) = 1;

@@ -9,7 +9,7 @@ classdef hanning < mri_rf_pulse_sim.backend.window.abstract
 
     methods % no attribute for dependent properties
         function value = get.shape(self)
-            % adjust time so it is symetrical
+            % adjust time so it is symmetrical
             if self.rf_pulse.time(1) == 0
                 t = self.rf_pulse.time - self.rf_pulse.time(end)/2; % useful for VERSE
                 d = t(end)-t(1);
@@ -31,7 +31,7 @@ classdef hanning < mri_rf_pulse_sim.backend.window.abstract
                 args.a1
             end % args
 
-            % default paramters
+            % default parameters
             self.name = mfilename;
             self.a0 = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='a0', value=+0.5);
             self.a1 = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='a1', value=+0.5);

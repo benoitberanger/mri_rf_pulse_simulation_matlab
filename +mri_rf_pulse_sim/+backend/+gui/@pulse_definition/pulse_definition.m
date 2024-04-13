@@ -115,7 +115,7 @@ classdef pulse_definition < mri_rf_pulse_sim.backend.base_class
             % IMPORTANT
             guidata(container,handles)
             % After creating the figure, dont forget the line
-            % guidata(figHandle,handles) . It allows smart retrive like
+            % guidata(figHandle,handles) . It allows smart retrieve like
             % handles=guidata(hObject)
 
             if use_onefig

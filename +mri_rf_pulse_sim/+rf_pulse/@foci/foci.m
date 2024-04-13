@@ -18,8 +18,8 @@ classdef foci < mri_rf_pulse_sim.rf_pulse.hs
             % This is the C-shape, that will be used to modulate the amplitude, frequency and gradient
             value = 10 * ones(size(T));
 
-            conditon = cosh(self.beta*T) < 10.0;
-            value(conditon) = cosh(self.beta*T(conditon));
+            condition = cosh(self.beta*T) < 10.0;
+            value(condition) = cosh(self.beta*T(condition));
         end % fcn
 
     end % meths

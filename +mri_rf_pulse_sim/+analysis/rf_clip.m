@@ -1,5 +1,5 @@
 function varargout = rf_clip()
-% This funcion show that increasing the RECT duration reduce it's B1max, so
+% This function show that increasing the RECT duration reduce it's B1max, so
 % reduce the maximum voltage of the amplifier.
 
 
@@ -12,7 +12,7 @@ solver = mri_rf_pulse_sim.bloch_solver();
 n_dz = 301;
 solver.setPulse(RECT);
 solver.setSpatialPosition(linspace(-RECT.slice_thickness.get(),+RECT.slice_thickness.get(),n_dz));
-solver.setDeltaB0(0); % in this exemple, assume no dB0
+solver.setDeltaB0(0); % in this example, assume no dB0
 solver.setT1(0.800); % WM @ 3T
 solver.setT2(0.080); % WM @ 3T
 

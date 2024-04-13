@@ -1,11 +1,11 @@
 function varargout = evaluate_adiabaticity_hs()
-% This function eveluate the slice profile of HyperbolicSecant (hs) pulse
-% at differnet maximum RF amplitude
+% This function evaluate the slice profile of HyperbolicSecant (hs) pulse
+% at different maximum RF amplitude
 
 
 %% Parameters
 
-% generate HS pulse with default paramters
+% generate HS pulse with default parameters
 pulse = mri_rf_pulse_sim.rf_pulse.hs();
 pulse.plot();
 
@@ -14,7 +14,7 @@ solver = mri_rf_pulse_sim.bloch_solver();
 solver.setPulse(pulse);
 n_dz = 301;
 solver.setSpatialPosition(linspace(-pulse.slice_thickness.get(),+pulse.slice_thickness.get(),n_dz));
-solver.setDeltaB0(0); % in this exemple, assume no dB0
+solver.setDeltaB0(0); % in this example, assume no dB0
 
 % Evaluate slice profile over these deferent max amplitude :
 vect = 2 : 2 : 26; % µT
@@ -39,7 +39,7 @@ for idx = 1 : b1max_range.N
 end
 
 
-%%  Display inversion efficieny
+%%  Display inversion efficiency
 
 efficiency = round(abs(mid_slice_profile-1)/2 *100); % convert Mz from [-1 to +1] into [0% to 100%]
 

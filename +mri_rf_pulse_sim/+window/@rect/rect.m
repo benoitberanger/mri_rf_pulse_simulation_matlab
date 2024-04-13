@@ -18,7 +18,7 @@ classdef rect < mri_rf_pulse_sim.backend.window.abstract
                 args.rf_pulse
             end % args
 
-            % default paramters
+            % default parameters
             self.name = mfilename;
 
             if length(fieldnames(args)) < 1

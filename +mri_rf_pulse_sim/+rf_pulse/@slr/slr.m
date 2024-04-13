@@ -9,7 +9,7 @@ classdef slr < mri_rf_pulse_sim.backend.rf_pulse.abstract
     properties (GetAccess = public, SetAccess = public)
         d1          mri_rf_pulse_sim.ui_prop.scalar                        % [] ripple ratio on the rect top      (from 0 to 1)
         d2          mri_rf_pulse_sim.ui_prop.scalar                        % [] ripple ratio on the rect baseline (from 0 to 1)
-        TBWP        mri_rf_pulse_sim.ui_prop.scalar                        % [] TimeBandWidthProduct -> needs to be an input paramter
+        TBWP        mri_rf_pulse_sim.ui_prop.scalar                        % [] TimeBandWidthProduct -> needs to be an input parameter
         pulse_type  mri_rf_pulse_sim.ui_prop.list
         filter_type mri_rf_pulse_sim.ui_prop.list
         flip_angle  mri_rf_pulse_sim.ui_prop.scalar                        % [deg] flip angle

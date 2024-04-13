@@ -1,9 +1,9 @@
 classdef fermi < mri_rf_pulse_sim.backend.rf_pulse.abstract
-    % Fermi pulse is typicaly used for fat saturation.
+    % Fermi pulse is typically used for fat saturation.
     % Here, frequency_offcet default value is the frequency shift of the fat (lipids) at 3T.
     % Select dB0 = +3.5ppm (440Hz at 3T) -> the slice will now be "centered", its the fat that will be excited, not water.
     %
-    % With this implementation the excitation bandwith only depends on the pulse duration.
+    % With this implementation the excitation bandwidth only depends on the pulse duration.
     %
     % Handbook of MRI Pulse Sequences // Matt A. Bernstein, Kevin F. King, Xiaohong Joe Zhou
 

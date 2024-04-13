@@ -1,14 +1,14 @@
 # MRI $RF$ pulse simulation in MALTAB
 
 This repository is a Matlab application that simulate the response of MRI **R**adio**F**requency (**RF**) pulses.
-The app is a GUI, and the code also made to be used purely programatically.
+The app is a GUI, and the code also made to be used purely programmatically.
 
 1. Open the GUI app
 2. Click on a pulse in the library list.
-3. The selected $RF$ pulse is loaded with default paramters, plotted in the GUI, and it's simulation triggered.
+3. The selected $RF$ pulse is loaded with default parameters, plotted in the GUI, and it's simulation triggered.
 4. The simulation is plotted : magnetization vector across time $M_{xzy}(t)$, slice profile $\Delta Z$, chemical shift profile $\Delta B_0$.
 
-The application is completly object oriented programming, to take advandtage of heritage. See the API section.
+The application is completely object oriented programming, to take advandtage of heritage. See the API section.
 
 Also, you can use your own pulses in the app by :
 - a super fast method : filling the $RF$ pulse shape ($B1$ curve $GZ$ curve). !! TODO !!
@@ -22,13 +22,13 @@ Also, you can use your own pulses in the app by :
 
 ## Features
 ### GUI
-The GUI have 3 independant panels :
+The GUI have 3 independent panels :
 - **Pulse definition** : It shows the library of pulses, and the selected pulse, including its shape and the UI parameters.
 - **Simulation parameters** : You define the range and granularity (number of points) for the slice profile evaluation $\Delta Z$ and the chemical shift $\Delta B_0$ evaluation.
 - **Simulation results** : Displays $M_{xzy}(t)$, the slice profile $\Delta Z$, and the chemical shift $\Delta B_0$ profile.
 
 ### Scripting
-Here is some exemples of non-GUI analysis :  
+Here is some examples of non-GUI analysis :  
 - [evaluate_adiabaticity_hs](+mri_rf_pulse_sim/+analysis/evaluate_adiabaticity_hs.m)
 - [compare_hs_foci](+mri_rf_pulse_sim/+analysis/compare_hs_foci.m)
 
@@ -38,7 +38,7 @@ TODO
 
 
 # Limitations
-- MATLAB R2023a+ ? maybe few realease earlier, but I did not test them.
+- MATLAB R2023a+ ? maybe few release earlier, but I did not test them.
 
 
 ## TODO list

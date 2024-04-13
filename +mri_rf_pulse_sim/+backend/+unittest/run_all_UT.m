@@ -1,6 +1,6 @@
 function varargout = run_all_UT()
 % Run all UnitTests.
-% All UT are in one dir, containing all class dereived from matlab.unittest.TestCase
+% All UT are in one dir, containing all class derived from matlab.unittest.TestCase
 
 t0 = tic;
 ut_path = fileparts(mfilename('fullpath'));
