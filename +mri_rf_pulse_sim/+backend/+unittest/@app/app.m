@@ -52,6 +52,9 @@ classdef app < matlab.unittest.TestCase
         function getPulse(testCase)
             testCase.verifyNotEmpty(testCase.application.getPulse())
         end
+        function gz_rewinder(testCase)
+            testCase.application.getPulse().gz_rewinder.setTrue();
+        end
         function setPulse(testCase)
             target_pulse = 'foci'; % FOCI is derived from HS, it's a nice crash test
             testCase.verifyNotEmpty(testCase.application.setPulse(target_pulse))
