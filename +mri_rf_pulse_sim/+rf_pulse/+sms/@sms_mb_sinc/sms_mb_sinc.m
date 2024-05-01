@@ -4,7 +4,7 @@ classdef sms_mb_sinc < mri_rf_pulse_sim.backend.rf_pulse.sms_mb & mri_rf_pulse_s
 
         % constructor
         function self = sms_mb_sinc()
-            self.generate_sms_mb_sinc();
+            self.generate();
         end % fcn
 
         function generate(self) % #abstract

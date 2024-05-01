@@ -30,11 +30,12 @@ classdef sinc < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.n_side_lobs    = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='n_side_lobs', value= 2          );
             self.flip_angle     = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle' , value=90, unit='°');
             self.rf_phase       = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='rf_phase'   , value= 0, unit='°');
-            self.generate_sinc();
+            self.generate();
         end % fcn
 
         function generate(self) % #abstract
             self.generate_sinc();
+            self.add_gz_rewinder();
         end % fcn
 
         function generate_sinc(self)
@@ -50,8 +51,6 @@ classdef sinc < mri_rf_pulse_sim.backend.rf_pulse.abstract
             waveform = waveform * deg2rad(self.flip_angle.get()) / self.gamma; % scale integrale with flip angle
             self.B1  = waveform * exp(1j * deg2rad(self.rf_phase.get()));
             self.GZ  = ones(size(self.time)) * self.GZavg;
-
-            self.add_gz_rewinder();
         end % fcn
 
         function txt = summary(self) % #abstract

@@ -4,7 +4,7 @@ classdef foci_verse < mri_rf_pulse_sim.backend.rf_pulse.verse & mri_rf_pulse_sim
 
         % constructor
         function self = foci_verse()
-            self.generate_foci_verse();
+            self.generate();
         end % fcn
 
         function generate(self) % #abstract

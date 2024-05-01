@@ -42,7 +42,7 @@ classdef dante < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.subpulse_duration = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='subpulse_duration', value=100 * 1e-6, unit='us'      , scale=1e6);
             self.phase_alternation = mri_rf_pulse_sim.ui_prop.bool  (parent=self, name='phase_alternation', value=true      , text='phase_alternation'  );
             self.use_blip          = mri_rf_pulse_sim.ui_prop.bool  (parent=self, name='use_blip'         , value=true      , text='use_blip'           );
-            self.generate_DANTE();
+            self.generate();
         end % fcn
 
         function generate(self) % #abstract

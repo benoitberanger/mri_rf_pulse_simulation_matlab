@@ -7,7 +7,7 @@ classdef slr_mb_verse < mri_rf_pulse_sim.backend.rf_pulse.verse & mri_rf_pulse_s
             self.n_points.set(256);  % a bit more numerical precision
             self.TBWP.set(10);
             self.filter_type.value = 'ls';
-            self.generate_slr_mb_verse();
+            self.generate();
         end % fcn
 
         function generate(self) % #abstract

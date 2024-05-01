@@ -27,7 +27,7 @@ classdef foci < mri_rf_pulse_sim.rf_pulse.hs
     methods (Access = public)
 
         function self = foci()
-            self.generate_foci();
+            self.generate();
         end % fcn
 
         function generate(self) % #abstract

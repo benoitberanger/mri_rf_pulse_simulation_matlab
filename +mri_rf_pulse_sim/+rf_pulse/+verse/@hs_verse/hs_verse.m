@@ -4,7 +4,7 @@ classdef hs_verse < mri_rf_pulse_sim.backend.rf_pulse.verse & mri_rf_pulse_sim.r
 
         % constructor
         function self = hs_verse()
-            self.generate_hs_verse();
+            self.generate();
         end % fcn
 
         function generate(self) % #abstract

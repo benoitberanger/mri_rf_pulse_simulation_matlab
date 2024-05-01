@@ -24,7 +24,7 @@ classdef sinc_self_refocusing < mri_rf_pulse_sim.backend.rf_pulse.abstract
         function self = sinc_self_refocusing()
             self.n_side_lobs = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='n_side_lobs',  value=7          );
             self.flip_angle  = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle' , value=90, unit='°');
-            self.generate_sinc_self_refocusing();
+            self.generate();
         end % fcn
 
         function generate(self) % #abstract

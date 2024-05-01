@@ -6,7 +6,7 @@ classdef sinc_verse < mri_rf_pulse_sim.backend.rf_pulse.verse & mri_rf_pulse_sim
         function self = sinc_verse()
             self.n_points.set(256);  % a bit more numerical precision
             self.n_side_lobs.set(5); % set a very high TimeBandwidth-Product
-            self.generate_sinc_verse();
+            self.generate();
         end % fcn
 
         function generate(self) % #abstract

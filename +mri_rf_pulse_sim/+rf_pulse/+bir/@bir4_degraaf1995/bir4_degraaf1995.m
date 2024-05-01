@@ -34,7 +34,7 @@ classdef bir4_degraaf1995 < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.flip_angle     = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle'  , value=   90  , unit='°' );
             self.Beta           = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='Beta'        , value=    5.3           );
             self.dWmax          = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='dWmax'       , value= 3571  , unit='Hz');
-            self.generate_bir4_degraaf1995();
+            self.generate();
         end % fcn
 
         function generate(self) % #abstract

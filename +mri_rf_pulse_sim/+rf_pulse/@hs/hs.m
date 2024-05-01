@@ -24,7 +24,7 @@ classdef hs < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.bw       = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='bw'      , value=2000   , scale=1e-3, unit='kHz');
             self.b1max    = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='b1max'   , value=  20e-6, scale=1e6 , unit='µT' );
             self.b1cutoff = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='b1cutoff', value=   0.01, scale=1e2 , unit='%'  );
-            self.generate_hs();
+            self.generate();
         end % fcn
 
         function generate(self) % #abstract

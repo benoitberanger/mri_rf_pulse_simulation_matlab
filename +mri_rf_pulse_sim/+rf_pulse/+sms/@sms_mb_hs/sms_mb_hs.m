@@ -4,7 +4,7 @@ classdef sms_mb_hs < mri_rf_pulse_sim.backend.rf_pulse.sms_mb & mri_rf_pulse_sim
 
         % constructor
         function self = sms_mb_hs()
-            self.generate_sms_mb_hs();
+            self.generate();
         end % fcn
 
         function generate(self) % #abstract

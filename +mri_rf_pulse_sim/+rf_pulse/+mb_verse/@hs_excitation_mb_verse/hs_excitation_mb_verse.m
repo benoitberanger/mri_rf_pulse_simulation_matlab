@@ -5,7 +5,7 @@ classdef hs_excitation_mb_verse < mri_rf_pulse_sim.backend.rf_pulse.verse & mri_
         % constructor
         function self = hs_excitation_mb_verse()
             self.n_points.set(512); % need a bit more numerical precision
-            self.generate_hs_excitation_mb_verse();
+            self.generate();
         end % fcn
 
         function generate(self) % #abstract

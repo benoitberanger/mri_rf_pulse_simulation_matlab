@@ -46,11 +46,12 @@ classdef hs_excitation < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.flip_angle = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle', value=90  , unit='°'    );
             self.beta       = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='beta'      , value=3040, unit='rad/s');
             self.mu         = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='mu'        , value=4.25              );
-            self.generate_hs_excitation();
+            self.generate();
         end % fcn
 
         function generate(self) % #abstract
             self.generate_hs_excitation();
+            self.add_gz_rewinder();
         end % fcn
 
         function generate_hs_excitation(self)
