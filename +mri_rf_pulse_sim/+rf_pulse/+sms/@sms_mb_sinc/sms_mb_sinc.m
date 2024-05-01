@@ -9,6 +9,7 @@ classdef sms_mb_sinc < mri_rf_pulse_sim.backend.rf_pulse.sms_mb & mri_rf_pulse_s
 
         function generate(self) % #abstract
             self.generate_sms_mb_sinc();
+            self.add_gz_rewinder();
         end % fcn
 
         function generate_sms_mb_sinc(self)
