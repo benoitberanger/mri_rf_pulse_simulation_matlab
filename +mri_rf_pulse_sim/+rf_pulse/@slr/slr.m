@@ -60,6 +60,27 @@ classdef slr < mri_rf_pulse_sim.backend.rf_pulse.abstract
             waveform = waveform * deg2rad(self.flip_angle.get()) / self.gamma; % scale integrale with flip angle
             self.B1 = waveform;
 
+            self.add_gz_rewinder();
+        end % fcn
+
+        % SLR pulses can be asymetric : overload the method with a dedicated one
+        function add_gz_rewinder(self, status)
+            self.gz_rewinder.visible = "on";
+            if nargin == 1, status = self.gz_rewinder.get(); end
+            if ~status    , return                         , end
+
+            switch self.filter_type.get()
+                case {'min','max'}
+                    [~,idx_max] = max(abs(self.B1));
+                    dur = self.time(end) - self.time(idx_max);
+                otherwise
+                    dur = self.duration/2;
+            end
+
+            n_new_points = round(self.n_points/2);
+            self.time = [self.time linspace(self.time(end), self.time(end)+dur, n_new_points)];
+            self.B1   = [self.B1   zeros(1,n_new_points)                                     ];
+            self.GZ   = [self.GZ   -self.GZ(n_new_points+1:end)                              ];
         end % fcn
 
         function txt = summary(self) % #abstract
