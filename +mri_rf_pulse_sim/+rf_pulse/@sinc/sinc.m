@@ -3,6 +3,7 @@ classdef sinc < mri_rf_pulse_sim.backend.rf_pulse.abstract
     properties (GetAccess = public, SetAccess = public)
         n_side_lobs mri_rf_pulse_sim.ui_prop.scalar                        % [] number of side lobs, from 1 to +Inf
         flip_angle  mri_rf_pulse_sim.ui_prop.scalar                        % [deg] flip angle
+        rf_phase       mri_rf_pulse_sim.ui_prop.scalar                     % [deg] phase of the pulse (typically used for spoiling)
 
         window                                                             % window object
     end % props
@@ -28,6 +29,7 @@ classdef sinc < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.n_points.value = 128;
             self.n_side_lobs    = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='n_side_lobs', value= 2          );
             self.flip_angle     = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle' , value=90, unit='°');
+            self.rf_phase       = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='rf_phase'   , value= 0, unit='°');
             self.generate_sinc();
         end % fcn
 
@@ -46,15 +48,15 @@ classdef sinc < mri_rf_pulse_sim.backend.rf_pulse.abstract
             end
             waveform = waveform / trapz(self.time, waveform); % normalize integral
             waveform = waveform * deg2rad(self.flip_angle.get()) / self.gamma; % scale integrale with flip angle
-            self.B1  = waveform;
+            self.B1  = waveform * exp(1j * deg2rad(self.rf_phase.get()));
             self.GZ  = ones(size(self.time)) * self.GZavg;
 
             self.add_gz_rewinder();
         end % fcn
 
         function txt = summary(self) % #abstract
-            txt = sprintf('[%s] : n_side_lobs=%s  flip_angle=%s',...
-                mfilename, self.n_side_lobs.repr, self.flip_angle.repr);
+            txt = sprintf('[%s] : n_side_lobs=%s  flip_angle=%s  rf_phase=%s',...
+                mfilename, self.n_side_lobs.repr, self.flip_angle.repr, self.rf_phase.repr);
             if ~isempty(self.window) && isvalid(self.window)
                 txt = sprintf('%s  window=%s', txt, self.window.name);
             end
@@ -78,7 +80,7 @@ classdef sinc < mri_rf_pulse_sim.backend.rf_pulse.abstract
         function init_specific_gui(self, container) % #abstract
             mri_rf_pulse_sim.ui_prop.scalar.add_uicontrol_multi_scalar(...
                 container,...
-                [self.n_side_lobs, self.flip_angle],...
+                [self.n_side_lobs, self.flip_angle self.rf_phase],...
                 [0 0.2 1 0.8]...
                 );
 
