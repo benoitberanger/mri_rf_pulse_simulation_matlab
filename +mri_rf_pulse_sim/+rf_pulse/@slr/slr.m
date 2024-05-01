@@ -62,7 +62,7 @@ classdef slr < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.B1 = waveform;
         end % fcn
 
-        % SLR pulses can be asymetric : overload the method with a dedicated one
+        % SLR pulses can be asymmetric : overload the method with a dedicated one
         function add_gz_rewinder(self, status)
             self.gz_rewinder.visible = "on";
             if nargin == 1, status = self.gz_rewinder.get(); end

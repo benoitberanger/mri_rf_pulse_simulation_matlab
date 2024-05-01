@@ -3,7 +3,7 @@ classdef sinc < mri_rf_pulse_sim.backend.rf_pulse.abstract
     properties (GetAccess = public, SetAccess = public)
         n_side_lobs mri_rf_pulse_sim.ui_prop.scalar                        % [] number of side lobs, from 1 to +Inf
         flip_angle  mri_rf_pulse_sim.ui_prop.scalar                        % [deg] flip angle
-        rf_phase       mri_rf_pulse_sim.ui_prop.scalar                     % [deg] phase of the pulse (typically used for spoiling)
+        rf_phase    mri_rf_pulse_sim.ui_prop.scalar                        % [deg] phase of the pulse (typically used for spoiling)
 
         window                                                             % window object
     end % props

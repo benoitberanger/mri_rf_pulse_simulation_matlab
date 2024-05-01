@@ -5,20 +5,14 @@ The app is a GUI, and the code also made to be used purely programmatically.
 
 1. Open the GUI app
 2. Click on a pulse in the library list.
-3. The selected $RF$ pulse is loaded with default parameters, plotted in the GUI, and it's simulation triggered.
-4. The simulation is plotted : magnetization vector across time $M_{xzy}(t)$, slice profile $\Delta Z$, chemical shift profile $\Delta B_0$.
+3. The selected $RF$ pulse is loaded with default parameters, plotted in the GUI, and it's simulation triggered. The simulation is plotted automatically : magnetization vector across time $M_{xzy}(t)$, slice profile $\Delta Z$, chemical shift profile $\Delta B_0$.
 
-The application is completely object oriented programming, to take advandtage of heritage. See the API section.
+The application is completely object oriented, to take advandtage of heritage and composition of several abstract classes.
 
 Also, you can use your own pulses in the app by :
-- a super fast method : filling the $RF$ pulse shape ($B1$ curve $GZ$ curve). !! TODO !!
-- an ergonomic method made for interativity : add your own $RF$ pulse objects so it will appear in the library. !! TODO !!
+- a super fast method : fill the $RF$ pulse shape ($B1$ curve $GZ$ curve) in the the `USER_DEFINED` pulse. This is "empty" pulse, used as placeholder in the app.
+- !! TODO !! : an ergonomic method made for interativity : add your own $RF$ pulse objects so it will appear in the library.
 
-## Download and install
-1. Clone the repository with 
-    - `git clone --recurse-submodules https://github.com/benoitberanger/mri_rf_pulse_simulation_matlab.git`
-2. In Matlab, `cd /path/to/mri_rf_pulse_simulation_matlab`
-3. Start the app with `mri_rf_pulse_sim.app()`
 
 ## Features
 ### GUI
@@ -29,27 +23,42 @@ The GUI have 3 independent panels :
 
 ### Scripting
 Here is some examples of non-GUI analysis :  
-- [evaluate_adiabaticity_hs](+mri_rf_pulse_sim/+analysis/evaluate_adiabaticity_hs.m)
+- [rect_vs_sinc](+mri_rf_pulse_sim/+analysis/rect_vs_sinc.m)
+- [rf_clip](+mri_rf_pulse_sim/+analysis/rf_clip.m)
 - [compare_hs_foci](+mri_rf_pulse_sim/+analysis/compare_hs_foci.m)
 
+### Object oriented programming
+All pulses are objects.  
+Pulses can inherit from others : `FOCI` is derived from `HyperbolicSecant`.  
+Pulses can be composed of several abstract classes.
+For example, `slr_mb_verse` is a **SLR** base waveform, then the **M**ulti**B**and algorithm is applied to excite several slices, and finnally the **VERSE** algorithm reduces it's duration and *$B1_{max}$* using constrains.
 
-### API for user defined pulses
+
+### Re-usability
+One of the objectives here is to centralize the equations/algorithms of *$RF$* pulse so they can be almost copy-pasted in other programming environments, like a complete sequence simulator, or a sequence development environment from your manufacturer.  
+One difficulty when looking in the literature is that different sources can have different vocabulary or different parameters. A typical example is the **H**yperbolic**S**ecant, which is the extremely well described, but with a large variety of implementation using different input parameters.
+
+
+## Examples
 TODO
-
-
-# Limitations
-- MATLAB R2023a+ ? maybe few release earlier, but I did not test them.
 
 
 ## TODO list
 https://github.com/users/benoitberanger/projects/2
 
 
-# Examples
-TODO
+## Download and install
+1. Clone the repository with 
+    - `git clone --recurse-submodules https://github.com/benoitberanger/mri_rf_pulse_simulation_matlab.git`
+2. In Matlab, `cd /path/to/mri_rf_pulse_simulation_matlab`
+3. Start the app with `mri_rf_pulse_sim.app()`
 
 
-# External dependency ?
+## Limitations
+- MATLAB R2023a+ ? maybe few release earlier, but I did not test them.
+
+
+## External dependency
 
 **None**, except for : 
 - For SLR pulses : 
@@ -57,18 +66,13 @@ TODO
     - Signal Processing Toolbox
 
 
-# Tested on
+## Tested on
 MATLAB R2023a+
 
 
-# Alternatives
+## Alternatives
 In all alternatives that I found, in Python, Malab, Julia, none has the same interactivty and ergonomy.
 
-## Python
-https://github.com/mikgroup/sigpy
-
-## Matlab
-https://github.com/leoliuf/MRiLab
-
-## Julia
-https://github.com/cncastillo/KomaMRI.jl
+- Python : https://github.com/mikgroup/sigpy
+- Matlab : https://github.com/leoliuf/MRiLab
+- Julia : https://github.com/cncastillo/KomaMRI.jl
