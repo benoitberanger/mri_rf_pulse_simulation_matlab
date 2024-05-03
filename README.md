@@ -31,11 +31,11 @@ Here is some examples of non-GUI analysis :
 All pulses are objects.  
 Pulses can inherit from others : `FOCI` is derived from `HyperbolicSecant`.  
 Pulses can be composed of several abstract classes.
-For example, `slr_mb_verse` is a **SLR** base waveform, then the **M**ulti**B**and algorithm is applied to excite several slices, and finnally the **VERSE** algorithm reduces it's duration and *$B1_{max}$* using constrains.
+For example, `slr_mb_verse` is a **SLR** base waveform, then the **M**ulti**B**and algorithm is applied to excite several slices, and finnally the **VERSE** algorithm reduces it's duration and $B1_{max}$ using constrains.
 
 
 ### Re-usability
-One of the objectives here is to centralize the equations/algorithms of *$RF$* pulse so they can be almost copy-pasted in other programming environments, like a complete sequence simulator, or a sequence development environment from your manufacturer.  
+One of the objectives here is to centralize the equations/algorithms of $RF$ pulse so they can be almost copy-pasted in other programming environments, like a complete sequence simulator, or a sequence development environment from your manufacturer.  
 One difficulty when looking in the literature is that different sources can have different vocabulary or different parameters. A typical example is the **H**yperbolic**S**ecant, which is the extremely well described, but with a large variety of implementation using different input parameters.
 
 
