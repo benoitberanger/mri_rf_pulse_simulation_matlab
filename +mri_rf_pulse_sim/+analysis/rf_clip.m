@@ -1,6 +1,7 @@
-function varargout = rf_clip()
-% This function show that increasing the RECT duration reduce it's B1max, so
-% reduce the maximum voltage of the amplifier.
+function rf_clip()
+%% Too much B1max ? maybe increase pulse duration
+% This function show that increasing the duration of a RECT reduce it's $B1_{max}$,
+% so reduces the maximum voltage of the RF power amplifier.
 
 
 %% Parameters
@@ -38,23 +39,24 @@ for i = 1 : N
     solver.solve();
     all_B1max        (1,i) = RECT.B1max* 1e6; % T -> µT
     all_pulse_time   (:,i) = RECT.time * 1e3; % s -> ms
-    all_pulse_shape  (:,i) = RECT.real * 1e6; % T -> µT
+    all_pulse_shape  (:,i) = RECT.mag  * 1e6; % T -> µT
     all_slice_profile(:,i) = solver.getSliceProfilePerp();
 end
 
 
 %% Plot
+% In the SliceProfile plot, the $M_{\perp}$ reduction comes from $T2$ relaxtion,
+% which is not neglected in this simulation
 
-fig = figure('Name',mfilename,'NumberTitle','off');
-
-ax(1) = subplot(3,1,1);
-ax(2) = subplot(3,1,2);
-ax(3) = subplot(3,1,3);
+fig = figure(Name=sprintf('[%s]', mfilename), NumberTitle='off', Units='pixels', Position=[100 100 1600 800]);
+ax(1) = subplot(3,1,1, 'Parent',fig);
+ax(2) = subplot(3,1,2, 'Parent',fig);
+ax(3) = subplot(3,1,3, 'Parent',fig);
 hold(ax, 'all')
 colors = flipud(colors);
 
 % data
-for i = N : -1 : 1
+for i = N : -1 : 1 % reverse plot order so the lowest duration is on top
     plot(ax(1), [all_pulse_time(1,i); all_pulse_time(:,i); all_pulse_time(end,i)], [0; all_pulse_shape(:,i); 0], 'Color',colors(i,:), 'LineWidth',2);
     plot(ax(3), solver.SpatialPosition.getScaled()                               ,   all_slice_profile(:,i)    , 'Color',colors(i,:), 'LineWidth',2);
     plot(ax(2), vect(i), all_B1max(i), 'MarkerFaceColor',colors(i,:), 'MarkerEdgeColor','black', 'Marker', 's', 'MarkerSize', 10, 'LineStyle','none');
@@ -66,29 +68,22 @@ plot(ax(1), [min(all_pulse_time(:)) max(all_pulse_time(:))], [0 0]              
 plot(ax(3), solver.SpatialPosition.getScaled()             , ones(size(solver.SpatialPosition.getScaled())), 'LineStyle',':', 'Color','black', 'LineWidth', 0.5)
 
 labels = string(duration_range.getScaled()) + "ms";
-labels = flip(labels);
+labels = flip(labels); % because of reveres order in the plot
 
 xlabel(ax(1),'time (ms)')
-ylabel(ax(1),'Real (µT)')
-axis(ax(1), 'tight')
+ylabel(ax(1),'Magnitude (µT)')
+axis  (ax(1),'tight')
 legend(ax(1), labels)
 
 xlabel(ax(2),'duration (ms)')
 ylabel(ax(2),'B1max (µT)')
-axis(ax(2), 'tight')
+axis  (ax(2),'tight')
 legend(ax(2), labels)
 
 xlabel(ax(3),'spatial position (mm)')
 ylabel(ax(3),'slice profile (M\perp)')
-axis(ax(3), 'tight')
+axis  (ax(3),'tight')
 legend(ax(3), labels)
-
-
-%% Output ?
-
-if nargout
-    varargout{1} = fig;
-end
 
 
 end % fcn
