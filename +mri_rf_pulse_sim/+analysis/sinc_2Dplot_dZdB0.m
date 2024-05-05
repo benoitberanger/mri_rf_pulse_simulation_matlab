@@ -1,4 +1,5 @@
 function sinc_2Dplot_dZdB0()
+%% What does it mean to have DeltaB0 not null, i.e. being off-resonance ?
 % This function will show a 2D plot SliceProfile x DeltaB0
 
 
@@ -24,10 +25,13 @@ DZxDB0 = squeeze(DZxDB0); % ?? why there is an empty dimension
 
 
 %% Plot
+% The slice profile is distorted when DeltaB0 is not null.
 
-figure('Name',mfilename,'NumberTitle','off');
+figure(Name=sprintf('[%s]', mfilename), NumberTitle='off', Units='pixels', Position=[100 100 1600 800]);
 [DZgrid, DB0grid] = meshgrid(solver.SpatialPosition.getScaled(),solver.DeltaB0.getScaled());
 mysurf = surf(DZgrid, DB0grid, DZxDB0');
+view(2)
+colorbar()
 xlabel('Slice position (mm)')
 ylabel('Chemical shift (ppm)')
 zlabel('M\perp')

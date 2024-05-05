@@ -1,5 +1,6 @@
 function compare_ChemicalShift_SLRinv_vs_HS_vs_FOCI()
-% This function will compare the spatial displacement due to chemical shift between 2 pulses
+%% Why adiabatic pulses are interesting in case of DeltaB0 ?
+% This function will compare the spatial displacement due to chemical shift between different pulses
 %
 % REMINDER
 %
@@ -94,39 +95,43 @@ fprintf('FOCI    : CS displacement = %f mm/ppm \n', abs(p3(1)))
 
 
 %% Plot
+%
+% * on the top, 2D plots SlicePosition x ChemicalShoft
+% * on the bottom, the ChemicalShift Displacement Error
 
 [DZgrid, DB0grid] = meshgrid(solver.SpatialPosition.getScaled(),solver.DeltaB0.getScaled());
 
-figure('Name',mfilename,'NumberTitle','off');
+figure(Name=sprintf('[%s]', mfilename), NumberTitle='off', Units='pixels', Position=[100 100 1600 800]);
 
 subplot(2,3,1)
+title('SLR inv')
 mysurf = surf(DZgrid, DB0grid, DZxDB0_1');
 view(2)
 xlabel('Slice position (mm)')
 ylabel('Chemical shift (ppm)')
 zlabel('M\perp')
 mysurf.EdgeColor = 'none';
-title('SLR inv')
 
 subplot(2,3,2)
 mysurf = surf(DZgrid, DB0grid, DZxDB0_2');
+title('HS')
 view(2)
 xlabel('Slice position (mm)')
 ylabel('Chemical shift (ppm)')
 zlabel('M\perp')
 mysurf.EdgeColor = 'none';
-title('HS')
 
 subplot(2,3,3)
+title('FOCI')
 mysurf = surf(DZgrid, DB0grid, DZxDB0_3');
 view(2)
 xlabel('Slice position (mm)')
 ylabel('Chemical shift (ppm)')
 zlabel('M\perp')
 mysurf.EdgeColor = 'none';
-title('FOCI')
 
-subplot(2,2,[3 4])
+subplot(2,3,[4 5 6])
+title('SlicePisiton = function(ChemicalShift)')
 hold on
 plot(solver.DeltaB0.getScaled,Z_middle_1)
 plot(solver.DeltaB0.getScaled,Z_middle_2)
