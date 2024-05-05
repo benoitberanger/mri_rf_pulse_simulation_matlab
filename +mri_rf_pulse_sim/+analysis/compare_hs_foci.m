@@ -1,18 +1,13 @@
-function varargout = compare_hs_foci()
-% This function evaluate the slice profile of HS vs. FOCI at different maximum RF amplitude
+function compare_hs_foci()
+%% FOCI is derivezd from HS pulse. But is it better ?
+% This function evaluate the slice profile of HS vs. FOCI at different maximum RF amplitude ($B1_{max}$).
 
 
 %% Parameters
 
 % generate FOCI pulse with default parameters
-% since FOCI herits from HS, the FOCI object can call both generate_hs() and genertage_foci()
-% using the exact same parameters.
+% since FOCI herits from HS, the FOCI object can call both generate_hs() and genertage_foci() using the exact same parameters.
 pulse = mri_rf_pulse_sim.rf_pulse.foci();
-
-pulse.generate_foci();
-pulse.plot();
-pulse.generate_hs();
-pulse.plot();
 
 % set parameters of the solver
 solver = mri_rf_pulse_sim.bloch_solver();
@@ -25,8 +20,22 @@ solver.setDeltaB0(0); % in this example, assume no dB0
 vect = 2 : 2 : 18; % µT
 b1max_range = mri_rf_pulse_sim.ui_prop.range(name='b1max', vect=vect*1e-6, unit='µT', scale=1e6);
 
+fig_size_px = [100 100 1600 800];
 
-%% Computation (and plot)
+
+%% Plot HS and FOCI
+
+fig1 = figure(Name=sprintf('[%s]: plot pulses', mfilename), NumberTitle='off', Units='pixels', Position=fig_size_px);
+p1 = uipanel(Parent=fig1, Units="normalized",Position=[0.00 0.00 0.50 1.00], Title="HS");
+p2 = uipanel(Parent=fig1, Units="normalized",Position=[0.50 0.00 0.50 1.00], Title="FOCI");
+
+pulse.generate_hs();
+pulse.plot(p1);
+pulse.generate_foci();
+pulse.plot(p2);
+
+
+%% Computation
 
 % pre-allocation
 all_slice_profile = zeros(2,solver.SpatialPosition.N,b1max_range.N);
@@ -52,7 +61,7 @@ end
 
 %%  Display inversion efficiency
 
-efficiency = round(abs(squeeze(mid_slice_profile)-1)/2 *100); % convert Mz from [-1 to +1] into [0% to 100%]
+efficiency = round(abs(squeeze(mid_slice_profile)-1)/2 *100); % convert Mz from [+1 -> -1] into [0% -> 100%]
 
 % and now print efficiency in a nice way
 efficiency_table = array2table(efficiency);
@@ -61,12 +70,12 @@ efficiency_table.Properties.RowNames = {'efficiency HS (%)', 'efficiency FOCI (%
 disp(efficiency_table)
 
 
-%% Plot
+%% Plot SliceProfile and Efficiency for both pulses
 
-fig = figure('Name',mfilename,'NumberTitle','off');
+fig2 = figure(Name=sprintf('[%s]: plot slice profiles', mfilename), NumberTitle='off', Units='pixels', Position=fig_size_px);
 
-ax1 = subplot('Position', [0.10 0.40 0.35 0.50]);
-ax2 = subplot('Position', [0.55 0.40 0.35 0.50]);
+ax1 = subplot('Position',[0.10 0.40 0.35 0.50], 'Parent',fig2);
+ax2 = subplot('Position',[0.55 0.40 0.35 0.50], 'Parent',fig2);
 hold([ax1 ax2], 'on');
 colors = jet(b1max_range.N);
 for idx = 1 : b1max_range.N
@@ -82,23 +91,15 @@ end
 legend(ax1)
 legend(ax2)
 xlabel([ax1 ax2],'mm')
-ylabel([ax1 ax2],'Mz')
+ylabel([ax1 ax2],'M\mid\mid')
 title(ax1, 'HS')
 title(ax2, 'FOCI')
 
-ax3 = subplot('Position', [0.1 0.1 0.8 0.2]);
+ax3 = subplot('Position',[0.1 0.1 0.8 0.2], 'Parent',fig2);
 plot(ax3, b1max_range.getScaled(), efficiency, 'Marker', 'x', 'LineWidth',2);
 xlabel('µT')
 ylabel('efficiency (%)')
 legend({'HS', 'FOCI'})
-
-
-%% Output ?
-
-if nargout
-    varargout{1} = efficiency_table;
-    varargout{2} = fig;
-end
 
 
 end % fcn
