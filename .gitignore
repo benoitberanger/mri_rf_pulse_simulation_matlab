@@ -6,6 +6,7 @@
 
 # specific
 /test
+/html_publish_matlab
 
 # Octave
 octave-workspace
