@@ -1,8 +1,7 @@
 function generate_all_HTML()
 
 % get all anaysis scripts
-% path_string = fullfile(mri_rf_pulse_sim.get_package_dir(), "+analysis", "*.m");
-path_string = fullfile(mri_rf_pulse_sim.get_package_dir(), "+analysis", "rect_vs_sinc.m");
+path_string = fullfile(mri_rf_pulse_sim.get_package_dir(), "+analysis", "*.m");
 content = dir(path_string);
 to_execute = {content.name};
 to_execute = strrep(to_execute, '.m', '');

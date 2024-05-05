@@ -1,5 +1,5 @@
 function rect_vs_sinc()
-%% Why SINC is used for slice selection compared to RECT ?
+%% Why SINC is used for slice selection instead of to RECT ?
 %
 % This function compares :
 %
@@ -7,7 +7,7 @@ function rect_vs_sinc()
 % * SINC, probably the most used
 % * SINC x hanning, the same SINC modulated with a Hanning window.
 %
-% All theses pulses have the *same* input parameters : duration, slice thickness, flip angle
+% All these pulses have the *same* input parameters : duration, slice thickness, flip angle
 %
 
 
@@ -16,9 +16,7 @@ function rect_vs_sinc()
 % generate pulses
 RECT  = mri_rf_pulse_sim.rf_pulse.rect();
 SINC  = mri_rf_pulse_sim.rf_pulse.sinc();
-SINCh = mri_rf_pulse_sim.rf_pulse.sinc();
-SINCh.set_window('hanning');
-SINCh.generate();
+SINCh = mri_rf_pulse_sim.rf_pulse.sinc(); SINCh.set_window('hanning'); SINCh.generate();
 
 slice_thickness = 4/1000; % mm -> m
 slice_profile_visu_factor = 4; % to visualize larger than just the expected slice profile
