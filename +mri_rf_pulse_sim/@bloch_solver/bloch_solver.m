@@ -273,7 +273,7 @@ classdef bloch_solver < handle & matlab.mixin.CustomCompactDisplayProvider
 
                 dt = self.rf_pulse.time(t) - self.rf_pulse.time(t-1);
 
-                Uz = (Zgrid * self.rf_pulse.GZ(t-1) + Bgrid*self.B0 ) * self.rf_pulse.gamma;
+                Uz = (Zgrid * self.rf_pulse.GZ(t-1) + Bgrid*self.B0) * self.rf_pulse.gamma;
                 Ux = self.rf_pulse.gamma * B1real(t-1);
                 Uy = self.rf_pulse.gamma * B1imag(t-1);
 
