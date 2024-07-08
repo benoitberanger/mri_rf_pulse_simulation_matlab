@@ -12,29 +12,30 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
     end % props
 
     properties (GetAccess = public, SetAccess = protected, Dependent)
-        FM              (1,:) double                                       % [Hz]    frequency modulation -> its the derivation of the phase(t)
-        B1max           (1,1) double                                       % [T]     max value of magnitude(t)
-        GZmax           (1,1) double                                       % [T/m]   max value of  gradient(t)
-        GZavg           (1,1) double                                       % [T/m]   average value of gradient(t) -> used for slice thickness
-        tbwp            (1,1) double                                       % []      time-bandwidth product -> in the literature, it represents a "quality" factor
-        energy          (1,1) double                                       % []      ~Joules (J)
-        power           (1,1) double                                       % []      ~Watts  (W) !! average power (not instantaneous)
-        B1rms           (1,1) double                                       % [T]     B1 Root Mean Square
-        gradB1max       (1,1) double                                       % [T/s]   max(dB1/dt)
-        gradGZmax       (1,1) double                                       % [T/m/s] max(dGZ/dt)
+        FM              mri_rf_pulse_sim.ui_prop.scalar                    % [Hz]    frequency modulation -> its the derivation of the phase(t)
+        B1max           mri_rf_pulse_sim.ui_prop.scalar                    % [T]     max value of magnitude(t)
+        GZmax           mri_rf_pulse_sim.ui_prop.scalar                    % [T/m]   max value of  gradient(t)
+        GZavg           mri_rf_pulse_sim.ui_prop.scalar                    % [T/m]   average value of gradient(t) -> used for slice thickness
+        tbwp            mri_rf_pulse_sim.ui_prop.scalar                    % []      time-bandwidth product -> in the literature, it represents a "quality" factor
+        energy          mri_rf_pulse_sim.ui_prop.scalar                    % []      ~Joules (J)
+        power           mri_rf_pulse_sim.ui_prop.scalar                    % []      ~Watts  (W) !! average power (not instantaneous)
+        B1rms           mri_rf_pulse_sim.ui_prop.scalar                    % [T]     B1 Root Mean Square
+        gradB1max       mri_rf_pulse_sim.ui_prop.scalar                    % [T/s]   max(dB1/dt)
+        gradGZmax       mri_rf_pulse_sim.ui_prop.scalar                    % [T/m/s] max(dGZ/dt)
     end % props
 
     methods % no attribute for dependent properties
-        function value = get.B1max    (self); value = max (abs(self.B1));                                      end
-        function value = get.GZmax    (self); value = max (abs(self.GZ));                                      end
-        function value = get.GZavg    (self); value = 2*pi*self.bandwidth / (self.gamma*self.slice_thickness); end
         function value = get.FM       (self); value = gradient(self.phase,self.time) / (2*pi);                 end
-        function value = get.tbwp     (self); value = self.duration * self.bandwidth;                          end
-        function value = get.energy   (self); value = trapz(self.time,self.magnitude.^2);                      end
-        function value = get.power    (self); value = self.energy/self.duration;                               end
-        function value = get.B1rms    (self); value = sqrt(self.power);                                        end
-        function value = get.gradB1max(self); value = max(gradient(self.magnitude,self.time));                 end
-        function value = get.gradGZmax(self); value = max(gradient(self.GZ       ,self.time));                 end
+
+        function value = get.B1max    (self); value = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='B1max'    , value=max(abs(self.B1))                                      , unit='µT'     , scale=1e06); end
+        function value = get.GZmax    (self); value = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='GZmax'    , value=max(abs(self.GZ))                                      , unit='mT/m'   , scale=1e03); end
+        function value = get.GZavg    (self); value = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='GZavg'    , value=2*pi*self.bandwidth / (self.gamma*self.slice_thickness), unit='mT/m'   , scale=1e03); end
+        function value = get.tbwp     (self); value = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='tbwp'     , value=self.duration * self.bandwidth                                                     ); end
+        function value = get.energy   (self); value = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='energy'   , value=trapz(self.time,self.magnitude.^2)                     , unit='fJ'     , scale=1e15); end
+        function value = get.power    (self); value = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='power'    , value=self.energy/self.duration                              , unit='pW'     , scale=1e12); end
+        function value = get.B1rms    (self); value = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='B1rms'    , value=sqrt(self.power)                                       , unit='µT'     , scale=1e06); end
+        function value = get.gradB1max(self); value = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='gradB1max', value=max(gradient(self.magnitude,self.time))                , unit='µT/ms'  , scale=1e03); end
+        function value = get.gradGZmax(self); value = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='gradGZmax', value=max(gradient(self.GZ       ,self.time))                , unit='mT/m/ms'            ); end
     end % meths
 
     methods (Access = public)
