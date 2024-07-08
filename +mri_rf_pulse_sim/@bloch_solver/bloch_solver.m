@@ -257,8 +257,8 @@ classdef bloch_solver < handle & matlab.mixin.CustomCompactDisplayProvider
             m(:,2,1) = self.M0.y;
             m(:,3,1) = self.M0.z;
 
-            B1mag = self.rf_pulse.mag();
-            B1pha = self.rf_pulse.pha();
+            B1real = self.rf_pulse.real();
+            B1imag = self.rf_pulse.imag();
 
             use_T1_relaxiation = false;
             use_T2_relaxiation = false;
@@ -274,8 +274,8 @@ classdef bloch_solver < handle & matlab.mixin.CustomCompactDisplayProvider
                 dt = self.rf_pulse.time(t) - self.rf_pulse.time(t-1);
 
                 Uz = (Zgrid * self.rf_pulse.GZ(t-1) + Bgrid*self.B0 ) * self.rf_pulse.gamma;
-                Ux = self.rf_pulse.gamma * B1mag(t-1) * cos(B1pha(t-1));
-                Uy = self.rf_pulse.gamma * B1mag(t-1) * sin(B1pha(t-1));
+                Ux = self.rf_pulse.gamma * B1real(t-1);
+                Uy = self.rf_pulse.gamma * B1imag(t-1);
 
                 phy = atan2(               Uy , Ux);
                 the = atan2(sqrt(Ux.^2+Uy.^2) , Uz);
