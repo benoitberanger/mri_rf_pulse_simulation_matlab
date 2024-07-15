@@ -40,7 +40,7 @@ classdef sinc_self_refocusing < mri_rf_pulse_sim.backend.rf_pulse.abstract
             % generate standard SINC pulse for the middle part
             time_middle = linspace(-self.duration/4, +self.duration/4, self.n_points/2    );
             lob_size_middle = 1/self.bandwidth/2;
-            b1_middle = sinc(time_middle/lob_size_middle); % base shape
+            b1_middle = Sinc(time_middle/lob_size_middle); % base shape
             gz_middle = ones(size(time_middle)) * self.GZavg;
 
             % then replicate the half of the middle on each side, with L/R swap
@@ -73,3 +73,10 @@ classdef sinc_self_refocusing < mri_rf_pulse_sim.backend.rf_pulse.abstract
     end % meths
 
 end % class
+
+function y = Sinc(x)
+i    = find(x==0);        % identify the zeros
+x(i) = 1;                 % fix the DIVIDED_BY_ZERO problem
+y    = sin(pi*x)./(pi*x); % generate the Sinc curve
+y(i) = 1;                 % fix the DIVIDED_BY_ZERO problem
+end % fcn

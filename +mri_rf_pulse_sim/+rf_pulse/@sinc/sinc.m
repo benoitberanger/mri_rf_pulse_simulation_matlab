@@ -43,7 +43,7 @@ classdef sinc < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
             lob_size = 1/self.bandwidth;
 
-            waveform = sinc(self.time/lob_size); % base shape
+            waveform = Sinc(self.time/lob_size); % base shape
             if ~isempty(self.window) && isvalid(self.window)
                 waveform = waveform .* self.window.shape; % windowing
             end
@@ -103,3 +103,10 @@ classdef sinc < mri_rf_pulse_sim.backend.rf_pulse.abstract
     end % meths
 
 end % class
+
+function y = Sinc(x)
+i    = find(x==0);        % identify the zeros
+x(i) = 1;                 % fix the DIVIDED_BY_ZERO problem
+y    = sin(pi*x)./(pi*x); % generate the Sinc curve
+y(i) = 1;                 % fix the DIVIDED_BY_ZERO problem
+end % fcn
