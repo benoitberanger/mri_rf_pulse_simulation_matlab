@@ -7,7 +7,7 @@ function optimize_sinc()
 
 %% Parameters
 
-% input paramters
+% input parameters
 target_B1max = 15e-6; % 15 µT is a classic constrain for pulses
 
 % generate default pulse, using Hanning window (mostly for visualization)

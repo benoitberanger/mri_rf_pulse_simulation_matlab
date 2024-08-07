@@ -22,7 +22,7 @@ b1max_range = mri_rf_pulse_sim.ui_prop.range(name='b1max', vect=vect*1e-6, unit=
 
 %% Plot pulse (default parameters)
 % In this plot, the $B1_{max}$ is the default value.
-% In the reste of the analysis, *only* the $B1_{max}$ will vary
+% In the rest of the analysis, *only* the $B1_{max}$ will vary
 
 fig1 = figure(Name=sprintf('[%s]: %s', mfilename, pulse.summary), NumberTitle='off', Units='pixels', Position=[100 100 1600 800]);
 p1 = uipanel(Parent=fig1, Title=pulse.summary);

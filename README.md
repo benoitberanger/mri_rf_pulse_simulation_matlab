@@ -1,6 +1,6 @@
 # MRI $RF$ pulse simulation in MALTAB
 
-This repository is a Matlab application that simulate the response of MRI **R**adio**F**requency (**RF**) pulses.
+This repository is a MATLAB application that simulate the response of MRI **R**adio**F**requency (**RF**) pulses.
 The app is a GUI, and the code also made to be used purely programmatically.
 
 1. Open the GUI app
@@ -18,14 +18,18 @@ Also, you can use your own pulses in the app by :
 ### GUI
 The GUI have 3 independent panels :
 - **Pulse definition** : It shows the library of pulses, and the selected pulse, including its shape and the UI parameters.
+![Pulse definition](docs/gui_pulse_definition.jpeg)
 - **Simulation parameters** : You define the range and granularity (number of points) for the slice profile evaluation $\Delta Z$ and the chemical shift $\Delta B_0$ evaluation.
+![Simulation parmeters](docs/gui_simulation_parameters.jpeg)
 - **Simulation results** : Displays $M_{xzy}(t)$, the slice profile $\Delta Z$, and the chemical shift $\Delta B_0$ profile.
+![Simulation results](docs/gui_simulation_results.jpeg)
 
 ### Scripting
 Here is some examples of non-GUI analysis :  
-- [rect_vs_sinc](+mri_rf_pulse_sim/+analysis/rect_vs_sinc.m)
-- [rf_clip](+mri_rf_pulse_sim/+analysis/rf_clip.m)
-- [compare_hs_foci](+mri_rf_pulse_sim/+analysis/compare_hs_foci.m)
+- [Why SINC is used for slice selection instead of to RECT ?](+mri_rf_pulse_sim/+analysis/rect_vs_sinc.m)
+- [Too much B1max ? RF clip ? maybe increase pulse duration](+mri_rf_pulse_sim/+analysis/rf_clip.m)
+- [FOCI is derivezd from HS pulse. But is it better ?](+mri_rf_pulse_sim/+analysis/compare_hs_foci.m)
+- [Why do we need a slice selection gradient **rewinder** ?](+mri_rf_pulse_sim/+analysis/slice_selection_rewinder_lob.m)
 
 ### Object oriented programming
 All pulses are objects.  
