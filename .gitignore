@@ -7,6 +7,7 @@
 # specific
 /test
 /html_publish_matlab
++mri_rf_pulse_sim/+rf_pulse/+local
 
 # Octave
 octave-workspace

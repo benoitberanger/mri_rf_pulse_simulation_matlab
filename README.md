@@ -7,20 +7,21 @@ The app is a GUI, and the code also made to be used purely programmatically.
 2. Click on a pulse in the library list.
 3. The selected $RF$ pulse is loaded with default parameters, plotted in the GUI, and it's simulation triggered. The simulation is plotted automatically : magnetization vector across time $M_{xzy}(t)$, slice profile $\Delta Z$, chemical shift profile $\Delta B_0$.
 
-The application is completely object oriented, to take advandtage of heritage and composition of several abstract classes.
+The application is highly object oriented, to take advandtage of heritage and composition of several abstract classes.
 
 Also, you can use your own pulses in the app by :
-- a super fast method : fill the $RF$ pulse shape ($B1$ curve $GZ$ curve) in the the `USER_DEFINED` pulse. This is "empty" pulse, used as placeholder in the app.
-- !! TODO !! : an ergonomic method made for interativity : add your own $RF$ pulse objects so it will appear in the library.
+- A super fast method : fill the $RF$ pulse shape ($B1$ curve $GZ$ curve) in the the `USER_DEFINED` pulse. This is "empty" pulse, used as placeholder in the app. _Example usage : if  you have Brucker pulse file (.exc .rfc .inv), load it with [load_bruker_RFpulse](+mri_rf_pulse_sim/load_bruker_RFpulse.m), fill the `USER_DEFINED` pulse, then trigger the GUI so simulate the profile._
+- An ergonomic method made for interativity : add your own $RF$ pulse class in `+mri_rf_pulse_sim/+rf_pulse/+local/` so it will appear in the GUI library. _This directory is not versioned in this repo_
 
 
 ## Features
+
 ### GUI
 The GUI have 3 independent panels :
 - **Pulse definition** : It shows the library of pulses, and the selected pulse, including its shape and the UI parameters.
 ![Pulse definition](docs/gui_pulse_definition.png)
 - **Simulation parameters** : You define the range and granularity (number of points) for the slice profile evaluation $\Delta Z$ and the chemical shift $\Delta B_0$ evaluation.
-![Simulation parmeters](docs/gui_simulation_parameters.png)
+![Simulation parameters](docs/gui_simulation_parameters.png)
 - **Simulation results** : Displays $M_{xzy}(t)$, the slice profile $\Delta Z$, and the chemical shift $\Delta B_0$ profile.
 ![Simulation results](docs/gui_simulation_results.png)
 
@@ -76,7 +77,7 @@ MATLAB R2023a+
 
 
 ## Alternatives
-In all alternatives that I found, in Python, Malab, Julia, all of them have nice features, but none has the same interactivty and ergonomy.
+In all alternatives that I found, in Python, MATLAB, Julia, all of them have very nice features, but none has the same interactivty and ergonomy.
 
 - Python : https://github.com/mikgroup/sigpy
 - Matlab : https://github.com/leoliuf/MRiLab
