@@ -44,11 +44,12 @@ One difficulty when looking in the literature is that different sources can have
 
 
 ## Examples
-TODO
 
+### HS : Hyperbolic Secant
+![HS](docs/gui_HS.png)
 
-## TODO list
-https://github.com/users/benoitberanger/projects/2
+### FOCI : Frequency Offset Corrected Inversion
+![FOCI](docs/gui_FOCI.png)
 
 
 ## Download and install
@@ -75,8 +76,13 @@ MATLAB R2023a+
 
 
 ## Alternatives
-In all alternatives that I found, in Python, Malab, Julia, none has the same interactivty and ergonomy.
+In all alternatives that I found, in Python, Malab, Julia, all of them have nice features, but none has the same interactivty and ergonomy.
 
 - Python : https://github.com/mikgroup/sigpy
 - Matlab : https://github.com/leoliuf/MRiLab
 - Julia : https://github.com/cncastillo/KomaMRI.jl
+
+
+## TODO list
+https://github.com/users/benoitberanger/projects/2
+
