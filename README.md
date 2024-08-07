@@ -18,11 +18,11 @@ Also, you can use your own pulses in the app by :
 ### GUI
 The GUI have 3 independent panels :
 - **Pulse definition** : It shows the library of pulses, and the selected pulse, including its shape and the UI parameters.
-![Pulse definition](docs/gui_pulse_definition.jpeg)
+![Pulse definition](docs/gui_pulse_definition.png)
 - **Simulation parameters** : You define the range and granularity (number of points) for the slice profile evaluation $\Delta Z$ and the chemical shift $\Delta B_0$ evaluation.
-![Simulation parmeters](docs/gui_simulation_parameters.jpeg)
+![Simulation parmeters](docs/gui_simulation_parameters.png)
 - **Simulation results** : Displays $M_{xzy}(t)$, the slice profile $\Delta Z$, and the chemical shift $\Delta B_0$ profile.
-![Simulation results](docs/gui_simulation_results.jpeg)
+![Simulation results](docs/gui_simulation_results.png)
 
 ### Scripting
 Here is some examples of non-GUI analysis :  
