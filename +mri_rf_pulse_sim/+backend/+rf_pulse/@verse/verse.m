@@ -128,7 +128,6 @@ classdef (Abstract) verse < handle
 
                             if abs(sk) > lim_s
                                 % slew rate limte broken : decompress waveforms
-
                                 A       = dt(k-1) * lim_s * sign(sk);
                                 B       = - g(k);
                                 C       = g(k-1);
@@ -174,7 +173,10 @@ classdef (Abstract) verse < handle
                             sk = (g(k+1)-g(k))/dt(k);
 
                             if abs(sk) > lim_s
-                                alpha  = g(k+1) / (sign(sk)*lim_s*dt(k)+g(k)) ;
+                                alpha  = g(k+1) / (sign(sk)*lim_s*dt(k)+g(k));
+                                if alpha == 0 && g(k+1) == 0 % edge case
+                                    alpha = eps;
+                                end
                                 alpha  = min(alpha,ALPHA_MAX);
                                 g(k+1) = g(k+1) / alpha;
                                 b(k+1) = b(k+1) / alpha;
