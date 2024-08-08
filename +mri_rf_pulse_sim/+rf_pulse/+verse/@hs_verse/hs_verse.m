@@ -14,6 +14,7 @@ classdef hs_verse < mri_rf_pulse_sim.backend.rf_pulse.verse & mri_rf_pulse_sim.r
         function generate_hs_verse(self)
             self.generate_hs();
             self.verse_modulation();
+            self.add_gz_rewinder_verse();
         end % fcn
 
         function txt = summary(self) % #abstract

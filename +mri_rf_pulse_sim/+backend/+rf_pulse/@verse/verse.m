@@ -222,6 +222,38 @@ classdef (Abstract) verse < handle
                 [0.40 0.00 0.60 1.00]);
         end % fcn
 
+        % Nicer GZ rewinder using the constrains
+        function add_gz_rewinder_verse(self, status)
+            self.gz_rewinder.visible = "on";
+            if nargin == 1, status = self.gz_rewinder.get(); end
+            if ~status    , return                         , end
+
+            target_moment = trapz(self.time,self.GZ) / 2;
+            dt = mean(diff(self.time));
+
+            half_g = 0;
+            half_t = 0;
+            current_moment = 0;
+
+            while current_moment <= target_moment
+                next = half_g(end) + self.maxSZ*dt;
+
+                if next <= self.maxGZ.get()
+                    half_g(end+1) = next;
+                elseif next > self.maxGZ.get()
+                    half_g(end+1) = self.maxGZ.get();
+                end
+
+                half_t(end+1) = half_t(end)+dt;
+                current_moment = 2 * trapz(half_t,half_g);
+            end
+
+            self.time = [self.time self.time(end)+half_t];
+            self.time = [self.time self.time(end)+half_t];
+            self.B1   = [self.B1   zeros(1,length(half_t)*2)];
+            self.GZ   = [self.GZ   -half_g -fliplr(half_g)];
+        end % fcn
+
     end % meths
 
 end % class

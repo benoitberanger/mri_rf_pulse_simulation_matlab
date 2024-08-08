@@ -18,6 +18,7 @@ classdef slr_mb_verse < mri_rf_pulse_sim.backend.rf_pulse.verse & mri_rf_pulse_s
             self.generate_slr();
             self.mb_phase_modulation();
             self.verse_modulation();
+            self.add_gz_rewinder_verse();
         end % fcn
 
         function txt = summary(self) % #abstract

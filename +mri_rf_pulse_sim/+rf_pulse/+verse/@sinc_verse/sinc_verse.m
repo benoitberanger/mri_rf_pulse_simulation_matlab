@@ -16,6 +16,7 @@ classdef sinc_verse < mri_rf_pulse_sim.backend.rf_pulse.verse & mri_rf_pulse_sim
         function generate_sinc_verse(self)
             self.generate_sinc();
             self.verse_modulation();
+            self.add_gz_rewinder_verse();
         end % fcn
 
         function txt = summary(self) % #abstract

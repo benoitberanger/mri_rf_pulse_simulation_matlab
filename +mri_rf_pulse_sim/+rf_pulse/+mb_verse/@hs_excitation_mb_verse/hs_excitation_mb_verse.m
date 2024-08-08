@@ -16,6 +16,7 @@ classdef hs_excitation_mb_verse < mri_rf_pulse_sim.backend.rf_pulse.verse & mri_
             self.generate_hs_excitation();
             self.mb_phase_modulation();
             self.verse_modulation();
+            self.add_gz_rewinder_verse();
         end % fcn
 
         function txt = summary(self) % #abstract
