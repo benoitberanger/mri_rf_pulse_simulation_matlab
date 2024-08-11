@@ -1,10 +1,14 @@
 classdef binomial_rect < mri_rf_pulse_sim.backend.rf_pulse.abstract
+    % The default paramters are chosen to show how FatSat -> Water Exitation Fast works
+    % At 3T, the water at dB0=0pmm is exited, but the fat at dB0=3.5ppm is not.
+    %
+    % Handbook of MRI Pulse Sequences // Matt A. Bernstein, Kevin F. King, Xiaohong Joe Zhou
 
     properties (GetAccess = public, SetAccess = public)
         flip_angle     mri_rf_pulse_sim.ui_prop.scalar                     % [deg] flip angle
         binomial_coeff mri_rf_pulse_sim.ui_prop.list                       % '1 1', '1 2 1', '1 3 3 1', ...
         subpulse_width mri_rf_pulse_sim.ui_prop.scalar                     % [s] width of the RECTS
-        subpulse_delay mri_rf_pulse_sim.ui_prop.scalar                     % [s] delay between two RECTS
+        subpulse_delay mri_rf_pulse_sim.ui_prop.scalar                     % [s] delay between two RECTS center
     end % props
 
     properties (GetAccess = public, SetAccess = protected, Dependent)
@@ -12,22 +16,26 @@ classdef binomial_rect < mri_rf_pulse_sim.backend.rf_pulse.abstract
     end % props
 
     methods % no attribute for dependent properties
-        function value = get.bandwidth(self)
-            coeff = self.binomial_coeff.get();
-            value = 1 / (length(coeff)*self.subpulse_width);
-        end
+        %%% Not sure about this definition, but it doesnt really matter : bionmial RECTs are used as non-selective
+        % function value = get.bandwidth(self)
+        %     coeff = self.binomial_coeff.get();
+        %     value = 1 / (length(coeff)*self.subpulse_width);
+        % end
+        function value = get.bandwidth(self); value = 1 / self.duration; end
     end % meths
 
     methods (Access = public)
 
         % constructor
         function self = binomial_rect()
-            self.n_points.set(128);
-            self.duration.editable = "off";
-            self.flip_angle     = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle'    , value= 90    , unit='°');
-            self.binomial_coeff = mri_rf_pulse_sim.ui_prop.list  (parent=self, name='binomial_coeff', value='1 1', items=self.getPascalTriagleCoeff());
-            self.subpulse_width = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='subpulse_width', value=100e-6 , unit='µs', scale=1e6);
-            self.subpulse_delay = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='subpulse_delay', value=300e-6 , unit='µs', scale=1e6);
+            self.slice_thickness.set(Inf); % Usually, it's a non-selective pulse
+            fat_water_shift_3T = 440; % Hz
+            delay_to_cancel_fat = 1 / (2*fat_water_shift_3T);
+            self.flip_angle     = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle'    , value= 90                , unit='°');
+            self.binomial_coeff = mri_rf_pulse_sim.ui_prop.list  (parent=self, name='binomial_coeff', value='1 1'              , items=self.getPascalTriagleCoeff());
+            self.subpulse_width = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='subpulse_width', value=100e-6             , unit='µs', scale=1e6);
+            self.subpulse_delay = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='subpulse_delay', value=delay_to_cancel_fat, unit='µs', scale=1e6);
+            self.duration.editable = "off";           % duration is not directly an input parameter
             self.duration.value = self.getDuration(); % special duration
             self.generate();
         end % fcn
