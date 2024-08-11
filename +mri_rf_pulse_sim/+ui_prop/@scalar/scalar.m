@@ -1,10 +1,12 @@
 classdef scalar < mri_rf_pulse_sim.backend.base_class
 
     properties(GetAccess = public, SetAccess = public, SetObservable, AbortSet)
-        name   (1,:) char
-        value  (1,1) double
-        unit         char
-        scale  (1,1) double {mustBeFinite} = 1
+        name     (1,:) char
+        value    (1,1) double
+        unit           char
+        scale    (1,1) double {mustBeFinite} = 1
+        visible  (1,1) string {mustBeMember( visible,["on","off"])} = "on"
+        editable (1,1) string {mustBeMember(editable,["on","off"])} = "on"
     end % props
 
     properties (GetAccess = public, SetAccess = protected, Dependent)
@@ -38,6 +40,8 @@ classdef scalar < mri_rf_pulse_sim.backend.base_class
                 args.value
                 args.unit
                 args.scale
+                args.visible
+                args.editable
                 args.parent
             end % args
 
@@ -50,9 +54,11 @@ classdef scalar < mri_rf_pulse_sim.backend.base_class
             self.name  = args.name;
             self.value = args.value;
 
-            if isfield(args, 'unit'  ), self.unit   = args.unit  ; end
-            if isfield(args, 'scale' ), self.scale  = args.scale ; end
-            if isfield(args, 'parent'), self.parent = args.parent; end
+            if isfield(args, 'unit'    ), self.unit     = args.unit    ; end
+            if isfield(args, 'scale'   ), self.scale    = args.scale   ; end
+            if isfield(args, 'visible' ), self.visible  = args.visible ; end
+            if isfield(args, 'editable'), self.editable = args.editable; end
+            if isfield(args, 'parent'  ), self.parent   = args.parent  ; end
         end % fcn
 
         function out = double(self)
@@ -123,15 +129,21 @@ classdef scalar < mri_rf_pulse_sim.backend.base_class
                 'Style'          , 'text'                          ,...
                 'String'         ,  txt                            ,...
                 'Units'          , 'normalized'                    ,...
+                'Visible'        , self.visible                    ,...
                 'BackgroundColor', container.BackgroundColor       ,...
                 'Position'       , pos_text                         ...
                 );
 
+            switch self.editable
+                case "on" , style = 'edit'; color = [1 1 1];
+                case "off", style = 'text'; color = container.BackgroundColor;
+            end
             self.edit = uicontrol(container,...
-                'Style'           , 'edit'                           ,...
+                'Style'           , style                            ,...
                 'String'          , num2str(self.value * self.scale) ,...
                 'Units'           , 'normalized'                     ,...
-                'BackgroundColor' , [1 1 1]                          ,...
+                'Visible'         , self.visible                     ,...
+                'BackgroundColor' , color                            ,...
                 'Position'        , pos_edit                         ,...
                 'Callback'        , @self.callback_update             ...
                 );

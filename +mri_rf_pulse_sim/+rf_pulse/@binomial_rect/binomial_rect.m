@@ -23,6 +23,7 @@ classdef binomial_rect < mri_rf_pulse_sim.backend.rf_pulse.abstract
         % constructor
         function self = binomial_rect()
             self.n_points.set(128);
+            self.duration.editable = "off";
             self.flip_angle     = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle'    , value= 90    , unit='°');
             self.binomial_coeff = mri_rf_pulse_sim.ui_prop.list  (parent=self, name='binomial_coeff', value='1 1', items=self.getPascalTriagleCoeff());
             self.subpulse_width = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='subpulse_width', value=100e-6 , unit='µs', scale=1e6);
@@ -86,6 +87,7 @@ classdef binomial_rect < mri_rf_pulse_sim.backend.rf_pulse.abstract
     methods(Access = protected)
 
         function value = getDuration(self)
+            coeff = str2num(self.binomial_coeff.get()); %#ok<ST2NM>
             value = length(coeff)*self.subpulse_width + (length(coeff)-1)*(self.subpulse_delay-self.subpulse_width);
         end % meths
 
