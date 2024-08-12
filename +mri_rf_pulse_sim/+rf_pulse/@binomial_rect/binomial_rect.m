@@ -1,5 +1,5 @@
 classdef binomial_rect < mri_rf_pulse_sim.backend.rf_pulse.abstract
-    % The default paramters are chosen to show how FatSat -> Water Exitation Fast works
+    % The default parameters are chosen to show how FatSat -> Water Excitation Fast works
     % At 3T, the water at dB0=0pmm is exited, but the fat at dB0=3.5ppm is not.
     %
     % Handbook of MRI Pulse Sequences // Matt A. Bernstein, Kevin F. King, Xiaohong Joe Zhou
@@ -16,7 +16,7 @@ classdef binomial_rect < mri_rf_pulse_sim.backend.rf_pulse.abstract
     end % props
 
     methods % no attribute for dependent properties
-        %%% Not sure about this definition, but it doesnt really matter : bionmial RECTs are used as non-selective
+        %%% Not sure about this definition, but it doesn't really matter : bionmial RECTs are used as non-selective
         % function value = get.bandwidth(self)
         %     coeff = self.binomial_coeff.get();
         %     value = 1 / (length(coeff)*self.subpulse_width);
