@@ -13,7 +13,7 @@ classdef bool < mri_rf_pulse_sim.backend.base_class
 
     methods % no attribute for dependent properties
         function value = get.repr(self)
-            value = sprintf('%g [bool]', self.value);
+            value = self.summary();
         end
     end % methods
 
@@ -91,6 +91,10 @@ classdef bool < mri_rf_pulse_sim.backend.base_class
             addlistener(self, 'value', 'PostSet', @self.postset_update);
 
         end % fcn
+
+        function txt = summary(self)
+            txt = sprintf('%g [bool]', self.value);
+        end
 
         function displayRep = compactRepresentationForSingleLine(self,displayConfiguration,width)
             displayRep = widthConstrainedDataRepresentation(self,displayConfiguration,width,...
