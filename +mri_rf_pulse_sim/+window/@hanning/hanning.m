@@ -8,17 +8,25 @@ classdef hanning < mri_rf_pulse_sim.backend.window.abstract
     end % props
 
     methods % no attribute for dependent properties
+
         function value = get.shape(self)
-            % adjust time so it is symmetrical
-            if self.rf_pulse.time(1) == 0
-                t = self.rf_pulse.time - self.rf_pulse.time(end)/2; % useful for VERSE
-                d = t(end)-t(1);
+            if isempty(self.time)
+                time = self.rf_pulse.time;
             else
-                t = self.rf_pulse.time;
-                d = self.rf_pulse.duration.get();
+                time = self.time;
             end
+
+            % adjust time so it is symmetrical
+            if time(1) == 0
+                t = time - time(end)/2; % useful for VERSE
+            else
+                t = time;
+            end
+            
+            d = t(end)-t(1);
             value = self.a0 + self.a1 * cos(2*pi*t/d);
         end % fcn
+
     end % meths
 
     methods (Access = public)
@@ -29,6 +37,7 @@ classdef hanning < mri_rf_pulse_sim.backend.window.abstract
                 args.rf_pulse
                 args.a0
                 args.a1
+                args.time
             end % args
 
             % default parameters
@@ -43,6 +52,7 @@ classdef hanning < mri_rf_pulse_sim.backend.window.abstract
             if isfield(args, 'rf_pulse'), self.rf_pulse = args.rf_pulse; end
             if isfield(args, 'a0'      ), self.a0.set(args.a0)         ; end
             if isfield(args, 'a1'      ), self.a1.set(args.a1)         ; end
+            if isfield(args, 'time'    ), self.time = args.time        ; end
         end % fcn
 
         function init_gui(self, container)

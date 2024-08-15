@@ -45,6 +45,7 @@ classdef sinc < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
             waveform = Sinc(self.time/lob_size); % base shape
             if ~isempty(self.window) && isvalid(self.window)
+                self.window.time = self.time;
                 waveform = waveform .* self.window.shape; % windowing
             end
             waveform = waveform / trapz(self.time, waveform); % normalize integral

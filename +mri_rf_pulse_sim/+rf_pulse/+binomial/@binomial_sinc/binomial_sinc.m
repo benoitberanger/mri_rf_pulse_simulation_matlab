@@ -2,7 +2,7 @@ classdef binomial_sinc < mri_rf_pulse_sim.backend.rf_pulse.abstract
     % Handbook of MRI Pulse Sequences // Matt A. Bernstein, Kevin F. King, Xiaohong Joe Zhou
 
     properties (GetAccess = public, SetAccess = public)
-        n_side_lobs    mri_rf_pulse_sim.ui_prop.scalar                        % [] number of side lobs, from 1 to +Inf
+        n_side_lobs    mri_rf_pulse_sim.ui_prop.scalar                     % [] number of side lobs, from 1 to +Inf
         flip_angle     mri_rf_pulse_sim.ui_prop.scalar                     % [deg] flip angle
         binomial_coeff mri_rf_pulse_sim.ui_prop.list                       % '1 1', '1 2 1', '1 3 3 1', ...
         subpulse_width mri_rf_pulse_sim.ui_prop.scalar                     % [s] width of the RECTS
@@ -41,9 +41,10 @@ classdef binomial_sinc < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
         function generate(self) % #abstract
             self.generate_binomial_sinc();
+            self.add_gz_rewinder();
         end % fcn
 
-        function generate_binomial_sinc(self)            
+        function generate_binomial_sinc(self)
             coeff = str2num(self.binomial_coeff.get()); %#ok<ST2NM>
             self.duration.value = self.getDuration(); % special duration
 
@@ -63,6 +64,7 @@ classdef binomial_sinc < mri_rf_pulse_sim.backend.rf_pulse.abstract
             for c = 1 : length(coeff)
                 subpulse = Sinc(subpulse_time/lob_size); % base shape
                 if ~isempty(self.window) && isvalid(self.window)
+                    self.window.time = subpulse_time;
                     subpulse = subpulse .* self.window.shape; % windowing
                 end
                 subpulse = subpulse / trapz(subpulse_time, subpulse); % normalize integral
@@ -123,6 +125,18 @@ classdef binomial_sinc < mri_rf_pulse_sim.backend.rf_pulse.abstract
                     self.window = feval(fullname, rf_pulse=self);
             end
             self.generate();
+        end % fcn
+
+        function add_gz_rewinder(self, status)
+            self.gz_rewinder.visible = "on";
+            if nargin == 1, status = self.gz_rewinder.get(); end
+            if ~status    , return                         , end
+
+            sample_subpulse = round((self.n_points-2) * self.subpulse_width /self.duration);
+            n_new_points = sample_subpulse;
+            self.time = [self.time linspace(self.time(end), self.time(end)+self.subpulse_width/2, n_new_points)];
+            self.B1   = [self.B1   zeros(1,n_new_points)           ];
+            self.GZ   = [self.GZ   -ones(1,n_new_points)*self.GZavg];
         end % fcn
 
     end % meths
