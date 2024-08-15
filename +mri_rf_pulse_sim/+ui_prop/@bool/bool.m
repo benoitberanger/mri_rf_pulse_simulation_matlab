@@ -18,7 +18,7 @@ classdef bool < mri_rf_pulse_sim.backend.base_class
     end % methods
 
     properties (GetAccess = public, SetAccess = public)
-        checkbox      matlab.ui.control.UIControl
+        checkbox matlab.ui.control.UIControl
     end % props
 
     methods (Access = public)

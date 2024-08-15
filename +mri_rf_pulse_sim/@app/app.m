@@ -15,7 +15,7 @@ classdef app < handle
         pulse_definition      mri_rf_pulse_sim.backend.gui.pulse_definition
         simulation_parameters mri_rf_pulse_sim.backend.gui.simulation_parameters
         simulation_results    mri_rf_pulse_sim.backend.gui.simulation_results
-        window_definition     mri_rf_pulse_sim.backend.gui.window_definition
+        % window_definition     mri_rf_pulse_sim.backend.gui.window_definition
 
         bloch_solver          mri_rf_pulse_sim.bloch_solver
 
@@ -164,10 +164,10 @@ classdef app < handle
             set(self.simulation_results.axes_ChemicalShiftHz, 'XTick', bw_hz, 'XTickLabel', num2cell(bw_hz), 'XLim', [bw_hz(1) bw_hz(end)])
         end % fcn
 
-        function open_window_gui(self)
-            self.window_definition = mri_rf_pulse_sim.backend.gui.window_definition('open_gui', self);
-            notify(self, 'update_window');
-        end % fcn
+        % function open_window_gui(self)
+        %     self.window_definition = mri_rf_pulse_sim.backend.gui.window_definition('open_gui', self);
+        %     notify(self, 'update_window');
+        % end % fcn
 
     end % meths
 
@@ -181,7 +181,7 @@ classdef app < handle
 
         cleanup
 
-        update_window
+        % update_window
     end
     properties (GetAccess = public,  SetAccess = protected, Hidden)
         listener__update_pulse  event.listener
@@ -190,7 +190,7 @@ classdef app < handle
 
         listener__cleanup       event.listener
 
-        listener__update_window event.listener
+        % listener__update_window event.listener
     end % props
 
     methods (Access = protected)
@@ -269,34 +269,34 @@ classdef app < handle
             self.plot();
         end % fcn
 
-        function callback__update_window(self, ~, ~)
-            if ishandle(self.window_definition.fig) % fig is opened
-
-                % fetch
-                handles = guidata(self.window_definition.fig);
-                rf_pulse = self.pulse_definition.rf_pulse;
-                window = self.window_definition.window;
-
-                % link
-                rf_pulse.window = window;
-                window.rf_pulse = rf_pulse;
-
-                % generate & plot
-                rf_pulse.window.plot(handles.uipanel_plot);
-                self.pulse_definition.callback_update();
-
-            else % deleted window
-
-                % fetch
-                rf_pulse = self.pulse_definition.rf_pulse;
-
-                % link
-                delete(rf_pulse.window);
-
-                % generate & plot
-                self.pulse_definition.callback_update();
-            end
-        end % fcn
+        % function callback__update_window(self, ~, ~)
+        %     if ishandle(self.window_definition.fig) % fig is opened
+        % 
+        %         % fetch
+        %         handles = guidata(self.window_definition.fig);
+        %         rf_pulse = self.pulse_definition.rf_pulse;
+        %         window = self.window_definition.window;
+        % 
+        %         % link
+        %         rf_pulse.window = window;
+        %         window.rf_pulse = rf_pulse;
+        % 
+        %         % generate & plot
+        %         rf_pulse.window.plot(handles.uipanel_plot);
+        %         self.pulse_definition.callback_update();
+        % 
+        %     else % deleted window
+        % 
+        %         % fetch
+        %         rf_pulse = self.pulse_definition.rf_pulse;
+        % 
+        %         % link
+        %         delete(rf_pulse.window);
+        % 
+        %         % generate & plot
+        %         self.pulse_definition.callback_update();
+        %     end
+        % end % fcn
 
     end % meths
 
@@ -304,14 +304,14 @@ classdef app < handle
             ?mri_rf_pulse_sim.pulse_definition, ...
             ?mri_rf_pulse_sim.simulation_parameters, ...
             ?mri_rf_pulse_sim.simulation_results, ...
-            ?mri_rf_pulse_sim.window_definition ...
+            % ?mri_rf_pulse_sim.window_definition ...
             })
 
         function callback_cleanup(self, ~, ~)
             fprintf('[app]: cleanup() ... ')
             tic
             try delete(self.                      fig); catch, end
-            try delete(self.window_definition    .fig); catch, end
+            % try delete(self.window_definition    .fig); catch, end
             try delete(self.pulse_definition     .fig); catch, end
             try delete(self.simulation_parameters.fig); catch, end
             try delete(self.simulation_results   .fig); catch, end
