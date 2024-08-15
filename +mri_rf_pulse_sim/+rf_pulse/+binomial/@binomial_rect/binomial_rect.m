@@ -32,9 +32,9 @@ classdef binomial_rect < mri_rf_pulse_sim.backend.rf_pulse.abstract
             fat_water_shift_3T = 440; % Hz
             delay_to_cancel_fat = 1 / (2*fat_water_shift_3T);
             self.flip_angle     = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle'    , value= 90                , unit='°');
-            self.binomial_coeff = mri_rf_pulse_sim.ui_prop.list  (parent=self, name='binomial_coeff', value='1 1'              , items=self.getPascalTriagleCoeff());
             self.subpulse_width = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='subpulse_width', value=100e-6             , unit='µs', scale=1e6);
             self.subpulse_delay = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='subpulse_delay', value=delay_to_cancel_fat, unit='µs', scale=1e6);
+            self.binomial_coeff = mri_rf_pulse_sim.ui_prop.list  (parent=self, name='binomial_coeff', value='1 1'              , items=self.getPascalTriagleCoeff());
             self.duration.editable = "off";           % duration is not directly an input parameter
             self.duration.value = self.getDuration(); % special duration
             self.generate();
@@ -60,9 +60,9 @@ classdef binomial_rect < mri_rf_pulse_sim.backend.rf_pulse.abstract
             for c = 1 : length(coeff)
                 subpulse = ones(1,sample_subpulse) / self.subpulse_width;
                 subpulse = subpulse * deg2rad(subpulse_fa(c))/self.gamma;
-                waveform = [waveform subpulse];
+                waveform = [waveform subpulse]; %#ok<AGROW>
                 if c ~= length(coeff)
-                    waveform = [waveform zeros(1,sample_delay)];
+                    waveform = [waveform zeros(1,sample_delay)]; %#ok<AGROW>
                 end
             end
             waveform = [0 waveform 0];
@@ -83,11 +83,11 @@ classdef binomial_rect < mri_rf_pulse_sim.backend.rf_pulse.abstract
             mri_rf_pulse_sim.ui_prop.scalar.add_uicontrol_multi_scalar(...
                 container,...
                 [self.flip_angle self.subpulse_width self.subpulse_delay],...
-                [0.00 0.00 0.50 1.00]...
+                [0.00 0.00 0.60 1.00]...
                 );
             self.binomial_coeff.add_uicontrol(...
                 container,...
-                [0.50 0.00 0.50 1.00]);
+                [0.60 0.00 0.40 1.00]);
         end % fcn
 
     end % meths

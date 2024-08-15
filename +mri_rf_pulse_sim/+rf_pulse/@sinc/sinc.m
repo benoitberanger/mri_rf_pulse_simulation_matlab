@@ -96,10 +96,11 @@ classdef sinc < mri_rf_pulse_sim.backend.rf_pulse.abstract
     end % meths
 
     methods(Access = protected)
+
         function callback_open_window_gui(self,varargin)
             self.app.open_window_gui();
         end % fcn
-
+        
     end % meths
 
 end % class
