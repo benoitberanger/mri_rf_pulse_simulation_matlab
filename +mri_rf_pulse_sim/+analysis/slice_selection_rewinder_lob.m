@@ -9,7 +9,7 @@ function slice_selection_rewinder_lob()
 
 SINC = mri_rf_pulse_sim.rf_pulse.sinc();
 SINC.n_side_lobs.set(3);    % for a sharper slice profile
-SINC.set_window('hanning'); % add apodization so the profile looks more smooth
+SINC.window.set('hanning'); % add apodization so the profile looks more smooth
 SINC.rf_phase.set(180);     % so magnetization will be on +y instead of -y ---> mostly for the plots
 
 % set parameters of the solver

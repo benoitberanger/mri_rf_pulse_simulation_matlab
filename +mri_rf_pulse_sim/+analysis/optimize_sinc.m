@@ -11,9 +11,9 @@ function optimize_sinc()
 target_B1max = 15e-6; % 15 µT is a classic constrain for pulses
 
 % generate default pulse, using Hanning window (mostly for visualization)
-SINC_base          = mri_rf_pulse_sim.rf_pulse.sinc(); SINC_base.         set_window('hanning');
-SINC_opti_quality  = mri_rf_pulse_sim.rf_pulse.sinc(); SINC_opti_quality. set_window('hanning');
-SINC_opti_duration = mri_rf_pulse_sim.rf_pulse.sinc(); SINC_opti_duration.set_window('hanning');
+SINC_base          = mri_rf_pulse_sim.rf_pulse.sinc(); SINC_base.         window.set('hanning');
+SINC_opti_quality  = mri_rf_pulse_sim.rf_pulse.sinc(); SINC_opti_quality. window.set('hanning');
+SINC_opti_duration = mri_rf_pulse_sim.rf_pulse.sinc(); SINC_opti_duration.window.set('hanning');
 PULSES = [SINC_base, SINC_opti_quality, SINC_opti_duration];
 nPULSE = length(PULSES);
 COLORS = lines(nPULSE);
