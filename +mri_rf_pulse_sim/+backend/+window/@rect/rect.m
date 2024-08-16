@@ -16,8 +16,10 @@ classdef rect < mri_rf_pulse_sim.backend.window.abstract
             if isfield(args, 'rf_pulse'), self.rf_pulse = args.rf_pulse; end
         end % fcn
 
-        function value = getShape(self, time) %#ok<INUSD>
-            value = ones(size(time));
+        function shape = getShape(self, time)
+            shape = ones(size(time));
+            self.time  = time;
+            self.shape = shape;
         end % fcn
 
         function init_gui(~, ~)

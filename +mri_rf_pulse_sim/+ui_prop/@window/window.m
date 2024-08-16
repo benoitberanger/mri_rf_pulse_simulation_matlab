@@ -6,6 +6,8 @@ classdef window < mri_rf_pulse_sim.backend.base_class
         name    (1,:) char
         child
         visible (1,1) string {mustBeMember(visible,["on","off"])} = "on"
+
+        fig           matlab.ui.Figure
     end % props
 
     properties (GetAccess = public, SetAccess = protected, Dependent)
@@ -37,7 +39,6 @@ classdef window < mri_rf_pulse_sim.backend.base_class
 
 
             window_list = mri_rf_pulse_sim.backend.window.get_list();
-            window_list = self.label_none + window_list;
             self.list   = mri_rf_pulse_sim.ui_prop.list(parent=self, name="window_list", items=window_list, value=self.label_none);
 
             if     isfield(args, 'list' )
@@ -73,13 +74,6 @@ classdef window < mri_rf_pulse_sim.backend.base_class
             self.child.plot();
         end % fcn
 
-        function add_uicontrol(self,container,rect)
-            if nargin < 3
-                rect = [0 0 1 1];
-            end
-            self.bool.add_uicontrol(container,rect)
-        end % fcn
-
         function set(self, value)
             self.list.value = value;
             self.populateChild();
@@ -98,8 +92,98 @@ classdef window < mri_rf_pulse_sim.backend.base_class
                 StringArray=self.repr,AllowTruncatedDisplayForScalar=true);
         end % fcn
 
-        function callback_update(self, src, ~)
-            0
+        function add_uicontrol(self, container, rect)
+            if nargin < 3
+                rect = [0 0 1 1];
+            end
+            self.bool.add_uicontrol(container, rect);
+        end % fcn
+
+        function callback_update(self, ~, ~)
+            if self.bool.checkbox.Value
+
+                if ishandle(self.fig)
+
+                    handles = guidata(self.fig);
+                    delete(handles.uipanel_plot.Children)
+                    delete(handles.uipanel_settings.Children)
+                    self.populateChild();
+                    self.parent.generate();
+                    self.child.init_gui(handles.uipanel_settings);
+                    self.child.plot    (handles.uipanel_plot    );
+                    self.notify_parent();
+
+                else
+
+                    self.set("hanning");
+                    self.notify_parent();
+
+                    fig_col = mri_rf_pulse_sim.backend.gui.get_fig_colors();
+
+                    % Create a figure
+                    figHandle = figure( ...
+                        'MenuBar'         , 'none'                   , ...
+                        'Toolbar'         , 'none'                   , ...
+                        'Name'            , 'Pulse window'           , ...
+                        'NumberTitle'     , 'off'                    , ...
+                        'Units'           , 'normalized'             , ...
+                        'Color'           , fig_col.figureBG         , ...
+                        'CloseRequestFcn' , @self.callback_cleanup   );
+
+                    % Create GUI handles : pointers to access the graphic objects
+                    handles               = guihandles(figHandle);
+                    handles.fig           = figHandle;
+
+                    handles.uipanel_plot = uipanel(figHandle,...
+                        'Title','Plot',...
+                        'Units','Normalized',...
+                        'Position',[0 0 1 0.7],...
+                        'BackgroundColor',fig_col.figureBG);
+
+                    handles.uipanel_selection = uipanel(figHandle,...
+                        'Title','Selection',...
+                        'Units','Normalized',...
+                        'Position',[0 0.7 0.4 0.3],...
+                        'BackgroundColor',fig_col.figureBG);
+
+                    handles.uipanel_settings = uipanel(figHandle,...
+                        'Title','Settings',...
+                        'Units','Normalized',...
+                        'Position',[0.4 0.7 0.6 0.3],...
+                        'BackgroundColor',fig_col.figureBG);
+
+                    % IMPORTANT
+                    guidata(figHandle,handles)
+                    % After creating the figure, dont forget the line
+                    % guidata(figHandle,handles) . It allows smart retrieve like
+                    % handles=guidata(hObject)
+
+                    self.fig = figHandle;
+
+                    self.list.add_uicontrol(handles.uipanel_selection);
+                    self.child.init_gui(handles.uipanel_settings);
+                    self.child.plot    (handles.uipanel_plot    );
+
+                end
+
+            else
+
+                self.callback_cleanup();
+
+            end
+        end % fcn
+
+        function callback_cleanup(self,varargin)
+            delete(self.fig);
+            delete(self.list.listener__listbox)
+            self.bool.setFalse();
+            self.set(self.label_none);
+            self.populateChild();
+            self.notify_parent();
+        end % fcn
+
+        function delete(self)
+            try delete(self.fig); catch, end
         end % fcn
 
     end % meths
@@ -110,7 +194,7 @@ classdef window < mri_rf_pulse_sim.backend.base_class
             if any( strcmp(self.list.value, [self.label_none, ""]) )
                 self.child = [];
             else
-                self.child = feval(sprintf('mri_rf_pulse_sim.backend.window.%s', self.list.value));
+                self.child = feval(sprintf('mri_rf_pulse_sim.backend.window.%s', self.list.value), rf_pulse=self.parent);
             end
         end % fcn
 

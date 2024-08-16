@@ -15,7 +15,6 @@ classdef app < handle
         pulse_definition      mri_rf_pulse_sim.backend.gui.pulse_definition
         simulation_parameters mri_rf_pulse_sim.backend.gui.simulation_parameters
         simulation_results    mri_rf_pulse_sim.backend.gui.simulation_results
-        % window_definition     mri_rf_pulse_sim.backend.gui.window_definition
 
         bloch_solver          mri_rf_pulse_sim.bloch_solver
 
@@ -164,11 +163,6 @@ classdef app < handle
             set(self.simulation_results.axes_ChemicalShiftHz, 'XTick', bw_hz, 'XTickLabel', num2cell(bw_hz), 'XLim', [bw_hz(1) bw_hz(end)])
         end % fcn
 
-        % function open_window_gui(self)
-        %     self.window_definition = mri_rf_pulse_sim.backend.gui.window_definition('open_gui', self);
-        %     notify(self, 'update_window');
-        % end % fcn
-
     end % meths
 
 
@@ -205,6 +199,8 @@ classdef app < handle
 
                 case "onefig"
 
+                    fig_col = mri_rf_pulse_sim.backend.gui.get_fig_colors();
+
                     self.fig = figure( ...
                         'MenuBar'         , 'none'                   , ...
                         'Toolbar'         , 'none'                   , ...
@@ -212,18 +208,12 @@ classdef app < handle
                         'NumberTitle'     , 'off'                    , ...
                         'Units'           , 'normalized'             , ...
                         'Position'        , [0.1 0.1 0.8 0.8]        , ...
+                        'Color'           , fig_col.figureBG         , ...
                         'CloseRequestFcn' , @self.callback_cleanup   );
-
-                    figureBGcolor = [0.9 0.9 0.9]; set(self.fig,'Color',figureBGcolor);
-                    buttonBGcolor = figureBGcolor - 0.1;
-                    editBGcolor   = [1.0 1.0 1.0];
 
                     % Create GUI handles : pointers to access the graphic objects
                     handles               = guihandles(self.fig);
                     handles.fig           = self.fig;
-                    handles.figureBGcolor = figureBGcolor;
-                    handles.buttonBGcolor = buttonBGcolor;
-                    handles.editBGcolor   = editBGcolor  ;
 
                     guidata(self.fig,handles)
 
@@ -245,7 +235,7 @@ classdef app < handle
             self.listener__update_setup  = addlistener(self, 'update_setup' , @self.callback__update_setup );
             self.listener__update_select = addlistener(self, 'update_select', @self.callback__update_select);
 
-            self.listener__update_window = addlistener(self, 'update_window', @self.callback__update_window);
+            % self.listener__update_window = addlistener(self, 'update_window', @self.callback__update_window);
 
             self.listener__cleanup = addlistener(self, 'cleanup', @self.callback_cleanup);
         end % fcn
@@ -269,49 +259,18 @@ classdef app < handle
             self.plot();
         end % fcn
 
-        % function callback__update_window(self, ~, ~)
-        %     if ishandle(self.window_definition.fig) % fig is opened
-        % 
-        %         % fetch
-        %         handles = guidata(self.window_definition.fig);
-        %         rf_pulse = self.pulse_definition.rf_pulse;
-        %         window = self.window_definition.window;
-        % 
-        %         % link
-        %         rf_pulse.window = window;
-        %         window.rf_pulse = rf_pulse;
-        % 
-        %         % generate & plot
-        %         rf_pulse.window.plot(handles.uipanel_plot);
-        %         self.pulse_definition.callback_update();
-        % 
-        %     else % deleted window
-        % 
-        %         % fetch
-        %         rf_pulse = self.pulse_definition.rf_pulse;
-        % 
-        %         % link
-        %         delete(rf_pulse.window);
-        % 
-        %         % generate & plot
-        %         self.pulse_definition.callback_update();
-        %     end
-        % end % fcn
-
     end % meths
 
     methods(Access = { ...
             ?mri_rf_pulse_sim.pulse_definition, ...
             ?mri_rf_pulse_sim.simulation_parameters, ...
             ?mri_rf_pulse_sim.simulation_results, ...
-            % ?mri_rf_pulse_sim.window_definition ...
             })
 
         function callback_cleanup(self, ~, ~)
             fprintf('[app]: cleanup() ... ')
             tic
             try delete(self.                      fig); catch, end
-            % try delete(self.window_definition    .fig); catch, end
             try delete(self.pulse_definition     .fig); catch, end
             try delete(self.simulation_parameters.fig); catch, end
             try delete(self.simulation_results   .fig); catch, end
@@ -320,4 +279,5 @@ classdef app < handle
 
     end % meths
 
+    
 end % class
