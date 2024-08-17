@@ -8,7 +8,8 @@ classdef vec3 < mri_rf_pulse_sim.backend.base_class
     end % props
 
     properties (GetAccess = public, SetAccess = public)
-        edit         matlab.ui.control.UIControl
+        edit           matlab.ui.control.UIControl
+        listener__edit event.listener
     end % props
 
     properties (GetAccess = public, SetAccess = public, Dependent)
@@ -198,7 +199,7 @@ classdef vec3 < mri_rf_pulse_sim.backend.base_class
                 'Callback'        , @self.callback_update             ...
                 );
 
-            addlistener(self, 'xyz', 'PostSet', @self.postset_update);
+            self.listener__edit = addlistener(self, 'xyz', 'PostSet', @self.postset_update);
 
         end % fcn
 
@@ -221,6 +222,8 @@ classdef vec3 < mri_rf_pulse_sim.backend.base_class
         end % fcn
 
         function postset_update(self, ~, ~)
+            if ~ishandle(self.edit), return, end
+            
             new_xyz          = self.xyz';
             self.edit.String = num2str(new_xyz * self.scale);
 
