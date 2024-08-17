@@ -17,15 +17,10 @@ classdef dante < mri_rf_pulse_sim.backend.rf_pulse.abstract
     end % props
 
     properties (GetAccess = public, SetAccess = protected, Dependent)
-        bandwidth                                                          % [Hz]  #abstract
         blip_duration                                                      % [s]
     end % props
 
     methods % no attribute for dependent properties
-
-        function value = get.bandwidth(self)
-            value = 1 / self.duration;
-        end
 
         function value = get.blip_duration(self)
             value = (self.duration - self.subpulse_duration) / (self.subpulse_number-1) - self.subpulse_duration;
@@ -129,6 +124,14 @@ classdef dante < mri_rf_pulse_sim.backend.rf_pulse.abstract
             % scale gradient -> for slice thickness
             self.GZ = self.GZavg / mean(GZ) * GZ;
 
+        end % fcn
+
+        function value = get_bandwidth(self) % #abstract
+            value = self.get_dante_bandwidth();
+        end % fcn
+
+        function value = get_dante_bandwidth(self)
+            value = 1 / self.duration;
         end % fcn
 
         function txt = summary(self) % #abstract

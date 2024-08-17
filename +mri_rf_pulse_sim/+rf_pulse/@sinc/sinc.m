@@ -8,16 +8,6 @@ classdef sinc < mri_rf_pulse_sim.backend.rf_pulse.abstract
         window      mri_rf_pulse_sim.ui_prop.window                        % apply a window to the base Sinc waveform
     end % props
 
-    properties (GetAccess = public, SetAccess = protected, Dependent)
-        bandwidth                                                          % [Hz]  #abstract
-    end % props
-
-    methods % no attribute for dependent properties
-        function value = get.bandwidth(self)
-            value = (2*self.n_side_lobs) / self.duration;
-        end% % fcn
-    end % meths
-
     methods (Access = public)
 
         % constructor
@@ -46,6 +36,14 @@ classdef sinc < mri_rf_pulse_sim.backend.rf_pulse.abstract
             waveform = waveform * deg2rad(self.flip_angle.get()) / self.gamma; % scale integrale with flip angle
             self.B1  = waveform * exp(1j * deg2rad(self.rf_phase.get()));
             self.GZ  = ones(size(self.time)) * self.GZavg;
+        end % fcn
+
+        function value = get_bandwidth(self) % #abstract
+            value = self.get_sinc_bandwidth();
+        end % fcn
+
+        function value = get_sinc_bandwidth(self)
+            value = (2*self.n_side_lobs) / self.duration;
         end % fcn
 
         function txt = summary(self) % #abstract

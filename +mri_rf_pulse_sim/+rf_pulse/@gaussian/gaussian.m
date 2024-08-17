@@ -13,14 +13,12 @@ classdef gaussian < mri_rf_pulse_sim.backend.rf_pulse.abstract
     end % props
 
     properties (GetAccess = public, SetAccess = protected, Dependent)
-        bandwidth                                                          % [Hz]  #abstract
         sigma                                                              % []
         Ag                                                                 % [T] amplitude
     end % props
 
     methods % no attribute for dependent properties
         function value = get.sigma    (self); value = self.duration/7.734; end
-        function value = get.bandwidth(self); value = 0.3748/self.sigma  ; end
         function value = get.Ag       (self)
             value = deg2rad(self.flip_angle.get()) / ...
                 (self.gamma * self.sigma * sqrt(2*pi));
@@ -36,14 +34,22 @@ classdef gaussian < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.generate();
         end % fcn
 
-        function generate(self) % #abstract
-            self.generate_gaussian();
+        function value = get_gaussian_bandwidth(self)
+            value = 0.3748/self.sigma;
         end % fcn
 
         function generate_gaussian(self)
             self.time = linspace(-self.duration/2, +self.duration/2, self.n_points.get());
             self.B1   = self.Ag * exp(-self.time.^2/(2*self.sigma^2)) .* exp(1j*2*pi*self.frequency_offcet*self.time);
             self.GZ   = ones(size(self.time)) * self.GZavg;
+        end % fcn
+
+        function generate(self) % #abstract
+            self.generate_gaussian();
+        end % fcn
+
+        function value = get_bandwidth(self) % #abstract
+            value = self.get_gaussian_bandwidth();
         end % fcn
 
         function txt = summary(self) % #abstract

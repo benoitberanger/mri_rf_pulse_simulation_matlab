@@ -12,10 +12,6 @@ classdef bir4_steawen1990 < mri_rf_pulse_sim.backend.rf_pulse.abstract
         dW0factor  mri_rf_pulse_sim.ui_prop.scalar                         % [] frequency sweep factor
     end % props
 
-    properties (GetAccess = public, SetAccess = protected)
-        bandwidth = 0                                                      % [Hz]  #abstract
-    end % props
-
     properties (GetAccess = public, SetAccess = protected, Dependent)
         delta_phase                                                        % [deg]
     end % props
@@ -84,6 +80,14 @@ classdef bir4_steawen1990 < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.GZ = ones(size(self.time)) * self.GZavg;
 
         end
+
+        function value = get_bandwidth(self) % #abstract
+            value = self.get_bir4_steawen1990_bandwidth();
+        end % fcn
+
+        function value = get_bir4_steawen1990_bandwidth(~)
+            value = 0;
+        end % fcn
 
         function txt = summary(self) % #abstract
             txt = sprintf('[%s]  Amax=%s  FA=%s  beta=%s  tanKappa=%s  dW0factor=%s',...

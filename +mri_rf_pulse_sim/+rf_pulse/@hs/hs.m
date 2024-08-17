@@ -8,13 +8,11 @@ classdef hs < mri_rf_pulse_sim.backend.rf_pulse.abstract
     end % props
 
     properties (GetAccess = public, SetAccess = protected, Dependent)
-        bandwidth                                                          % [Hz]  #abstract
         beta                                                               % [rad/s]
     end % props
 
     methods % no attribute for dependent properties
-        function value = get.bandwidth          (self); value = self.bw.get();                          end
-        function value = get.beta               (self); value = asech(self.b1cutoff.get());             end
+        function value = get.beta(self); value = asech(self.b1cutoff.get()); end
     end % meths
 
     methods (Access = public)
@@ -48,6 +46,14 @@ classdef hs < mri_rf_pulse_sim.backend.rf_pulse.abstract
             % final pulse shape
             self.B1 = magnitude .* exp(1j * phase);
             self.GZ = ones(size(self.time)) * self.GZavg;
+        end % fcn
+
+        function value = get_bandwidth(self) % #abstract
+            value = self.get_hs_bandwidth();
+        end % fcn
+
+        function value = get_hs_bandwidth(self)
+            value = self.bw.get();
         end % fcn
 
         % synthesis text

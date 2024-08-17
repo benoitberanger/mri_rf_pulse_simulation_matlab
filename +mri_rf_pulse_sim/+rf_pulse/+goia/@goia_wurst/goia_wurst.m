@@ -23,14 +23,6 @@ classdef goia_wurst < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
     end % props
 
-    properties (GetAccess = public, SetAccess = protected, Dependent)
-        bandwidth                                                          % [Hz]  #abstract
-    end % props
-
-    methods % no attribute for dependent properties
-        function value = get.bandwidth(self); value = self.bw.get(); end
-    end % meths
-
     methods (Access = public)
 
         function self = goia_wurst()
@@ -63,6 +55,14 @@ classdef goia_wurst < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
             self.B1 = magnitude .* exp(1j * phase);
             self.GZ = gradient;
+        end % fcn
+
+        function value = get_bandwidth(self) % #abstract
+            value = self.get_goia_wurst_bandwidth();
+        end % fcn
+
+        function value = get_goia_wurst_bandwidth(self)
+            value = self.bw.get();
         end % fcn
 
         % synthesis text

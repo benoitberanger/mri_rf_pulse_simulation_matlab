@@ -14,14 +14,12 @@ classdef fermi < mri_rf_pulse_sim.backend.rf_pulse.abstract
     end % props
 
     properties (GetAccess = public, SetAccess = protected, Dependent)
-        bandwidth                                                          % [Hz]  #abstract
         t0                                                                 % [s] pulse width
         a                                                                  % [s] transition width
         Af                                                                 % [T] amplitude
     end % props
 
     methods % no attribute for dependent properties
-        function value = get.bandwidth(self); value = 1/self.duration * (1/(1-(1/self.transition_factor)));end % !!! wrong : very rough handmade approximation !!!
         function value = get.t0       (self); value = self.duration / (2 + 13.81/self.transition_factor);  end
         function value = get.a        (self); value = self.t0/self.transition_factor;                      end
         function value = get.Af       (self)
@@ -48,6 +46,15 @@ classdef fermi < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.time = linspace(-self.duration/2, +self.duration/2, self.n_points.get());
             self.B1   = self.Af * exp(1j * 2*pi*self.frequency_offcet.get() * self.time) ./ ( 1 + exp((abs(self.time)-self.t0)/self.a) );
             self.GZ   = ones(size(self.time)) * self.GZavg;
+        end % fcn
+
+        function value = get_bandwidth(self) % #abstract
+            value = self.get_fermi_bandwidth();
+        end % fcn
+
+        function value = get_fermi_bandwidth(self)
+            % !!! wrong : very rough handmade approximation !!!
+            value = 1/self.duration * (1/(1-(1/self.transition_factor)));
         end % fcn
 
         function txt = summary(self) % #abstract

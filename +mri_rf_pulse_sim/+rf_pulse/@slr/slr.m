@@ -15,16 +15,6 @@ classdef slr < mri_rf_pulse_sim.backend.rf_pulse.abstract
         flip_angle  mri_rf_pulse_sim.ui_prop.scalar                        % [deg] flip angle
     end % props
 
-    properties (GetAccess = public, SetAccess = protected, Dependent)
-        bandwidth                                                          % [Hz]  #abstract
-    end % props
-
-    methods % no attribute for dependent properties
-        function value = get.bandwidth(self)
-            value = self.TBWP / self.duration;
-        end
-    end % meths
-
     methods (Access = public)
 
         % constructor
@@ -60,6 +50,14 @@ classdef slr < mri_rf_pulse_sim.backend.rf_pulse.abstract
             waveform = waveform / trapz(self.time, waveform); % normalize integral
             waveform = waveform * deg2rad(self.flip_angle.get()) / self.gamma; % scale integrale with flip angle
             self.B1 = waveform;
+        end % fcn
+
+        function value = get_bandwidth(self) % #abstract
+            value = self.get_slr_bandwidth();
+        end % fcn
+
+        function value = get_slr_bandwidth(self)
+            value = self.TBWP / self.duration;
         end % fcn
 
         % SLR pulses can be asymmetric : overload the method with a dedicated one

@@ -8,16 +8,6 @@ classdef sinc_self_refocusing < mri_rf_pulse_sim.backend.rf_pulse.abstract
         flip_angle  mri_rf_pulse_sim.ui_prop.scalar                        % [deg] flip angle
     end % props
 
-    properties (GetAccess = public, SetAccess = protected, Dependent)
-        bandwidth                                                          % [Hz]  #abstract
-    end % props
-
-    methods % no attribute for dependent properties
-        function value = get.bandwidth(self)
-            value = (2*self.n_side_lobs) / self.duration;
-        end % fcn
-    end % meths
-
     methods (Access = public)
 
         % constructor
@@ -56,6 +46,14 @@ classdef sinc_self_refocusing < mri_rf_pulse_sim.backend.rf_pulse.abstract
             b1 = b1 * deg2rad(self.flip_angle.get()) / self.gamma; % scale integrale with flip angle
             self.B1  = b1;
             self.GZ  = gz*2;
+        end % fcn
+
+        function value = get_bandwidth(self) % #abstract
+            value = self.get_sinc_self_refocusing_bandwidth();
+        end % fcn
+
+        function value = get_sinc_self_refocusing_bandwidth(self)
+            value = (2*self.n_side_lobs) / self.duration;
         end % fcn
 
         function txt = summary(self) % #abstract

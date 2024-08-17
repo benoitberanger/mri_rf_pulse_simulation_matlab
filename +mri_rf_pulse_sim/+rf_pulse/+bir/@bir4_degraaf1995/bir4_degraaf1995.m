@@ -11,14 +11,10 @@ classdef bir4_degraaf1995 < mri_rf_pulse_sim.backend.rf_pulse.abstract
     end % props
 
     properties (GetAccess = public, SetAccess = protected, Dependent)
-        bandwidth                                                          % [Hz]  #abstract
         delta_phase                                                        % [deg]
     end % props
 
     methods % no attribute for dependent properties
-        function value = get.bandwidth(self)
-            value = self.dWmax;
-        end% % fcn
         function value = get.delta_phase(self)
             value = 180 + self.flip_angle/2;
         end
@@ -81,6 +77,14 @@ classdef bir4_degraaf1995 < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
             self.GZ = ones(size(self.time)) * self.GZavg;
         end
+
+        function value = get_bandwidth(self) % #abstract
+            value = self.get_bir4_degraaf1995_bandwidth();
+        end % fcn
+
+        function value = get_bir4_degraaf1995_bandwidth(self)
+            value = self.dWmax.get();
+        end % fcn
 
         function txt = summary(self) % #abstract
             txt = sprintf('[%s]  gammaB1max=%s  FA=%s  beta=%s  dWmax=%s',...

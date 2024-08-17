@@ -1,5 +1,28 @@
 classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
 
+
+    %% ABSTRACT properties & methods : need to be implemented in subclass
+
+    methods (Abstract)
+        % all abstract methods can be "empty" and do nothing
+        % but they MUST be defined
+
+        % BANDWIDTH is a Dependent propery so it's value can been automatically updated and visualized.
+        % It's value is retrived by the method GET_BANDWIDTH.
+        get_bandwidth                                                      % retrive the bandwith, which usually depends on the pulse paramters
+
+        % GENERATE is the "top" method. A nice strategy to make it
+        % "overloadable" is to make it call specific pulse method, such as
+        % generate as generate_sinc()
+        generate                                                           % generate pulse shape using input parameters
+
+        init_specific_gui                                                  % draw UI elements
+        summary                                                            % print summary text
+    end % meths
+
+
+    %% Here is properties and methods for all pulses
+
     properties (GetAccess = public, SetAccess = public)
         n_points        mri_rf_pulse_sim.ui_prop.scalar                    % []  number of points defining the pulse
         duration        mri_rf_pulse_sim.ui_prop.scalar                    % [s] pulse duration
@@ -13,6 +36,7 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
 
     properties (GetAccess = public, SetAccess = protected, Dependent)
         FM                                                                 % [Hz]    frequency modulation -> its the derivation of the phase(t)
+        bandwidth       mri_rf_pulse_sim.ui_prop.scalar                    % [Hz]    bandwidth of the pulse
         B1max           mri_rf_pulse_sim.ui_prop.scalar                    % [T]     max value of magnitude(t)
         GZmax           mri_rf_pulse_sim.ui_prop.scalar                    % [T/m]   max value of  gradient(t)
         GZavg           mri_rf_pulse_sim.ui_prop.scalar                    % [T/m]   average value of gradient(t) -> used for slice thickness
@@ -27,6 +51,7 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
     methods % no attribute for dependent properties
         function value = get.FM       (self); value = gradient(self.phase,self.time) / (2*pi);                 end
 
+        function value = get.bandwidth(self); value = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='bandwidth', value=self.get_bandwidth()                                   , unit='Hz'                 ); end
         function value = get.B1max    (self); value = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='B1max'    , value=max(abs(self.B1))                                      , unit='µT'     , scale=1e06); end
         function value = get.GZmax    (self); value = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='GZmax'    , value=max(abs(self.GZ))                                      , unit='mT/m'   , scale=1e03); end
         function value = get.GZavg    (self); value = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='GZavg'    , value=2*pi*self.bandwidth / (self.gamma*self.slice_thickness), unit='mT/m'   , scale=1e03); end
@@ -174,6 +199,7 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
 
     end % meths
 
+
     methods (Access = protected)
 
         function assert_nonempty_prop(self, prop_list)
@@ -186,19 +212,5 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
 
     end % meths
 
-    % =====================================================================
-    % ABSTRACT stuff : need to be implemented in subclass
-
-    properties (Abstract, GetAccess = public, SetAccess = protected)
-        bandwidth (1,1) double                                             % [Hz]
-    end % props
-
-    methods (Abstract)
-        % all abstract methods can be "empty" and do nothing
-        % but they MUST be defined
-        generate                                                           % generate pulse shape using input parameters
-        init_specific_gui                                                  % draw UI elements
-        summary                                                            % print summary text
-    end % meths
 
 end % class

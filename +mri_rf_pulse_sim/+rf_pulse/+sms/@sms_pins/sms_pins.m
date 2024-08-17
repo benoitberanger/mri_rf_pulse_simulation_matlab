@@ -15,7 +15,6 @@ classdef sms_pins < mri_rf_pulse_sim.backend.rf_pulse.abstract
     properties (GetAccess = public, SetAccess = protected, Dependent)
         N                 mri_rf_pulse_sim.ui_prop.scalar                  % [] number of subpulse in each SINC lob
         M                 mri_rf_pulse_sim.ui_prop.scalar                  % [] number of subpulse on each side (left right)
-        bandwidth                                                          % [Hz] % #abstract
         blip_duration                                                      % [s]
     end % props
 
@@ -23,10 +22,6 @@ classdef sms_pins < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
         function value = get.N(self)
             value = self.slice_distance / self.slice_thickness;
-        end
-
-        function value = get.bandwidth(self)
-            value = self.subpulse_number /(self.N * self.duration);
         end
 
         function value = get.M(self)
@@ -84,6 +79,14 @@ classdef sms_pins < mri_rf_pulse_sim.backend.rf_pulse.abstract
                 self.GZ = ones(size(self.time)) * self.GZavg; % scale gradient -> for slice thickness
             end
 
+        end % fcn
+
+        function value = get_bandwidth(self) % #abstract
+            value = self.get_sms_pins_bandwidth();
+        end % fcn
+
+        function value = get_sms_pins_bandwidth(self)
+            value = self.subpulse_number /(self.N * self.duration);
         end % fcn
 
         function txt = summary(self) % #abstract

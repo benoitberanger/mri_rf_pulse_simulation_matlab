@@ -4,14 +4,6 @@ classdef rect < mri_rf_pulse_sim.backend.rf_pulse.abstract
         flip_angle mri_rf_pulse_sim.ui_prop.scalar                         % [deg] flip angle
     end % props
 
-    properties (GetAccess = public, SetAccess = protected, Dependent)
-        bandwidth                                                          % [Hz]  #abstract
-    end % props
-
-    methods % no attribute for dependent properties
-        function value = get.bandwidth(self); value = 1 / self.duration; end
-    end % meths
-
     methods (Access = public)
 
         % constructor
@@ -35,6 +27,14 @@ classdef rect < mri_rf_pulse_sim.backend.rf_pulse.abstract
             waveform = waveform * deg2rad(self.flip_angle.get()) / self.gamma; % scale integrale with flip angle
             self.B1  = waveform;
             self.GZ  = ones(size(self.time)) * self.GZavg;
+        end % fcn
+
+        function value = get_bandwidth(self) % #abstract
+            value = self.get_rect_bandwidth();
+        end % fcn
+
+        function value = get_rect_bandwidth(self)
+            value = 1 / self.duration;
         end % fcn
 
         function txt = summary(self) % #abstract

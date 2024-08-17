@@ -11,22 +11,11 @@ classdef hs_excitation < mri_rf_pulse_sim.backend.rf_pulse.abstract
     end % props
 
     properties (GetAccess = public, SetAccess = protected, Dependent)
-        bandwidth                                                          % [Hz]  #abstract
         Amax                                                               % [T]
     end % props
 
     methods % no attribute for dependent properties
-        
-        function value = get.bandwidth(self)
-            % Analytic expression for the bandwidth, depending on the flip angle.
-            FA = deg2rad(self.flip_angle.get());
-            value = self.beta/pi^2 * ...
-                acosh( ...
-                (cosh(pi*self.mu)*(cos(FA)-0.5*sqrt(3+cos(FA)^2)) + cos(FA) -1 ) ...
-                /...
-                (0.5*sqrt(3+cos(FA)^2) -1) );
-        end% fcn
-        
+
         function value = get.Amax(self)
             % Analytic expression for the max amplitude, depending on the flip angle.
             FA = deg2rad(self.flip_angle.get());
@@ -65,6 +54,20 @@ classdef hs_excitation < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
             self.B1 = magnitude .* exp(1j * phase);
             self.GZ = ones(size(self.time)) * self.GZavg;
+        end % fcn
+
+        function value = get_bandwidth(self) % #abstract
+            value = self.get_hs_excitation_bandwidth();
+        end % fcn
+
+        function value = get_hs_excitation_bandwidth(self)
+            % Analytic expression for the bandwidth, depending on the flip angle.
+            FA = deg2rad(self.flip_angle.get());
+            value = self.beta/pi^2 * ...
+                acosh( ...
+                (cosh(pi*self.mu)*(cos(FA)-0.5*sqrt(3+cos(FA)^2)) + cos(FA) -1 ) ...
+                /...
+                (0.5*sqrt(3+cos(FA)^2) -1) );
         end % fcn
 
         function txt = summary(self) % #abstract
