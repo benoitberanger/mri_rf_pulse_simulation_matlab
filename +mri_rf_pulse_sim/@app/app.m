@@ -174,8 +174,6 @@ classdef app < handle
         update_select
 
         cleanup
-
-        % update_window
     end
     properties (GetAccess = public,  SetAccess = protected, Hidden)
         listener__update_pulse  event.listener
@@ -183,8 +181,6 @@ classdef app < handle
         listener__update_select event.listener
 
         listener__cleanup       event.listener
-
-        % listener__update_window event.listener
     end % props
 
     methods (Access = protected)
@@ -235,8 +231,6 @@ classdef app < handle
             self.listener__update_setup  = addlistener(self, 'update_setup' , @self.callback__update_setup );
             self.listener__update_select = addlistener(self, 'update_select', @self.callback__update_select);
 
-            % self.listener__update_window = addlistener(self, 'update_window', @self.callback__update_window);
-
             self.listener__cleanup = addlistener(self, 'cleanup', @self.callback_cleanup);
         end % fcn
 
@@ -270,14 +264,15 @@ classdef app < handle
         function callback_cleanup(self, ~, ~)
             fprintf('[app]: cleanup() ... ')
             tic
-            try delete(self.                      fig); catch, end
-            try delete(self.pulse_definition     .fig); catch, end
-            try delete(self.simulation_parameters.fig); catch, end
-            try delete(self.simulation_results   .fig); catch, end
+            try delete(self                                 .fig); catch, end
+            try delete(self.pulse_definition.rf_pulse.window.fig); catch, end
+            try delete(self.pulse_definition                .fig); catch, end
+            try delete(self.simulation_parameters           .fig); catch, end
+            try delete(self.simulation_results              .fig); catch, end
             fprintf('done in %.3gs \n', toc)
         end
 
     end % meths
 
-    
+
 end % class

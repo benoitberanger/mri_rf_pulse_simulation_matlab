@@ -16,9 +16,6 @@ classdef sinc < mri_rf_pulse_sim.backend.rf_pulse.abstract
         function value = get.bandwidth(self)
             value = (2*self.n_side_lobs) / self.duration;
         end% % fcn
-        function set.window(self,value)
-            self.window = value;
-        end
     end % meths
 
     methods (Access = public)
@@ -66,14 +63,6 @@ classdef sinc < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.window.add_uicontrol( ...
                 container, ...
                 [0.00 0.00 1.00 0.20])
-        end % fcn
-
-    end % meths
-
-    methods(Access = protected)
-
-        function callback_open_window_gui(self,varargin)
-            self.app.open_window_gui();
         end % fcn
 
     end % meths
