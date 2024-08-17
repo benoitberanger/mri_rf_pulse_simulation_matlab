@@ -7,9 +7,9 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
         % all abstract methods can be "empty" and do nothing
         % but they MUST be defined
 
-        % BANDWIDTH is a Dependent propery so it's value can been automatically updated and visualized.
-        % It's value is retrived by the method GET_BANDWIDTH.
-        get_bandwidth                                                      % retrive the bandwith, which usually depends on the pulse paramters
+        % BANDWIDTH is a Dependent property so it's value can been automatically updated and visualized.
+        % It's value is retrieved by the method GET_BANDWIDTH.
+        get_bandwidth                                                      % retrieve the bandwidth, which usually depends on the pulse parameters
 
         % GENERATE is the "top" method. A nice strategy to make it
         % "overloadable" is to make it call specific pulse method, such as

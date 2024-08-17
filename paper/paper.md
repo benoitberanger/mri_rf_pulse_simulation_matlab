@@ -34,7 +34,7 @@ Why ? Because here is a **lot** of them ! Some pulses are designed to selectivly
 Why are they so different from each other ? How to compare them ? Which one to choose ? The [main objective]{.ul} of this toolbox is to answer these questions, using a GUI or pragramaticaly, or both.
 
 # Statement of need
-An RF pulse is _complex_ curve. It can be associated with a magnetic gradient curve which is _real_. Modern MRI scanners do use this complex RF curve : you provide the _magnitude_ and the _phase_ of the pulse. To simulate the pulse response, we can solve the Bloch equations [REF] that describe the evolution of a magnitisation vector under a magnetic field. Depending on different starting conditions, we can evaluate, for exampple, the slice profile of a slice-selective RF pulse.
+An RF pulse is _complex_ curve. It can be associated with a magnetic gradient curve which is _real_. Modern MRI scanners do use this complex RF curve : you provide the _magnitude_ and the _phase_ of the pulse. To simulate the pulse response, we can solve the Bloch equations [REF] that describe the evolution of a magnitisation vector under a magnetic field. Depending on different starting conditions, we can evaluate, for example, the slice profile of a slice-selective RF pulse.
 
 ## Interactivity
 Open the GUI and click on a pulse in the library list. The pulse is loaded with default parameters, which are displayed and editable, and it's curves are plotted. By default, the simulation is triggered, and the results plotted :
