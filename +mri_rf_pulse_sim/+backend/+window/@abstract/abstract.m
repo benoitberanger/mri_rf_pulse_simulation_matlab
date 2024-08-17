@@ -1,13 +1,16 @@
 classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
 
+    methods(Abstract)
+        getShape
+        init_gui
+        summary
+    end
+
     properties (GetAccess = public, SetAccess = public)
         name     (1,:) char
-        time     (1,:) double
+        shape    (1,:) double                                              % [a.u.] shape of the window
+        time     (1,:) double                                              % [s]
         rf_pulse
-    end % props
-
-    properties (GetAccess = public, SetAccess = public, Abstract)
-        shape    (1,:) double                                              % shape of the window
     end % props
 
     methods
@@ -25,11 +28,7 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
                 container = figure('NumberTitle','off','Name',self.summary());
             end
 
-            if isempty(self.time)
-                t = self.rf_pulse.time*1e3;
-            else
-                t = self.time*1e3;
-            end
+            t = self.time*1e3;
 
             a = axes(container);
             hold(a,'on');
@@ -47,9 +46,5 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
         end
 
     end % meths
-
-    methods(Abstract)
-        summary
-    end
 
 end % class

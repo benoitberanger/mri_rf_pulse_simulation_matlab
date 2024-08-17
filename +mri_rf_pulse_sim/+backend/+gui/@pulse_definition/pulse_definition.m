@@ -134,9 +134,7 @@ classdef pulse_definition < mri_rf_pulse_sim.backend.base_class
         function pulse_obj = set_rf_pulse(self, pulse)
 
             % delete window if necessary
-            if ~isempty(self.app.window_definition) && ~isempty(self.app.window_definition.fig)
-                delete(self.app.window_definition.fig);
-            end
+            if isprop(self.rf_pulse,'window'), delete(self.rf_pulse.window.fig); end
 
             % clean previous plot
             handles = guidata(self.fig);
@@ -153,7 +151,7 @@ classdef pulse_definition < mri_rf_pulse_sim.backend.base_class
                         split = strsplit(pulse, filesep);
                         self.rf_pulse = eval(sprintf('%s%s.%s', rf_rel_path, split{1}, split{2}));
                     else
-                        self.rf_pulse = eval(sprintf('%s%s', rf_rel_path, pulse));
+                        self.rf_pulse = eval(sprintf('%s%s'   , rf_rel_path, pulse));
                     end
                 otherwise
                     self.rf_pulse = pulse;

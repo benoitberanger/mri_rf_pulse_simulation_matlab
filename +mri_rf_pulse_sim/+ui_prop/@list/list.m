@@ -22,7 +22,8 @@ classdef list < mri_rf_pulse_sim.backend.base_class
     end % methods
 
     properties (GetAccess = public, SetAccess = public)
-        listbox matlab.ui.control.UIControl
+        listbox           matlab.ui.control.UIControl
+        listener__listbox event.listener
     end % props
 
     methods % no attributes for Dependent properties
@@ -94,7 +95,7 @@ classdef list < mri_rf_pulse_sim.backend.base_class
                 'Callback'        , @self.callback_update  ...
                 );
 
-            addlistener(self, 'value', 'PostSet', @self.postset_update);
+            self.listener__listbox = addlistener(self, 'value', 'PostSet', @self.postset_update);
 
         end % fcn
 
@@ -120,6 +121,7 @@ classdef list < mri_rf_pulse_sim.backend.base_class
         end % fcn
 
         function postset_update(self, ~, ~)
+            if ~ishandle(self.listbox), return, end
             self.listbox.Value = self.idx;
             self.notify_parent();
         end % fcn

@@ -8,7 +8,7 @@ classdef binomial_sinc < mri_rf_pulse_sim.backend.rf_pulse.abstract
         subpulse_width mri_rf_pulse_sim.ui_prop.scalar                     % [s] width of the RECTS
         subpulse_delay mri_rf_pulse_sim.ui_prop.scalar                     % [s] delay between two RECTS center
 
-        window                                                             % window object
+        window         mri_rf_pulse_sim.ui_prop.window                     % apply a window to the base Sinc waveform
     end % props
 
     properties (GetAccess = public, SetAccess = protected, Dependent)
@@ -19,10 +19,6 @@ classdef binomial_sinc < mri_rf_pulse_sim.backend.rf_pulse.abstract
         function value = get.bandwidth(self)
             value = (2*self.n_side_lobs) / self.subpulse_width;
         end% % fcn
-        function set.window(self,value)
-            assert(isa(value,'mri_rf_pulse_sim.backend.window.abstract'))
-            self.window = value;
-        end
     end % meths
 
     methods (Access = public)
@@ -34,6 +30,7 @@ classdef binomial_sinc < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.subpulse_width = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='subpulse_width', value=  1e-3, unit='ms', scale=1e3);
             self.subpulse_delay = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='subpulse_delay', value=  2e-3, unit='ms', scale=1e3);
             self.binomial_coeff = mri_rf_pulse_sim.ui_prop.list  (parent=self, name='binomial_coeff', value='1 1' , items=self.getPascalTriagleCoeff());
+            self.window         = mri_rf_pulse_sim.ui_prop.window(parent=self, name='apodization'   , value=''                          );
             self.duration.editable = "off";           % duration is not directly an input parameter
             self.duration.value = self.getDuration(); % special duration
             self.generate();
@@ -63,10 +60,7 @@ classdef binomial_sinc < mri_rf_pulse_sim.backend.rf_pulse.abstract
             grad     = [];
             for c = 1 : length(coeff)
                 subpulse = Sinc(subpulse_time/lob_size); % base shape
-                if ~isempty(self.window) && isvalid(self.window)
-                    self.window.time = subpulse_time;
-                    subpulse = subpulse .* self.window.shape; % windowing
-                end
+                subpulse = subpulse .* self.window.getShape(subpulse_time); % windowing
                 subpulse = subpulse / trapz(subpulse_time, subpulse); % normalize integral
                 subpulse = subpulse * deg2rad(subpulse_fa(c))/self.gamma;
                 waveform = [waveform  subpulse               ]; %#ok<*AGROW>
@@ -102,29 +96,9 @@ classdef binomial_sinc < mri_rf_pulse_sim.backend.rf_pulse.abstract
                 container,...
                 [0.60 0.20 0.40 0.80]);
 
-            fig_col = mri_rf_pulse_sim.backend.gui.get_fig_colors();
-            uicontrol(container,...
-                'Style'          ,'pushbutton'                  ,...
-                'String'         ,'Windowing'                   ,...
-                'Units'          ,'normalized'                  ,...
-                'Position'       ,[0.60 0.00 0.40 0.20]         ,...
-                'BackgroundColor',fig_col.buttonBG              ,...
-                'Callback'       ,@self.callback_open_window_gui)
-        end % fcn
-
-        function set_window(self, name)
-            if nargin < 2
-                name = '';
-            end
-
-            switch name
-                case {'','none','NONE'}
-                    self.window = mri_rf_pulse_sim.window.base.empty;
-                otherwise
-                    fullname = sprintf('mri_rf_pulse_sim.window.%s', name);
-                    self.window = feval(fullname, rf_pulse=self);
-            end
-            self.generate();
+            self.window.add_uicontrol( ...
+                container, ...
+                [0.60 0.00 0.40 0.20])
         end % fcn
 
         function add_gz_rewinder(self, status)
@@ -146,10 +120,6 @@ classdef binomial_sinc < mri_rf_pulse_sim.backend.rf_pulse.abstract
         function value = getDuration(self)
             coeff = str2num(self.binomial_coeff.get()); %#ok<ST2NM>
             value = length(coeff)*self.subpulse_width + (length(coeff)-1)*(self.subpulse_delay-self.subpulse_width);
-        end % fcn
-
-        function callback_open_window_gui(self,varargin)
-            self.app.open_window_gui();
         end % fcn
 
     end % meths

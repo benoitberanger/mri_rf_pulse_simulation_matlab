@@ -13,12 +13,13 @@ classdef bool < mri_rf_pulse_sim.backend.base_class
 
     methods % no attribute for dependent properties
         function value = get.repr(self)
-            value = sprintf('%g [bool]', self.value);
+            value = self.summary();
         end
     end % methods
 
     properties (GetAccess = public, SetAccess = public)
-        checkbox      matlab.ui.control.UIControl
+        checkbox           matlab.ui.control.UIControl
+        listener__checkbox event.listener
     end % props
 
     methods (Access = public)
@@ -88,9 +89,13 @@ classdef bool < mri_rf_pulse_sim.backend.base_class
                 'BackgroundColor'    , container.BackgroundColor  ...
                 );
 
-            addlistener(self, 'value', 'PostSet', @self.postset_update);
+            self.listener__checkbox = addlistener(self, 'value', 'PostSet', @self.postset_update);
 
         end % fcn
+
+        function txt = summary(self)
+            txt = sprintf('%g [bool]', self.value);
+        end
 
         function displayRep = compactRepresentationForSingleLine(self,displayConfiguration,width)
             displayRep = widthConstrainedDataRepresentation(self,displayConfiguration,width,...
@@ -111,6 +116,8 @@ classdef bool < mri_rf_pulse_sim.backend.base_class
         end % fcn
 
         function postset_update(self, ~, ~)
+            if ~ishandle(self.checkbox), return, end
+
             new_value           = self.value;
             self.checkbox.Value = new_value;
 

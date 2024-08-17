@@ -4,7 +4,7 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
         n_points        mri_rf_pulse_sim.ui_prop.scalar                    % []  number of points defining the pulse
         duration        mri_rf_pulse_sim.ui_prop.scalar                    % [s] pulse duration
         slice_thickness mri_rf_pulse_sim.ui_prop.scalar                    % [m] slice width
-        gz_rewinder     mri_rf_pulse_sim.ui_prop.bool                      % add a selective selective gradient rewinder automatically
+        gz_rewinder     mri_rf_pulse_sim.ui_prop.bool                      % add a selective selective gradient rewinder automatically (or manually with an overload of the method)
         time           (1,:) double                                        % [s] time vector
         B1             (1,:) double                                        % [T] complex waveform of the pulse
         GZ             (1,:) double                                        % [T/m] slice gradient
@@ -12,7 +12,7 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
     end % props
 
     properties (GetAccess = public, SetAccess = protected, Dependent)
-        FM              mri_rf_pulse_sim.ui_prop.scalar                    % [Hz]    frequency modulation -> its the derivation of the phase(t)
+        FM                                                                 % [Hz]    frequency modulation -> its the derivation of the phase(t)
         B1max           mri_rf_pulse_sim.ui_prop.scalar                    % [T]     max value of magnitude(t)
         GZmax           mri_rf_pulse_sim.ui_prop.scalar                    % [T/m]   max value of  gradient(t)
         GZavg           mri_rf_pulse_sim.ui_prop.scalar                    % [T/m]   average value of gradient(t) -> used for slice thickness

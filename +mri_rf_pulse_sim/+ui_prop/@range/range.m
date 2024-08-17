@@ -30,6 +30,12 @@ classdef range < mri_rf_pulse_sim.backend.base_class
         edit_N        matlab.ui.control.UIControl
         edit_select   matlab.ui.control.UIControl
         slider        matlab.ui.control.UIControl
+
+        listener__edit_min    event.listener
+        listener__edit_max    event.listener
+        listener__edit_N      event.listener
+        listener__edit_select event.listener
+        listener__slider      event.listener
     end % props
 
     methods % no attributes for Dependent properties
@@ -131,7 +137,8 @@ classdef range < mri_rf_pulse_sim.backend.base_class
                     'UserData'        , scales(p)                         ...
                     );
 
-                addlistener(self, prop, 'PostSet', @self.postset_update_setup);
+                listener_tag = sprintf('listener__%s', tag);
+                self.(listener_tag) = addlistener(self, prop, 'PostSet', @self.postset_update_setup);
             end
 
         end % fcn
@@ -172,7 +179,7 @@ classdef range < mri_rf_pulse_sim.backend.base_class
                 'Callback'       , @self.callback_update_select  ...
                 );
 
-            addlistener(self, 'select', 'PostSet', @self.postset_update_select);
+            self.listener__slider = addlistener(self, 'select', 'PostSet', @self.postset_update_select);
         end % fcn
 
         function displayRep = compactRepresentationForSingleLine(self,displayConfiguration,width)
@@ -199,6 +206,7 @@ classdef range < mri_rf_pulse_sim.backend.base_class
             prop_name     = metaProp.Name;
             new_value     = self.(prop_name);
             ui_obj        = self.(sprintf('edit_%s',prop_name));
+            if ~ishandle(ui_obj), return, end
             ui_obj.String = num2str(new_value * ui_obj.UserData);
 
             self.slider.Min        = self.min;
@@ -227,6 +235,9 @@ classdef range < mri_rf_pulse_sim.backend.base_class
         end % fcn
 
         function postset_update_select(self, ~, ~)
+            if ~ishandle(self.edit_select), return, end
+            if ~ishandle(self.slider     ), return, end
+            
             new_value               = self.select;
             self.edit_select.String = num2str(new_value * self.scale);
             self.slider.Value       = new_value;

@@ -5,7 +5,7 @@ classdef sinc < mri_rf_pulse_sim.backend.rf_pulse.abstract
         flip_angle  mri_rf_pulse_sim.ui_prop.scalar                        % [deg] flip angle
         rf_phase    mri_rf_pulse_sim.ui_prop.scalar                        % [deg] phase of the pulse (typically used for spoiling)
 
-        window                                                             % window object
+        window      mri_rf_pulse_sim.ui_prop.window                        % apply a window to the base Sinc waveform
     end % props
 
     properties (GetAccess = public, SetAccess = protected, Dependent)
@@ -16,10 +16,6 @@ classdef sinc < mri_rf_pulse_sim.backend.rf_pulse.abstract
         function value = get.bandwidth(self)
             value = (2*self.n_side_lobs) / self.duration;
         end% % fcn
-        function set.window(self,value)
-            assert(isa(value,'mri_rf_pulse_sim.backend.window.abstract'))
-            self.window = value;
-        end
     end % meths
 
     methods (Access = public)
@@ -30,6 +26,7 @@ classdef sinc < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.n_side_lobs    = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='n_side_lobs', value= 2          );
             self.flip_angle     = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle' , value=90, unit='°');
             self.rf_phase       = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='rf_phase'   , value= 0, unit='°');
+            self.window         = mri_rf_pulse_sim.ui_prop.window(parent=self, name='apodization', value=''          );
             self.generate();
         end % fcn
 
@@ -44,10 +41,7 @@ classdef sinc < mri_rf_pulse_sim.backend.rf_pulse.abstract
             lob_size = 1/self.bandwidth;
 
             waveform = Sinc(self.time/lob_size); % base shape
-            if ~isempty(self.window) && isvalid(self.window)
-                self.window.time = self.time;
-                waveform = waveform .* self.window.shape; % windowing
-            end
+            waveform = waveform .* self.window.getShape(self.time); % windowing
             waveform = waveform / trapz(self.time, waveform); % normalize integral
             waveform = waveform * deg2rad(self.flip_angle.get()) / self.gamma; % scale integrale with flip angle
             self.B1  = waveform * exp(1j * deg2rad(self.rf_phase.get()));
@@ -55,53 +49,22 @@ classdef sinc < mri_rf_pulse_sim.backend.rf_pulse.abstract
         end % fcn
 
         function txt = summary(self) % #abstract
-            txt = sprintf('[%s] : n_side_lobs=%s  flip_angle=%s  rf_phase=%s',...
-                mfilename, self.n_side_lobs.repr, self.flip_angle.repr, self.rf_phase.repr);
-            if ~isempty(self.window) && isvalid(self.window)
-                txt = sprintf('%s  window=%s', txt, self.window.name);
-            end
-        end % fcn
-
-        function set_window(self, name)
-            if nargin < 2
-                name = '';
-            end
-
-            switch name
-                case {'','none','NONE'}
-                    self.window = mri_rf_pulse_sim.window.base.empty;
-                otherwise
-                    fullname = sprintf('mri_rf_pulse_sim.window.%s', name);
-                    self.window = feval(fullname, rf_pulse=self);
-            end
-            self.generate();
+            txt = sprintf('[%s] : n_side_lobs=%s  flip_angle=%s  rf_phase=%s  window=%s',...
+                mfilename, self.n_side_lobs.repr, self.flip_angle.repr, self.rf_phase.repr, self.window.repr);
         end % fcn
 
         function init_specific_gui(self, container) % #abstract
             mri_rf_pulse_sim.ui_prop.scalar.add_uicontrol_multi_scalar(...
                 container,...
                 [self.n_side_lobs, self.flip_angle self.rf_phase],...
-                [0 0.2 1 0.8]...
+                [0.00 0.20 1.00 0.80]...
                 );
 
-            fig_col = mri_rf_pulse_sim.backend.gui.get_fig_colors();
-            uicontrol(container,...
-                'Style'          ,'pushbutton'                  ,...
-                'String'         ,'Windowing'                   ,...
-                'Units'          ,'normalized'                  ,...
-                'Position'       ,[0 0 1 0.2]                   ,...
-                'BackgroundColor',fig_col.buttonBG              ,...
-                'Callback'       ,@self.callback_open_window_gui)
+            self.window.add_uicontrol( ...
+                container, ...
+                [0.00 0.00 1.00 0.20])
         end % fcn
 
-    end % meths
-
-    methods(Access = protected)
-
-        function callback_open_window_gui(self,varargin)
-            self.app.open_window_gui();
-        end % fcn
-        
     end % meths
 
 end % class

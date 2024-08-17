@@ -16,7 +16,7 @@ function rect_vs_sinc()
 % generate pulses
 RECT  = mri_rf_pulse_sim.rf_pulse.rect();
 SINC  = mri_rf_pulse_sim.rf_pulse.sinc();
-SINCh = mri_rf_pulse_sim.rf_pulse.sinc(); SINCh.set_window('hanning'); SINCh.generate();
+SINCh = mri_rf_pulse_sim.rf_pulse.sinc(); SINCh.window.set('hanning'); SINCh.generate();
 
 slice_thickness = 4/1000; % mm -> m
 slice_profile_visu_factor = 4; % to visualize larger than just the expected slice profile
