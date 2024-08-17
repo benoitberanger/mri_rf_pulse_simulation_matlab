@@ -118,6 +118,7 @@ classdef window < mri_rf_pulse_sim.backend.base_class
                     self.set("hanning");
                     self.notify_parent();
 
+                    fig_pos = mri_rf_pulse_sim.backend.gui.get_fig_pos   ();
                     fig_col = mri_rf_pulse_sim.backend.gui.get_fig_colors();
 
                     % Create a figure
@@ -127,6 +128,7 @@ classdef window < mri_rf_pulse_sim.backend.base_class
                         'Name'            , 'Pulse window'           , ...
                         'NumberTitle'     , 'off'                    , ...
                         'Units'           , 'normalized'             , ...
+                        'Position'        , fig_pos.window           , ...
                         'Color'           , fig_col.figureBG         , ...
                         'CloseRequestFcn' , @self.callback_cleanup   );
 
@@ -180,10 +182,6 @@ classdef window < mri_rf_pulse_sim.backend.base_class
             self.set(self.label_none);
             self.populateChild();
             self.notify_parent();
-        end % fcn
-
-        function delete(self)
-            try delete(self.fig); catch, end
         end % fcn
 
     end % meths
