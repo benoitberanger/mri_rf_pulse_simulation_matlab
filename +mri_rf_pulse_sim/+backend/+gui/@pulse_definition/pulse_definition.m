@@ -134,9 +134,7 @@ classdef pulse_definition < mri_rf_pulse_sim.backend.base_class
         function pulse_obj = set_rf_pulse(self, pulse)
 
             % delete window if necessary
-            if isprop(self.rf_pulse,'window')
-                delete(self.rf_pulse.window.fig);
-            end
+            if isprop(self.rf_pulse,'window'), delete(self.rf_pulse.window.fig); end
 
             % clean previous plot
             handles = guidata(self.fig);
