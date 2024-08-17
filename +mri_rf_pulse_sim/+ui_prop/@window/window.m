@@ -80,10 +80,16 @@ classdef window < mri_rf_pulse_sim.backend.base_class
         end % fcn
 
         function txt = summary(self)
-            if isempty(self.name)
-                txt = sprintf(     '%s',            self.list.value);
+            if isempty(self.list.value)
+                content = self.label_none;
             else
-                txt = sprintf('[%s] %s', self.name, self.list.value);
+                content = self.list.value;
+            end
+
+            if isempty(self.name)
+                txt = sprintf(     '%s',            content);
+            else
+                txt = sprintf('[%s] %s', self.name, content);
             end
         end % fcn
 

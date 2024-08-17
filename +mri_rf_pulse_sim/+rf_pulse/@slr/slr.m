@@ -21,11 +21,11 @@ classdef slr < mri_rf_pulse_sim.backend.rf_pulse.abstract
         function self = slr()
             check_slr_dependency();
             self.n_points.value = 128;
-            self.d1             = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='d1'         , value=  0.01, unit='from 0 to 1');
-            self.d2             = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='d2'         , value=  0.01, unit='from 0 to 1');
+            self.d1             = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='d1'         , value=  0.01, unit=' from 0 to 1');
+            self.d2             = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='d2'         , value=  0.01, unit=' from 0 to 1');
             self.TBWP           = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='TBWP'       , value=  8                       );
-            self.pulse_type     = mri_rf_pulse_sim.ui_prop.list  (parent=self, name='pulse_type' , value= 'ex' , items= {'st', 'ex', 'se', 'sat', 'inv'});
-            self.filter_type    = mri_rf_pulse_sim.ui_prop.list  (parent=self, name='filter_type', value= 'min', items= {'ms', 'pm', 'ls', 'min', 'max'});
+            self.pulse_type     = mri_rf_pulse_sim.ui_prop.list  (parent=self, name=''           , value= 'ex' , items= {'st', 'ex', 'se', 'sat', 'inv'});
+            self.filter_type    = mri_rf_pulse_sim.ui_prop.list  (parent=self, name=''           , value= 'min', items= {'ms', 'pm', 'ls', 'min', 'max'});
             self.flip_angle     = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle' , value= 90   , unit='°'          );
             self.generate();
         end % fcn

@@ -17,7 +17,11 @@ classdef list < mri_rf_pulse_sim.backend.base_class
 
     methods % no attribute for dependent properties
         function value = get.repr(self)
-            value = sprintf('%s = %s', self.name, self.value);
+            if isempty(self.name)
+                value = sprintf(     '%s',            self.value);
+            else
+                value = sprintf('%s = %s', self.name, self.value);
+            end
         end
     end % methods
 
@@ -51,7 +55,7 @@ classdef list < mri_rf_pulse_sim.backend.base_class
 
             assert(isfield(args,  'name'),  'name is required')
             assert(isfield(args, 'items'), 'items is required')
-            self.name  = args.name;
+            self.name = args.name;
 
             if isnumeric(args.items)
                 self.items = args.items;

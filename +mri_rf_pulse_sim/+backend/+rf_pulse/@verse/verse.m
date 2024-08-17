@@ -14,7 +14,7 @@ classdef (Abstract) verse < handle
     methods(Access = public)
 
         function self = verse()
-            self.type  = mri_rf_pulse_sim.ui_prop.list  (parent=self, name='type' , value= 'optimise' , items= {'<no>', 'optimise', 'rand'});
+            self.type  = mri_rf_pulse_sim.ui_prop.list  (parent=self, name=''     , value= 'optimise' , items= {'<no>', 'optimise', 'rand'});
             self.maxB1 = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='maxB1', value= 15e-6, scale=1e6, unit='µT'     );
             self.maxGZ = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='maxGZ', value= 40e-3, scale=1e3, unit='mT/m'   );
             self.maxSZ = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='maxSZ', value=120   , scale=1  , unit='mT/m/ms');

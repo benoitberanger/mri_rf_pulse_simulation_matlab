@@ -28,7 +28,7 @@ classdef (Abstract) binomial < handle
         function self = binomial()
             self.subpulse_width = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='subpulse_width', value=  1e-3, unit='ms', scale=1e3);
             self.subpulse_delay = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='subpulse_delay', value=  3e-3, unit='ms', scale=1e3);
-            self.binomial_coeff = mri_rf_pulse_sim.ui_prop.list  (parent=self, name='binomial_coeff', value='1 1' , items=self.getPascalTriagleCoeff());
+            self.binomial_coeff = mri_rf_pulse_sim.ui_prop.list  (parent=self, name=''              , value='1 1' , items=self.getPascalTriagleCoeff());
         end % fcn
 
         % this method ABOVE the generate_<pulse-name>
