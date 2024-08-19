@@ -37,9 +37,20 @@ Why are they so different from each other ? How to compare them ? Which one to c
 An RF pulse is _complex_ curve. It can be associated with a magnetic gradient curve which is _real_. Modern MRI scanners do use this complex RF curve : you provide the _magnitude_ and the _phase_ of the pulse. To simulate the pulse response, we can solve the Bloch equations [REF] that describe the evolution of a magnitisation vector under a magnetic field. Depending on different starting conditions, we can evaluate, for example, the slice profile of a slice-selective RF pulse.
 
 ## Interactivity
-Open the GUI and click on a pulse in the library list. The pulse is loaded with default parameters, which are displayed and editable, and it's curves are plotted. By default, the simulation is triggered, and the results plotted :
-![FOCI](../docs/gui_FOCI.png)
-Changing a parameter such as the pulse duration, in the GUI or programaticaly, will update the pulse curves, and simulation updated with the ne resultats plotted.
+Open the GUI and click on a pulse in the library list. The pulse is loaded with default parameters, which are displayed and editable, and it's curves are plotted:
+![GUI panel for Pulse definition. \label{fig:gui_pulse_definition}](gui_pulse_definition.png)
+Simulation parameters, such as magnetic field strength, can be edited :
+![GUI panel for Simulation parameters. \label{fig:gui_simulation_parameters}](gui_simulation_parameters.png)
+By default, the simulation is automatically triggered, and the results plotted :
+![GUI panel for Simulation results. \label{fig:gui_simulation_results}](gui_simulation_results.png)
+
+All UI parameters possess an _update_ mechanism, mostly used to trigger the simulation with the fresh value. Changing a parameter such as the pulse duration, in the GUI or programaticaly, will update the pulse, re-plot it's curves, and simulation updated.
+
+## Usage
+As mentioned, the package was designed to work with both GUI and scripting. The GUI allows fast pulse exploration, since the simulation is updated if any parameter change. Meanwhile, when you need to optimize pragramatically a pulse, or if you need to compare two pulses, code is a better choice. This is why there are many analysis scripts that serve as demos. These scripts use the full API provided by this package and take advantage of the MATLAB easy vector computation and plotting system.
+
+## Limitations
+The main limitation is MATLAB itself : it's licensing system is not as open as Python. However, in the MRI research community, which is very academic, the license can be provided for free by the most of the academic research institutes.
 
 # Citations
 A list of key references, including to other software addressing related needs. Note that the references should include full names of venues, e.g., journals and conferences, not abbreviations only understood in the context of a specific discipline.
