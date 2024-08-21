@@ -41,13 +41,13 @@ An RF pulse is _complex_ curve. It can be associated with a magnetic gradient cu
 
 ## Interactivity
 Open the GUI and click on a pulse in the library list. The pulse is loaded with default parameters, which are displayed and editable, and it's curves are plotted:  
-![GUI panel for Pulse definition. \label{fig:gui_pulse_definition}](gui_pulse_definition.png){width="40%"}
+![GUI panel for Pulse definition. \label{fig:gui_pulse_definition}](gui_pulse_definition.png){width="60%"}
 
 Simulation parameters, such as magnetic field strength, can be edited :  
-![GUI panel for Simulation parameters. \label{fig:gui_simulation_parameters}](gui_simulation_parameters.png){width="40%"}
+![GUI panel for Simulation parameters. \label{fig:gui_simulation_parameters}](gui_simulation_parameters.png){width="60%"}
 
 By default, the simulation is automatically triggered, and the results plotted :  
-![GUI panel for Simulation results. \label{fig:gui_simulation_results}](gui_simulation_results.png){width="60%"}
+![GUI panel for Simulation results. \label{fig:gui_simulation_results}](gui_simulation_results.png){width="100%"}
 
 All UI parameters possess an _update_ mechanism, mostly used to trigger the simulation with the fresh value. Changing a parameter such as the pulse duration, in the GUI or programaticaly, will update the pulse, re-plot it's curves, and the simulation updated.
 
@@ -61,9 +61,12 @@ The user can use it's on pulses :
 ## Modularity
 Many pulses are composed using different algorithm. For example, `sinc_mb_verse` uses the Sinc as base waveform, then the Simultaneous Multi-slice MutliBand (mb) algorithm to excite multiple slices at once, and finally the VERSE algorithm compresses the pulse in time to achieve the same slice profile while keeping the pulse under constrains, such as the maximum RF amplitude. The composition of `sinc_mb_verse` pulse comes from the heritage of all 3 classes : the `sinc` pulse, the `sms_mb` abstract class, and the `verse` abstract class : 
 ```matlab
-classdef sinc_mb_verse < mri_rf_pulse_sim.backend.rf_pulse.verse & mri_rf_pulse_sim.backend.rf_pulse.sms_mb & mri_rf_pulse_sim.rf_pulse.sinc
+classdef sinc_mb_verse < ...
+        mri_rf_pulse_sim.backend.rf_pulse.verse  & ...
+        mri_rf_pulse_sim.backend.rf_pulse.sms_mb & ...
+        mri_rf_pulse_sim.rf_pulse.sinc
 ```
-All pulses do have a reference to the book or the the article that described them. Many of them comes from [Bernstein:2004]
+All pulses do have a reference to the book or the the article that described them. Many of them comes from [@Bernstein:2004]
 
 # Limitations
 The main limitation is MATLAB itself : it's licensing system is not as open as Python. However, in the MRI research community, which is quite academic, the license can be provided by the most of the academic research institutes.
