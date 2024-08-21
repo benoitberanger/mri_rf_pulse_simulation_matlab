@@ -59,7 +59,7 @@ The user can use it's on pulses :
 * by add it's on pulses in a dedicated directory, so they will appear in th GUI.
 
 ## Modularity
-Many pulses are composed using different algorithm. For example, `sinc_mb_verse` uses the Sinc as base waveform, then the Simultaneous Multi-slice MutliBand (mb) algorithm to excite multiple slices at once, and finally the VERSE algorithm compresses the pulse in time to achieve the same slice profile while keeping the pulse under constrains, such as the maximum RF amplitude. The composition of `sinc_mb_verse` pulse comes from the heritage of all 3 classes : the `sinc` pulse, the `sms_mb` abstract class, and the `verse` abstract class : 
+Many pulses are composed using different algorithm. For example, `sinc_mb_verse` uses the Sinc as base waveform [@Bernstein:2004], then the Simultaneous Multi-slice MutliBand (mb) algorithm to excite multiple slices at once [@Barth:2016], and finally the VERSE algorithm compresses the pulse in time to achieve the same slice profile while keeping the pulse under constrains, such as the maximum RF amplitude [@Conolly:1988; @Hargreaves:2004]. The composition of `sinc_mb_verse` pulse comes from the heritage of all 3 classes : the `sinc` pulse, the `sms_mb` abstract class, and the `verse` abstract class : 
 ```matlab
 classdef sinc_mb_verse < ...
         mri_rf_pulse_sim.backend.rf_pulse.verse  & ...
