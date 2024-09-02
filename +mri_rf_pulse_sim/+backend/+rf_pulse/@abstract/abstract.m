@@ -1,4 +1,5 @@
 classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
+    % Scaffold of all pulse classes. Currently, all pulses derive from this class.
 
 
     %% ABSTRACT properties & methods : need to be implemented in subclass
@@ -11,12 +12,15 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
         % It's value is retrieved by the method GET_BANDWIDTH.
         get_bandwidth                                                      % retrieve the bandwidth, which usually depends on the pulse parameters
 
-        % GENERATE is the "top" method. A nice strategy to make it
-        % "overloadable" is to make it call specific pulse method, such as
-        % generate as generate_sinc()
+        % GENERATE is the "top" method.
+        % A nice strategy to make it "overloadable" is to make it call specific pulse method,
+        % such as generate_sinc()
         generate                                                           % generate pulse shape using input parameters
 
+        % This method is called by the App to create UI elements that are specific to the pulse class
         init_specific_gui                                                  % draw UI elements
+
+        % Returns text that summarize the pulse paramters
         summary                                                            % print summary text
     end % meths
 
@@ -49,7 +53,7 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
     end % props
 
     methods % no attribute for dependent properties
-        function value = get.FM       (self); value = gradient(self.phase,self.time) / (2*pi);                 end
+        function value = get.FM       (self); value = gradient(self.phase,self.time) / (2*pi); end
 
         function value = get.bandwidth(self); value = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='bandwidth', value=self.get_bandwidth()                                   , unit='Hz'                 ); end
         function value = get.B1max    (self); value = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='B1max'    , value=max(abs(self.B1))                                      , unit='µT'     , scale=1e06); end
@@ -163,14 +167,17 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
             end
         end
 
+        % Method called by the listener "listener_update"
         function callback_update(self, ~, ~)
             self.notify_parent();
         end
 
+        % Numerical integration of the frequency modulation to get the phase
         function phase = freq2phase(self, freq)
             phase = cumtrapz(self.time, freq);
         end
 
+        % Method called by the App to draw UI elements from the Abstract pulse class (this current class)
         function init_base_gui(self, container)
             mri_rf_pulse_sim.ui_prop.scalar.add_uicontrol_multi_scalar( ...
                 container, ...
@@ -180,12 +187,16 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
             self.gz_rewinder.add_uicontrol(container, [0.60 0.60 0.40 0.40])
         end % fcn
 
+        % For MATLAB to format the visual output in the Command Window
         function displayRep = compactRepresentationForSingleLine(self,displayConfiguration,width)
             txt = sprintf('%s', self.summary());
             displayRep = widthConstrainedDataRepresentation(self,displayConfiguration,width,...
                 StringArray=txt,AllowTruncatedDisplayForScalar=true);
         end % fcn
 
+        % Enable the possiblity to add a gradient rewinder lob
+        % Some pulses use a local copy of the method,
+        % such as `add_gz_rewinder_verse` in the `verse` abstract class
         function add_gz_rewinder(self, status)
             self.gz_rewinder.visible = "on";
             if nargin == 1, status = self.gz_rewinder.get(); end
@@ -197,11 +208,7 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
             self.GZ   = [self.GZ   -self.GZ(n_new_points+1:end)                                          ];
         end % fcn
 
-    end % meths
-
-
-    methods (Access = protected)
-
+        % For some quick assertions
         function assert_nonempty_prop(self, prop_list)
             assert(ischar(prop_list) || iscellstr(prop_list)) %#ok<ISCLSTR>
             prop_list = cellstr(prop_list); % force cellstr
