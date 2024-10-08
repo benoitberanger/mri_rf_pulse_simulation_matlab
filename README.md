@@ -19,24 +19,24 @@ Also, you can use your own pulses in the app by :
 ### GUI
 The GUI have 3 independent panels :
 - **Pulse definition** : It shows the library of pulses, and the selected pulse, including its shape and the UI parameters.
-![Pulse definition](paper/gui_pulse_definition.png)
+![Pulse definition](docs/gui_pulse_definition.png)
 - **Simulation parameters** : You define the range and granularity (number of points) for the slice profile evaluation $\Delta Z$ and the chemical shift $\Delta B_0$ evaluation.
-![Simulation parameters](paper/gui_simulation_parameters.png)
+![Simulation parameters](docs/gui_simulation_parameters.png)
 - **Simulation results** : Displays $M_{xzy}(t)$, the slice profile $\Delta Z$, and the chemical shift $\Delta B_0$ profile.
-![Simulation results](paper/gui_simulation_results.png)
+![Simulation results](docs/gui_simulation_results.png)
 
 ### Scripting
 Here is some examples of non-GUI analysis :  
 - [Why SINC is used for slice selection instead of to RECT ?](+mri_rf_pulse_sim/+analysis/rect_vs_sinc.m)
 - [Too much B1max ? RF clip ? maybe increase pulse duration](+mri_rf_pulse_sim/+analysis/rf_clip.m)
-- [FOCI is derivezd from HS pulse. But is it better ?](+mri_rf_pulse_sim/+analysis/compare_hs_foci.m)
+- [FOCI is derived from HS pulse. But is it better ?](+mri_rf_pulse_sim/+analysis/compare_hs_foci.m)
 - [Why do we need a slice selection gradient **rewinder** ?](+mri_rf_pulse_sim/+analysis/slice_selection_rewinder_lob.m)
 
 ### Object oriented programming
 All pulses are objects.  
 Pulses can inherit from others : `FOCI` is derived from `HyperbolicSecant`.  
 Pulses can be composed of several abstract classes.
-For example, `slr_mb_verse` is a **SLR** base waveform, then the **M**ulti**B**and algorithm is applied to excite several slices, and finnally the **VERSE** algorithm reduces it's duration and $B1_{max}$ using constrains.
+For example, `slr_mb_verse` is a **SLR** base waveform, then the **M**ulti**B**and algorithm is applied to excite several slices, and finally the **VERSE** algorithm reduces it's duration and $B1_{max}$ using constrains.
 
 
 ### Re-usability
