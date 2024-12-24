@@ -25,10 +25,10 @@ classdef BRUKER < mri_rf_pulse_sim.backend.rf_pulse.abstract
             pulse_list_inv = dir(fullfile(location, '**/*inv'));
             self.pulse_list_struct = [pulse_list_exc ; pulse_list_rfc ; pulse_list_inv];
             name = fullfile({self.pulse_list_struct.folder}, {self.pulse_list_struct.name})';
-            name = strrep(name, fullfile(pwd, 'vendor', 'bruker'), '');
-            self.pulse_list = mri_rf_pulse_sim.ui_prop.list(parent=self, name='pulse_list', items=name, value=name{1});
+            name = strrep(name, fullfile(pwd, 'vendor', 'bruker'), ''); % simplify it for display
+            self.pulse_list = mri_rf_pulse_sim.ui_prop.list  (parent=self, name='pulse_list', items=name, value=name{1});
             self.flip_angle = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle', value=0, unit='°');
-            self.n_points.editable = 'off';
+            self.n_points.editable = 'off'; % comes from the text file
             self.generate();
         end % fcn
 
@@ -41,14 +41,20 @@ classdef BRUKER < mri_rf_pulse_sim.backend.rf_pulse.abstract
         end % fcn
 
         function generate(self) %  #abstract
+            % get selected pulse name
             idx = self.pulse_list.idx;
             p = self.pulse_list_struct(idx);
-            self.pulse_path = fullfile(p.folder, p.name);
 
-            self.pulse_data = mri_rf_pulse_sim.load_bruker_RFpulse(self.pulse_path);
-            self.flip_angle.set(self.pulse_data.SHAPE_TOTROT);
-            self.n_points.set(self.pulse_data.NPOINTS);
+            % new pulse ?
+            new_path = fullfile(p.folder, p.name);
+            if ~strcmp(self.pulse_path, new_path)
+                self.pulse_path = fullfile(p.folder, p.name);
+                self.pulse_data = mri_rf_pulse_sim.load_bruker_RFpulse(self.pulse_path);
+                self.flip_angle.set(self.pulse_data.SHAPE_TOTROT);
+                self.n_points.set(self.pulse_data.NPOINTS);
+            end
 
+            % gen
             self.time = linspace(0, self.duration.get(), self.n_points.get());
             MAG = self.pulse_data.RF(:,1);
             MAG = MAG / trapz(self.time, MAG); % normalize integral
@@ -57,15 +63,17 @@ classdef BRUKER < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
             self.B1 = MAG .* exp(1j * PHA);
             self.GZ = ones(size(self.time)) * self.GZavg;
+            self.add_gz_rewinder()
         end % fcn
 
-        function txt = summary(self) %#ok<MANU>  #abstract
-            txt = '<BRUKER>';
+        function txt = summary(self) %  #abstract
+            txt = sprintf('<BRUKER> %s', ...
+                self.pulse_list.repr);
         end % fcn
 
         function init_specific_gui(self, container) %  #abstract
-            rect_fa        = [0.00 0.00 0.50 1.00];
-            rect_pulselist = [0.50 0.00 0.50 1.00];
+            rect_fa        = [0.00 0.50 0.30 0.50];
+            rect_pulselist = [0.30 0.00 0.70 1.00];
             self.flip_angle.add_uicontrol(container, rect_fa)
             self.pulse_list.add_uicontrol(container, rect_pulselist)
         end % fcn
