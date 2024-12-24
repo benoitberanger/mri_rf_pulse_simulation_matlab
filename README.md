@@ -10,7 +10,7 @@ The app is a GUI, and the code also made to be used purely programmatically.
 The application is highly object oriented, to take advantage of heritage and composition of several abstract classes.
 
 Also, you can use your own pulses in the app by:
-- A super fast method: fill the $RF$ pulse shape ($B1$ curve $GZ$ curve) in the the `USER_DEFINED` pulse. This is "empty" pulse, used as placeholder in the app. _Example usage: if  you have Brucker pulse file (.exc .rfc .inv), load it with [load_bruker_RFpulse](+mri_rf_pulse_sim/load_bruker_RFpulse.m), fill the `USER_DEFINED` pulse, then trigger the GUI so simulate the profile._
+- A super fast method: fill the $RF$ pulse shape ($B1$ curve $GZ$ curve) in the the `USER_DEFINED` pulse, then trigger the GUI so simulate the profile.
 - An ergonomic method made for interactivity: add your own $RF$ pulse class in `+mri_rf_pulse_sim/+rf_pulse/+local/` so it will appear in the GUI library. _This directory is not versioned in this repo_
 
 
@@ -43,6 +43,12 @@ For example, `slr_mb_verse` is a **SLR** base waveform, then the **M**ulti**B**a
 One of the objectives here is to centralize the equations/algorithms of $RF$ pulse so they can be almost copy-pasted in other programming environments, like a complete sequence simulator, or a sequence development environment from your manufacturer.  
 One difficulty when looking in the literature is that different sources can have different vocabulary or different parameters. A typical example is the **H**yperbolic**S**ecant, which is the extremely well described, but with a large variety of implementation using different input parameters.
 
+
+### Use vendor specific pulses
+#### Bruker
+- Copy your pulses from Bruker into `<package_dir>/vendor/bruker/`.  
+- In the GUI, select "BRUKER", this will fetch all *exc, *rfc, *inv and display them in a list.  
+- Click on a pulse to load it and simulate it.  
 
 ## Examples
 
