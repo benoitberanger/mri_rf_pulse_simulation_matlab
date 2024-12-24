@@ -9,6 +9,7 @@
 /html_publish_matlab
 +mri_rf_pulse_sim/+rf_pulse/+local
 /paper/paper.pdf
+vendor/
 
 # Octave
 octave-workspace
