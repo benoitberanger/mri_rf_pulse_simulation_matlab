@@ -10,22 +10,30 @@ classdef BRUKER < mri_rf_pulse_sim.backend.rf_pulse.abstract
         pulse_list_struct (:,1) struct
         pulse_path        (1,:) char
         pulse_data        (1,1) struct
+        button                  matlab.ui.control.UIControl
     end % props
 
     methods (Access = public)
 
         % constructor
         function self = BRUKER()
+            % bruker pulse in the correct dir ?
             location = fullfile(fileparts(mri_rf_pulse_sim.get_package_dir()), 'vendor', 'bruker');
             if ~exist(location, 'dir')
-                error('No `pulse_bruker` dir at the expected location : %s', location)
+                error('No `vendor/bruker` dir at the expected location : %s', location)
             end
+
+            % fetch all pulses
             pulse_list_exc = dir(fullfile(location, '**/*exc'));
             pulse_list_rfc = dir(fullfile(location, '**/*rfc'));
             pulse_list_inv = dir(fullfile(location, '**/*inv'));
             self.pulse_list_struct = [pulse_list_exc ; pulse_list_rfc ; pulse_list_inv];
+
+            % prepare their name
             name = fullfile({self.pulse_list_struct.folder}, {self.pulse_list_struct.name})';
             name = strrep(name, fullfile(pwd, 'vendor', 'bruker'), ''); % simplify it for display
+
+            % classic constructor steps
             self.pulse_list = mri_rf_pulse_sim.ui_prop.list  (parent=self, name='pulse_list', items=name, value=name{1});
             self.flip_angle = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle', value=0, unit='°');
             self.n_points.editable = 'off'; % comes from the text file
@@ -60,7 +68,6 @@ classdef BRUKER < mri_rf_pulse_sim.backend.rf_pulse.abstract
             MAG = MAG / trapz(self.time, MAG); % normalize integral
             MAG = MAG * deg2rad(self.flip_angle.get()) / self.gamma; % scale integrale with flip angle
             PHA = deg2rad(self.pulse_data.RF(:,2));
-
             self.B1 = MAG .* exp(1j * PHA);
             self.GZ = ones(size(self.time)) * self.GZavg;
             self.add_gz_rewinder()
@@ -73,10 +80,16 @@ classdef BRUKER < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
         function init_specific_gui(self, container) %  #abstract
             rect_fa        = [0.00 0.50 0.30 0.50];
+            rect_print     = [0.00 0.00 0.30 0.50];
             rect_pulselist = [0.30 0.00 0.70 1.00];
             self.flip_angle.add_uicontrol(container, rect_fa)
+            self.button = uicontrol(container,'Style','pushbutton', 'String','print', 'Units','normalized', 'Position',rect_print, 'Callback', @self.callback_button);
             self.pulse_list.add_uicontrol(container, rect_pulselist)
         end % fcn
+
+        function callback_button(self, ~, ~)
+            display(self.pulse_data)
+        end %fcn
 
     end % meths
 
