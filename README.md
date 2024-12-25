@@ -47,7 +47,7 @@ One difficulty when looking in the literature is that different sources can have
 ### Use vendor specific pulses
 #### Bruker
 - Copy your pulses from Bruker into `<package_dir>/vendor/bruker/`.  
-- In the GUI, select "BRUKER", this will fetch all *exc, *rfc, *inv and display them in a list.  
+- In the GUI, select "BRUKER", this will fetch all files and display them in a list.  
 - Click on a pulse to load it and simulate it.  
 
 ## Examples
