@@ -89,7 +89,3 @@ In all alternatives that I found, in Python, MATLAB, Julia, all of them have ver
 - Matlab : https://github.com/leoliuf/MRiLab
 - Julia : https://github.com/cncastillo/KomaMRI.jl
 
-
-## TODO list
-https://github.com/users/benoitberanger/projects/2
-
