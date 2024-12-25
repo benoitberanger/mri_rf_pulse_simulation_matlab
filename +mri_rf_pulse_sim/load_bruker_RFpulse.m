@@ -71,20 +71,24 @@ function value = fetch_field(content, name)
 value = '';
 
 idx_start = strfind(content, name);
-if ~idx_start, return, end
+if isempty(idx_start), return, end
 
 idx_end = strfind(content(idx_start:end), newline);
-if ~idx_end, return, end
+if isempty(idx_end), return, end
 idx_end = idx_end(1);
 
 idx_equal = strfind(content(idx_start:idx_start+idx_end), '=');
-if ~idx_equal, return, end
+if isempty(idx_equal), return, end
 
 value = content(idx_start+idx_equal:idx_start+idx_end-2);
 end % fcn
 
 %--------------------------------------------------------------------------
 function value = fetch_points(content, n_points)
+if ~isfinite(n_points)
+    value = NaN(0,2);
+    return
+end
 value = zeros(n_points,2);
 
 idx_XYPOINTS_start = strfind(content, '##XYPOINTS');

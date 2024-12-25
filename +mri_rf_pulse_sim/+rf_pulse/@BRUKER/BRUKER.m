@@ -23,20 +23,24 @@ classdef BRUKER < mri_rf_pulse_sim.backend.rf_pulse.abstract
                 error('No `vendor/bruker` dir at the expected location : %s', location)
             end
 
-            % fetch all pulses
-            pulse_list_exc = dir(fullfile(location, '**/*exc'));
-            pulse_list_rfc = dir(fullfile(location, '**/*rfc'));
-            pulse_list_inv = dir(fullfile(location, '**/*inv'));
-            self.pulse_list_struct = [pulse_list_exc ; pulse_list_rfc ; pulse_list_inv];
+            % fetch all files
+            self.pulse_list_struct = dir(fullfile(location, '**/*'));
+            self.pulse_list_struct([self.pulse_list_struct.isdir]) = [];
 
             % prepare their name
             name = fullfile({self.pulse_list_struct.folder}, {self.pulse_list_struct.name})';
-            name = strrep(name, fullfile(pwd, 'vendor', 'bruker'), ''); % simplify it for display
+            name = strrep(name, fullfile(fileparts(mri_rf_pulse_sim.get_package_dir()), 'vendor', 'bruker'), ''); % simplify it for display
+
+            % fetch the first file to be loaded
+            where = find(contains(name, {'.exc', '.rfc', '.inv'}),1);
+            if isempty(where)
+                error('no pulse found (.exc, .rfc, .inv) in %s', location)
+            end
 
             % classic constructor steps
-            self.pulse_list = mri_rf_pulse_sim.ui_prop.list  (parent=self, name='pulse_list', items=name, value=name{1});
-            self.flip_angle = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle', value=0, unit='°');
-            self.n_points.editable = 'off'; % comes from the text file
+            self.pulse_list = mri_rf_pulse_sim.ui_prop.list  (parent=self, name='pulse_list', items=name, value=name{where}         );
+            self.flip_angle = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle',             value=0         , unit='°');
+            self.n_points.editable = 'off'; % constant, comes from the text file
             self.generate();
         end % fcn
 
@@ -83,7 +87,13 @@ classdef BRUKER < mri_rf_pulse_sim.backend.rf_pulse.abstract
             rect_print     = [0.00 0.00 0.30 0.50];
             rect_pulselist = [0.30 0.00 0.70 1.00];
             self.flip_angle.add_uicontrol(container, rect_fa)
-            self.button = uicontrol(container,'Style','pushbutton', 'String','print', 'Units','normalized', 'Position',rect_print, 'Callback', @self.callback_button);
+            self.button = uicontrol(container, ...
+                'Style','pushbutton', ...
+                'String','print', ...
+                'Tooltip','print the file content AFTER parsing', ...
+                'Units','normalized', ...
+                'Position',rect_print, ...
+                'Callback', @self.callback_button);
             self.pulse_list.add_uicontrol(container, rect_pulselist)
         end % fcn
 
