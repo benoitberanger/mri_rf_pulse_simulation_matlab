@@ -14,7 +14,7 @@ classdef binomial_rect < mri_rf_pulse_sim.backend.rf_pulse.binomial & mri_rf_pul
             delay_to_cancel_fat = 1 / (2*fat_water_shift_3T);
             self.subpulse_delay.set(delay_to_cancel_fat);
             self.subpulse_width.set(500e-6);
-            self.generate();
+            self.generate_binomial_rect();
         end % fcn
 
         function generate(self) % #abstract

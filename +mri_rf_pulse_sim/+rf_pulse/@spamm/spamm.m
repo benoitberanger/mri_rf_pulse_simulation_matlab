@@ -1,11 +1,10 @@
-classdef spamm < mri_rf_pulse_sim.backend.rf_pulse.abstract
+classdef spamm < mri_rf_pulse_sim.rf_pulse.binomial.binomial_rect
     % SPAMM : SPAtial Modulation of Magnetization
     % The moment of gradient between the two RECTs changes the frequency of the oscillating pattern;
     %
     % Handbook of MRI Pulse Sequences // Matt A. Bernstein, Kevin F. King, Xiaohong Joe Zhou
 
     properties (GetAccess = public, SetAccess = public)
-        flip_angle mri_rf_pulse_sim.ui_prop.scalar                         % [deg] flip angle
         wavelength mri_rf_pulse_sim.ui_prop.scalar                         % [m]   spatial dimention of the modulation
     end % props
 
@@ -24,9 +23,9 @@ classdef spamm < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
         % constructor
         function self = spamm()
-            self.n_points.value = 128;
-            self.flip_angle = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle', value=90   , unit='°'            );
             self.wavelength = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='wavelength', value= 4e-3, unit='mm', scale=1e3);
+            self.subpulse_delay.set(0.003);
+            self.subpulse_width.set(0.001);
             self.slice_thickness.set(Inf);
             self.slice_thickness.visible = 'off';
             self.generate();
@@ -37,65 +36,52 @@ classdef spamm < mri_rf_pulse_sim.backend.rf_pulse.abstract
         end % fcn
 
         function generate_spamm(self)
-            proportions          = struct;
-            proportions.subpulse = 0.20;
-            proportions.tag      = 0.40;
-            proportions.remain   = 1 - proportions.subpulse*2 - proportions.tag;
-            proportions.delay    = proportions.remain / 4;
-
-            time_subpulse = linspace(0, self.duration*proportions.subpulse, round(self.n_points*proportions.subpulse));
-            time_tag      = linspace(0, self.duration*proportions.tag     , round(self.n_points*proportions.tag ));
-            time_delay    = linspace(0, self.duration*proportions.delay   , round(self.n_points*proportions.delay   ));
-
-            subpulse = ones(size(time_subpulse)); % base shape
-            subpulse = subpulse / trapz(time_subpulse, subpulse); % normalize integral
-            subpulse = subpulse * deg2rad(self.flip_angle.get()/2) / self.gamma; % scale integrale with flip angle
-            delay    = zeros(size(time_delay));
-            tag      = ones(size(time_tag)) * self.moment / (self.duration*proportions.tag);
-
-            self.B1 = delay;
-            self.GZ = delay;
-
-            self.B1 = [self.B1 subpulse];
-            self.GZ = [self.GZ zeros(size(subpulse))];
-
-            self.B1 = [self.B1 delay];
-            self.GZ = [self.GZ delay];
-
-            self.B1 = [self.B1 zeros(size(tag))];
-            self.GZ = [self.GZ tag];
-
-            self.B1 = [self.B1 delay];
-            self.GZ = [self.GZ delay];
-
-            self.B1 = [self.B1 subpulse];
-            self.GZ = [self.GZ zeros(size(subpulse))];
-
-            self.B1 = [self.B1 delay];
-            self.GZ = [self.GZ delay];
-
-            self.time = linspace(0, self.duration.get(), length(self.B1)); % rounding errors: maybe we miss 1 point
+            self.prepare_binomial();
+            self.generate_rect();
+            self.make_binomial();
+            self.add_spatial_modulation();
         end % fcn
 
-        function value = get_bandwidth(self) % #abstract
-            value = self.get_spamm_bandwidth();
-        end % fcn
+        function add_spatial_modulation(self)
+            coeff = str2num(self.binomial_coeff.get()); %#ok<ST2NM>
 
-        function value = get_spamm_bandwidth(self)
-            value = 1 / self.duration; % same as RECT (like all binomial pulses base waveform)
+            g = [];
+            for c = 1 : length(coeff)
+                g = [g zeros(1,self.sample_subpulse)];
+                if c ~= length(coeff)
+                    g = [g ones(1,self.sample_delay)*self.moment/(self.duration*(self.sample_delay/self.n_points))];
+                end
+            end
+            g = [0 g 0];
+
+            self.GZ = g;
         end % fcn
 
         function txt = summary(self) % #abstract
-            txt = sprintf('[%s]  flip_angle=%s  wavelength=%s',...
-                mfilename, self.flip_angle.repr, self.wavelength.repr);
+            txt = sprintf('[%s]  flip_angle=%s  %s  subpulse_width=%s  subpulse_delay=%s  wavelength=%s',...
+                mfilename, self.flip_angle.repr, self.binomial_coeff.repr, self.subpulse_width.repr, self.subpulse_delay.repr, self.wavelength.repr);
         end % fcn
 
         function init_specific_gui(self, container) % #abstract
-            mri_rf_pulse_sim.ui_prop.scalar.add_uicontrol_multi_scalar(...
-                container,...
-                [self.flip_angle self.wavelength],...
-                [0 0 1 1]...
-                );
+            pos_rect       = [0.00 0.50 0.50 0.50];
+            pos_wavelength = [0.00 0.00 0.50 0.50];
+            pos_binomial   = [0.50 0.00 0.50 1.00];
+
+            fig_col = mri_rf_pulse_sim.backend.gui.get_fig_colors();
+            panel_rect = uipanel(container,...
+                'Title','',...
+                'Units','Normalized',...
+                'Position',pos_rect,...
+                'BackgroundColor',fig_col.figureBG);
+            panel_binomial = uipanel(container,...
+                'Title','',...
+                'Units','Normalized',...
+                'Position',pos_binomial,...
+                'BackgroundColor',fig_col.figureBG);
+
+            init_specific_gui@mri_rf_pulse_sim.rf_pulse.rect(self, panel_rect);
+            self.init_binomial_gui(panel_binomial);
+            self.wavelength.add_uicontrol(container, pos_wavelength);
         end % fcn
 
     end % meths
