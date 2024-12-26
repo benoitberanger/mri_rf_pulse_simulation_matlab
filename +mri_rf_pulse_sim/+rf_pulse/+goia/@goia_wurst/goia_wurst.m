@@ -31,7 +31,7 @@ classdef goia_wurst < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.f     = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='f'    , value=0.9                               );
             self.n     = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='n'    , value=4                                 );
             self.m     = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='m'    , value=2                                 );
-            self.generate();
+            self.generate_goia_hs();
         end % fcn
 
         function generate(self)

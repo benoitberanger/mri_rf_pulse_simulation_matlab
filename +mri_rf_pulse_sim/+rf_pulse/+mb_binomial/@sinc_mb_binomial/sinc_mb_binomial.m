@@ -6,7 +6,7 @@ classdef sinc_mb_binomial < mri_rf_pulse_sim.backend.rf_pulse.binomial & mri_rf_
         function self = sinc_mb_binomial()
             self.n_points.set(512);  % a bit more numerical precision
             self.n_side_lobs.set(5); % set a very high TimeBandwidth-Product
-            self.generate();
+            self.generate_sinc_mb_binomial();
         end % fcn
 
         function generate(self) % #abstract

@@ -35,7 +35,8 @@ classdef hs_excitation < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.flip_angle = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle', value=90  , unit='°'    );
             self.beta       = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='beta'      , value=3040, unit='rad/s');
             self.mu         = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='mu'        , value=4.25              );
-            self.generate();
+            self.generate_hs_excitation();
+            self.add_gz_rewinder();
         end % fcn
 
         function generate(self) % #abstract
@@ -44,13 +45,9 @@ classdef hs_excitation < mri_rf_pulse_sim.backend.rf_pulse.abstract
         end % fcn
 
         function generate_hs_excitation(self)
-            self.assert_nonempty_prop({'Amax', 'beta', 'mu'})
-
             self.time = linspace(-self.duration/2, +self.duration/2, self.n_points);
-
             magnitude = self.Amax*sech(self.beta * self.time);
-
-            phase = self.mu * log( sech(self.beta * self.time) ) + self.mu * self.Amax;
+            phase     = self.mu * log( sech(self.beta * self.time) ) + self.mu * self.Amax;
 
             self.B1 = magnitude .* exp(1j * phase);
             self.GZ = ones(size(self.time)) * self.GZavg;

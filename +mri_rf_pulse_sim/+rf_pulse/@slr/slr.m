@@ -27,7 +27,8 @@ classdef slr < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.pulse_type     = mri_rf_pulse_sim.ui_prop.list  (parent=self, name=''           , value= 'ex' , items= {'st', 'ex', 'se', 'sat', 'inv'});
             self.filter_type    = mri_rf_pulse_sim.ui_prop.list  (parent=self, name=''           , value= 'min', items= {'ms', 'pm', 'ls', 'min', 'max'});
             self.flip_angle     = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle' , value= 90   , unit='°'          );
-            self.generate();
+            self.generate_slr();
+            self.add_gz_rewinder();
         end % fcn
 
         function generate(self) % #abstract

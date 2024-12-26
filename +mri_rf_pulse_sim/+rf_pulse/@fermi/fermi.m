@@ -35,7 +35,7 @@ classdef fermi < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.transition_factor = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='transition_factor', value= 10           );
             self.flip_angle        = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle'       , value= 90, unit='°' );
             self.frequency_offcet  = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='frequency_offcet' , value=440, unit='Hz');
-            self.generate();
+            self.generate_fermi();
         end % fcn
 
         function generate(self) % #abstract

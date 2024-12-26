@@ -41,7 +41,7 @@ classdef BRUKER < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.pulse_list = mri_rf_pulse_sim.ui_prop.list  (parent=self, name='pulse_list', items=name, value=name{where}         );
             self.flip_angle = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle',             value=0         , unit='°');
             self.n_points.editable = 'off'; % constant, comes from the text file
-            self.generate();
+            self.generate_BRUKER();
         end % fcn
 
         function value = get_bandwidth(self) % #abstract
@@ -53,6 +53,10 @@ classdef BRUKER < mri_rf_pulse_sim.backend.rf_pulse.abstract
         end % fcn
 
         function generate(self) %  #abstract
+            self.generate_BRUKER();
+        end % fcn
+
+        function generate_BRUKER(self)
             % get selected pulse name
             idx = self.pulse_list.idx;
             p = self.pulse_list_struct(idx);

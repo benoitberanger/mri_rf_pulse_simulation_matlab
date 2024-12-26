@@ -17,7 +17,8 @@ classdef sinc < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.flip_angle     = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle' , value=90, unit='°');
             self.rf_phase       = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='rf_phase'   , value= 0, unit='°');
             self.window         = mri_rf_pulse_sim.ui_prop.window(parent=self, name='apodization', value=''          );
-            self.generate();
+            self.generate_sinc();
+            self.add_gz_rewinder();
         end % fcn
 
         function generate(self) % #abstract

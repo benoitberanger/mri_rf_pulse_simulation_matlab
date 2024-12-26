@@ -6,7 +6,7 @@ classdef binomial_sinc < mri_rf_pulse_sim.backend.rf_pulse.binomial & mri_rf_pul
         % constructor
         function self = binomial_sinc()
             self.n_points.set(256);
-            self.generate();
+            self.generate_binomial_sinc();
         end % fcn
 
         function value = get_bandwidth(self)

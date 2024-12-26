@@ -35,7 +35,7 @@ classdef sinc_exc_ref < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.duration.editable   = "off";
             self.duration.value      = self.get_exc_ref_duration();
 
-            self.generate();
+            self.generate_sinc_exc_ref();
         end % fcn
 
         function generate(self) % #abstract

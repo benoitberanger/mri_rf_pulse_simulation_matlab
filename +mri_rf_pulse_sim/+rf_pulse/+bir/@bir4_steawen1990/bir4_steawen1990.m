@@ -32,7 +32,7 @@ classdef bir4_steawen1990 < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.Beta       = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='Beta'      , value=   10                             );
             self.tanKappa   = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='tanKappa'  , value=   10                             );
             self.dW0factor  = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='dW0factor' , value=  100                             );
-            self.generate();
+            self.generate_bir4_steawen1990();
         end % fcn
 
         function generate(self) % #abstract
