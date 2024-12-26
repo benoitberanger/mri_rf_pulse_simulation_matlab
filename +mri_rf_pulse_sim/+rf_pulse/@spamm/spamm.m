@@ -6,16 +6,29 @@ classdef spamm < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
     properties (GetAccess = public, SetAccess = public)
         flip_angle mri_rf_pulse_sim.ui_prop.scalar                         % [deg] flip angle
-        moment     mri_rf_pulse_sim.ui_prop.scalar                         % [s*T/m] gradient moment between the two RECTs
+        wavelength mri_rf_pulse_sim.ui_prop.scalar                         % [m]   spatial dimention of the modulation
     end % props
+
+    properties(GetAccess = public, SetAccess = protected, Dependent)
+        moment
+    end % props
+
+    methods % no attribute for dependent properties
+        function value = get.moment(self)
+            value = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='moment', unit='ms*mT/m', scale=1e6, ...
+                value=2*pi/(self.gamma*self.wavelength) );
+        end % fcn
+    end % meths
 
     methods (Access = public)
 
         % constructor
         function self = spamm()
             self.n_points.value = 128;
-            self.flip_angle = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle', value=90   , unit='°'                 );
-            self.moment     = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='moment'    , value= 5e-6, unit='ms*mT/m', scale=1e6);
+            self.flip_angle = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle', value=90   , unit='°'            );
+            self.wavelength = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='wavelength', value= 4e-3, unit='mm', scale=1e3);
+            self.slice_thickness.set(Inf);
+            self.slice_thickness.visible = 'off';
             self.generate();
         end % fcn
 
@@ -33,7 +46,7 @@ classdef spamm < mri_rf_pulse_sim.backend.rf_pulse.abstract
             time_subpulse = linspace(0, self.duration*proportions.subpulse, round(self.n_points*proportions.subpulse));
             time_tag      = linspace(0, self.duration*proportions.tag     , round(self.n_points*proportions.tag ));
             time_delay    = linspace(0, self.duration*proportions.delay   , round(self.n_points*proportions.delay   ));
-            
+
             subpulse = ones(size(time_subpulse)); % base shape
             subpulse = subpulse / trapz(time_subpulse, subpulse); % normalize integral
             subpulse = subpulse * deg2rad(self.flip_angle.get()/2) / self.gamma; % scale integrale with flip angle
@@ -73,14 +86,14 @@ classdef spamm < mri_rf_pulse_sim.backend.rf_pulse.abstract
         end % fcn
 
         function txt = summary(self) % #abstract
-            txt = sprintf('[%s]  flip_angle=%s  moment=%s',...
-                mfilename, self.flip_angle.repr, self.moment.repr);
+            txt = sprintf('[%s]  flip_angle=%s  wavelength=%s',...
+                mfilename, self.flip_angle.repr, self.wavelength.repr);
         end % fcn
 
         function init_specific_gui(self, container) % #abstract
             mri_rf_pulse_sim.ui_prop.scalar.add_uicontrol_multi_scalar(...
                 container,...
-                [self.flip_angle self.moment],...
+                [self.flip_angle self.wavelength],...
                 [0 0 1 1]...
                 );
         end % fcn
