@@ -1,5 +1,5 @@
 function data = load_bruker_RFpulse(filepath)
-% Load Bruker EF pulse, usually a .exc .rfc .inv  file
+% Load Bruker RF pulse, usually a .exc .rfc .inv  file
 %
 % SYNTAX
 %   data = load_bruker_RFpulse(filepath)

@@ -29,10 +29,10 @@ classdef BRUKER < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
             % prepare their name
             name = fullfile({self.pulse_list_struct.folder}, {self.pulse_list_struct.name})';
-            name = strrep(name, fullfile(fileparts(mri_rf_pulse_sim.get_package_dir()), 'vendor', 'bruker'), ''); % simplify it for display
+            name = strrep(name, fullfile(fileparts(mri_rf_pulse_sim.get_package_dir()), 'vendor', 'bruker', filesep), ''); % simplify it for display
 
             % fetch the first file to be loaded
-            where = find(contains(name, {'.exc', '.rfc', '.inv'}),1);
+            where = find(contains(name, {'.exc', '.rfc', '.inv'}), 1);
             if isempty(where)
                 error('no pulse found (.exc, .rfc, .inv) in %s', location)
             end
