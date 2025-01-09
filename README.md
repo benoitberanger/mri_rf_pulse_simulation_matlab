@@ -45,10 +45,18 @@ One difficulty when looking in the literature is that different sources can have
 
 
 ### Use vendor specific pulses
+
 #### Bruker
-- Copy your pulses from Bruker into `<package_dir>/vendor/bruker/`.  
+- Copy your pulses into `<package_dir>/vendor/bruker/`.  
 - In the GUI, select "BRUKER", this will fetch all files and display them in a list.  
 - Click on a pulse to load it and simulate it.  
+The parser is [load_bruker_RFpulse.m](+mri_rf_pulse_sim/load_bruker_RFpulse.m)
+
+#### Siemens
+- Copy your `.dat` file from into `<package_dir>/vendor/siemens/`.  
+- In the GUI, select "SIEMENS", this will fetch all files and display them in a list.  
+- Click on a pulse to load it and simulate it.  
+The parser is [load_siemens_RFpulse.m](+mri_rf_pulse_sim/load_siemens_RFpulse.m)
 
 ## Examples
 
