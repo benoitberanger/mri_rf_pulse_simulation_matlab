@@ -3,8 +3,8 @@ classdef SIEMENS < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
     properties (GetAccess = public, SetAccess = public)
         flip_angle mri_rf_pulse_sim.ui_prop.scalar                         % [deg] flip angle
-        file_list  mri_rf_pulse_sim.ui_prop.list
-        pulse_list mri_rf_pulse_sim.ui_prop.list
+        file_list  mri_rf_pulse_sim.ui_prop.list                           % list of files on vendor/siemens
+        pulse_list mri_rf_pulse_sim.ui_prop.list                           % list of pulses in the selected file
     end % props
 
     properties (GetAccess = public, SetAccess = protected)
@@ -23,15 +23,11 @@ classdef SIEMENS < mri_rf_pulse_sim.backend.rf_pulse.abstract
         function self = SIEMENS()
             % siemens pulse in the correct dir ?
             location = fullfile(fileparts(mri_rf_pulse_sim.get_package_dir()), 'vendor', 'siemens');
-            if ~exist(location, 'dir')
-                error('No `vendor/siemens` dir at the expected location : %s', location)
-            end
+            assert(exist(location, 'dir'), 'No `vendor/siemens` dir at the expected location : %s', location)
 
             % fetch all files
             self.file_list_struct = dir(fullfile(location, '**/*.dat'));
-            if isempty(self.file_list_struct)
-                error('no .dat file found in %s', location)
-            end
+            assert(~isempty(self.file_list_struct), 'no .dat file found in %s', location)
 
             % prepare their name
             list_file_name = fullfile({self.file_list_struct.folder}, {self.file_list_struct.name})';
@@ -90,6 +86,7 @@ classdef SIEMENS < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
             % the reference pulse for scaling is a RECT of 1ms and 180°
             rect = mri_rf_pulse_sim.rf_pulse.rect();
+            rect.gamma = self.gamma; % make sure to use the same nucleus
             rect.duration.set(0.001);
             rect.flip_angle.set(180);
             rect.generate();
@@ -124,14 +121,13 @@ classdef SIEMENS < mri_rf_pulse_sim.backend.rf_pulse.abstract
                 'Position',rect_print, ...
                 'Callback', @self.callback_button);
             self.pulse_list.add_uicontrol(container, rect_pulselist)
-
             self.file_list.add_uicontrol(container, rect_file)
         end % fcn
 
         function callback_button(self, ~, ~)
             display(self.pulse_data)
         end %fcn
-        
+
         % pulses can be asymmetric : overload the method with a dedicated one
         function add_gz_rewinder(self, status)
             self.gz_rewinder.visible = "on";

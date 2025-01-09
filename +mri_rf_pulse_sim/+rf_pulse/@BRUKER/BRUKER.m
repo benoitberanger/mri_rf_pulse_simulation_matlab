@@ -19,9 +19,7 @@ classdef BRUKER < mri_rf_pulse_sim.backend.rf_pulse.abstract
         function self = BRUKER()
             % bruker pulse in the correct dir ?
             location = fullfile(fileparts(mri_rf_pulse_sim.get_package_dir()), 'vendor', 'bruker');
-            if ~exist(location, 'dir')
-                error('No `vendor/bruker` dir at the expected location : %s', location)
-            end
+            assert(exist(location, 'dir'),'No `vendor/bruker` dir at the expected location : %s', location)
 
             % fetch all files
             self.pulse_list_struct = dir(fullfile(location, '**/*'));
@@ -33,9 +31,7 @@ classdef BRUKER < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
             % fetch the first file to be loaded
             where = find(contains(name, {'.exc', '.rfc', '.inv'}), 1);
-            if isempty(where)
-                error('no pulse found (.exc, .rfc, .inv) in %s', location)
-            end
+            assert(~isempty(where), 'no pulse found (.exc, .rfc, .inv) in %s', location)
 
             % classic constructor steps
             self.pulse_list = mri_rf_pulse_sim.ui_prop.list  (parent=self, name='pulse_list', items=name, value=name{where}         );
