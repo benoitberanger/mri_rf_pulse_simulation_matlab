@@ -109,18 +109,21 @@ classdef SIEMENS < mri_rf_pulse_sim.backend.rf_pulse.abstract
         end % fcn
 
         function init_specific_gui(self, container) %  #abstract
-            rect_fa        = [0.00 0.50 0.30 0.50];
-            rect_print     = [0.00 0.00 0.30 0.50];
+            rect_file      = [0.00 0.50 0.30 0.50];
+            rect_fa        = [0.00 0.25 0.30 0.25];
+            rect_print     = [0.00 0.00 0.30 0.25];
             rect_pulselist = [0.30 0.00 0.70 1.00];
             self.flip_angle.add_uicontrol(container, rect_fa)
             self.button = uicontrol(container, ...
                 'Style','pushbutton', ...
                 'String','print', ...
-                'Tooltip','print the file content AFTER parsing', ...
+                'Tooltip','print the pulse content AFTER parsing', ...
                 'Units','normalized', ...
                 'Position',rect_print, ...
                 'Callback', @self.callback_button);
             self.pulse_list.add_uicontrol(container, rect_pulselist)
+
+            self.file_list.add_uicontrol(container, rect_file)
         end % fcn
 
         function callback_button(self, ~, ~)
@@ -136,7 +139,7 @@ classdef SIEMENS < mri_rf_pulse_sim.backend.rf_pulse.abstract
             list_pulse_name = strcat({self.pulse_list_struct.family}, '/',  {self.pulse_list_struct.name})';
             if ~nargout
                 self.pulse_list.items = list_pulse_name;
-                self.pulse_list.idx   = 1;
+                self.pulse_list.value = list_pulse_name{1};
                 self.pulse_name       = self.pulse_list.value;
             end
         end % fcn
