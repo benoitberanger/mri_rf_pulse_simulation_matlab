@@ -47,6 +47,7 @@ classdef SIEMENS < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.flip_angle = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle', value=90             , unit='°'                );
             self.n_points.editable = "off";
             self.generate_SIEMENS();
+            self.add_gz_rewinder();
         end % fcn
 
         function value = get_bandwidth(self) % #abstract
@@ -61,6 +62,7 @@ classdef SIEMENS < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
         function generate(self) %  #abstract
             self.generate_SIEMENS();
+            self.add_gz_rewinder();
         end % fcn
 
         function generate_SIEMENS(self)
@@ -129,6 +131,21 @@ classdef SIEMENS < mri_rf_pulse_sim.backend.rf_pulse.abstract
         function callback_button(self, ~, ~)
             display(self.pulse_data)
         end %fcn
+        
+        % pulses can be asymmetric : overload the method with a dedicated one
+        function add_gz_rewinder(self, status)
+            self.gz_rewinder.visible = "on";
+            if nargin == 1, status = self.gz_rewinder.get(); end
+            if ~status    , return                         , end
+
+            [~,idx_max] = max(abs(self.B1));
+            dur = self.time(end) - self.time(idx_max);
+
+            n_new_points = round(self.n_points/2);
+            self.time = [self.time linspace(self.time(end), self.time(end)+dur, n_new_points)];
+            self.B1   = [self.B1   zeros(1,n_new_points)                                     ];
+            self.GZ   = [self.GZ   -self.GZ(n_new_points+1:end)                              ];
+        end % fcn
 
     end % meths
 
