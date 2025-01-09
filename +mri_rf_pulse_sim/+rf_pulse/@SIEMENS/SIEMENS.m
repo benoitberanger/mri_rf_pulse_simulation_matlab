@@ -44,7 +44,7 @@ classdef SIEMENS < mri_rf_pulse_sim.backend.rf_pulse.abstract
             % classic constructor steps
             self.file_list  = mri_rf_pulse_sim.ui_prop.list  (parent=self, name='file_list' , items=list_file_name , value=list_file_name {1});
             self.pulse_list = mri_rf_pulse_sim.ui_prop.list  (parent=self, name='pulse_list', items=list_pulse_name, value=list_pulse_name{1});
-            self.flip_angle = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle', value=0              , unit='°'                );
+            self.flip_angle = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle', value=90             , unit='°'                );
             self.n_points.editable = "off";
             self.generate_SIEMENS();
         end % fcn
@@ -55,7 +55,8 @@ classdef SIEMENS < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
         function value = get_SIEMENS_bandwidth(self)
             % refgrad => Amplitude of slice selection gradient required to excite a 10mm thick slice
-            value = self.pulse_data.refgrad/1000 * self.gamma * 0.010 / (2 * pi);
+            % also, gamma (in siemens doc) is in Hz/T, so the 2pi factor is not present bellow because my gamma is in rad/T
+            value = self.pulse_data.refgrad/1000 * self.gamma * 0.010 * (0.001/self.duration);
         end % fcn
 
         function generate(self) %  #abstract
@@ -84,33 +85,20 @@ classdef SIEMENS < mri_rf_pulse_sim.backend.rf_pulse.abstract
                 end
 
             end
-            
-            % from IdeaUSerGuide
+
+            % the reference pulse for scaling is a RECT of 1ms and 180°
             rect = mri_rf_pulse_sim.rf_pulse.rect();
             rect.duration.set(0.001);
             rect.flip_angle.set(180);
             rect.generate();
-            reference_amplitude_integral = sqrt(sum(rect.mag).^2)
+            reference_B1 = max(rect.mag);
 
             % gen
             self.n_points.set(self.pulse_data.samples);
-            self.duration.set(0.001);
-            self.flip_angle.set(180);
             self.time = linspace(0, self.duration.get(), self.n_points.get());
-            self.B1 = self.pulse_data.mag .* exp(1j * self.pulse_data.pha);
-            current_pulse_amplitude_integral = sqrt(sum(self.real).^2 + sum(self.imag).^2)
-            self.pulse_data.amplint
-            MAG = self.pulse_data.mag;
-%             MAG = MAG / current_pulse_amplitude_integral * self.pulse_data.amplint;
-            MAG = MAG * self.pulse_data.amplint;
-            MAG = MAG * max(rect.mag);
+            MAG = self.pulse_data.mag * reference_B1*(self.pulse_data.samples/self.pulse_data.amplint) * (self.flip_angle/180) * (0.001/self.duration);
             self.B1 = MAG .* exp(1j * self.pulse_data.pha);
-            
-                        
-%             MAG = MAG * reference_amplitude_integral / self.pulse_data.amplint;
-%             self.B1 = MAG .* exp(1j * self.pulse_data.pha);
-            
-            
+
             self.GZ = ones(size(self.time)) * self.GZavg;
 
         end % fcn
