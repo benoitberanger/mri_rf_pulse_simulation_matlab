@@ -33,14 +33,14 @@ classdef SIEMENS < mri_rf_pulse_sim.backend.rf_pulse.abstract
             list_file_name = fullfile({self.file_list_struct.folder}, {self.file_list_struct.name})';
             list_file_name = strrep(list_file_name, fullfile(fileparts(mri_rf_pulse_sim.get_package_dir()), 'vendor', 'siemens', filesep), ''); % simplify it for display
             self.file_path = fullfile({self.file_list_struct(1).folder}, {self.file_list_struct(1).name});
+            self.file_list  = mri_rf_pulse_sim.ui_prop.list  (parent=self, name='file_list' , items=string(list_file_name) , value=list_file_name {1});
 
             % load first file found
-            list_pulse_name = self.load_file(fullfile(self.file_list_struct(1).folder, self.file_list_struct(1).name));
+            self.pulse_list = mri_rf_pulse_sim.ui_prop.list  (parent=self, name='pulse_list', items="", value="");
+            self.load_file(fullfile(self.file_list_struct(1).folder, self.file_list_struct(1).name));
+            self.pulse_name = ""; % empty it to force loading the pulse data
 
-            % classic constructor steps
-            self.file_list  = mri_rf_pulse_sim.ui_prop.list  (parent=self, name='file_list' , items=string(list_file_name) , value=list_file_name {1});
-            self.pulse_list = mri_rf_pulse_sim.ui_prop.list  (parent=self, name='pulse_list', items=string(list_pulse_name), value=list_pulse_name{1});
-            self.flip_angle = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle', value=90             , unit='°'                );
+            self.flip_angle = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle', value=90, unit='°');
             self.n_points.editable = "off";
             self.generate_SIEMENS();
             self.add_gz_rewinder();
@@ -70,6 +70,7 @@ classdef SIEMENS < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
             if ~strcmp(self.file_path, new_file_path) % new file ?
                 self.load_file(fullfile(self.file_list_struct(idx_file).folder, self.file_list_struct(idx_file).name));
+                self.pulse_data = self.pulse_list_struct(1);
 
             else % new pulse ?
                 % get selected pulse name
@@ -151,14 +152,12 @@ classdef SIEMENS < mri_rf_pulse_sim.backend.rf_pulse.abstract
             [self.pulse_list_struct, self.file_info_struct] = mri_rf_pulse_sim.load_siemens_RFpulse(filepath);
             self.file_path = filepath;
             list_pulse_name = strcat({self.pulse_list_struct.family}, '/',  {self.pulse_list_struct.name})';
-            if ~nargout
-                self.pulse_list.items = string(list_pulse_name);
-                self.pulse_list.value = list_pulse_name{1};
-                self.pulse_name       = self.pulse_list.value;
-                if ishandle(self.pulse_list.listbox)
-                    self.pulse_list.listbox.String = self.pulse_list.items;
-                    self.pulse_list.listbox.Value = 1;
-                end
+            self.pulse_list.items = string(list_pulse_name);
+            self.pulse_list.value = list_pulse_name{1};
+            self.pulse_name       = self.pulse_list.value;
+            if ishandle(self.pulse_list.listbox)
+                self.pulse_list.listbox.String = self.pulse_list.items;
+                self.pulse_list.listbox.Value = 1;
             end
         end % fcn
 
