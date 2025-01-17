@@ -38,8 +38,8 @@ classdef SIEMENS < mri_rf_pulse_sim.backend.rf_pulse.abstract
             list_pulse_name = self.load_file(fullfile(self.file_list_struct(1).folder, self.file_list_struct(1).name));
 
             % classic constructor steps
-            self.file_list  = mri_rf_pulse_sim.ui_prop.list  (parent=self, name='file_list' , items=list_file_name , value=list_file_name {1});
-            self.pulse_list = mri_rf_pulse_sim.ui_prop.list  (parent=self, name='pulse_list', items=list_pulse_name, value=list_pulse_name{1});
+            self.file_list  = mri_rf_pulse_sim.ui_prop.list  (parent=self, name='file_list' , items=string(list_file_name) , value=list_file_name {1});
+            self.pulse_list = mri_rf_pulse_sim.ui_prop.list  (parent=self, name='pulse_list', items=string(list_pulse_name), value=list_pulse_name{1});
             self.flip_angle = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle', value=90             , unit='°'                );
             self.n_points.editable = "off";
             self.generate_SIEMENS();
@@ -149,11 +149,16 @@ classdef SIEMENS < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
         function list_pulse_name = load_file(self, filepath)
             [self.pulse_list_struct, self.file_info_struct] = mri_rf_pulse_sim.load_siemens_RFpulse(filepath);
+            self.file_path = filepath;
             list_pulse_name = strcat({self.pulse_list_struct.family}, '/',  {self.pulse_list_struct.name})';
             if ~nargout
-                self.pulse_list.items = list_pulse_name;
+                self.pulse_list.items = string(list_pulse_name);
                 self.pulse_list.value = list_pulse_name{1};
                 self.pulse_name       = self.pulse_list.value;
+                if ishandle(self.pulse_list.listbox)
+                    self.pulse_list.listbox.String = self.pulse_list.items;
+                    self.pulse_list.listbox.Value = 1;
+                end
             end
         end % fcn
 
