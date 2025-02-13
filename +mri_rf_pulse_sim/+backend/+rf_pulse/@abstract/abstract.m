@@ -62,7 +62,7 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
         function value = get.tbwp     (self); value = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='tbwp'     , value=self.duration * self.bandwidth                                                     ); end
         function value = get.energy   (self); value = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='energy'   , value=trapz(self.time,self.magnitude.^2)                     , unit='fJ'     , scale=1e15); end
         function value = get.power    (self); value = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='power'    , value=self.energy/self.duration                              , unit='pW'     , scale=1e12); end
-        function value = get.B1rms    (self); value = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='B1rms'    , value=sqrt(self.power)                                       , unit='µT'     , scale=1e06); end
+        function value = get.B1rms    (self); value = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='B1rms'    , value=sqrt(self.power.value)                                       , unit='µT'     , scale=1e06); end
         function value = get.gradB1max(self); value = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='gradB1max', value=max(gradient(self.magnitude,self.time))                , unit='µT/ms'  , scale=1e03); end
         function value = get.gradGZmax(self); value = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='gradGZmax', value=max(gradient(self.GZ       ,self.time))                , unit='mT/m/ms'            ); end
     end % meths
