@@ -1,4 +1,6 @@
-classdef sms_mb_hs < mri_rf_pulse_sim.backend.rf_pulse.sms_mb & mri_rf_pulse_sim.rf_pulse.hs
+classdef sms_mb_hs < ...
+        mri_rf_pulse_sim.backend.rf_pulse.sms_mb & ...
+        mri_rf_pulse_sim.rf_pulse.hs
 
     methods (Access = public)
 

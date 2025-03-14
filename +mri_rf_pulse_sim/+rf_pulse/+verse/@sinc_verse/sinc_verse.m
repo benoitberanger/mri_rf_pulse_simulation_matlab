@@ -1,4 +1,6 @@
-classdef sinc_verse < mri_rf_pulse_sim.backend.rf_pulse.verse & mri_rf_pulse_sim.rf_pulse.sinc
+classdef sinc_verse < ...
+        mri_rf_pulse_sim.backend.rf_pulse.verse & ...
+        mri_rf_pulse_sim.rf_pulse.sinc
 
     methods (Access = public)
 

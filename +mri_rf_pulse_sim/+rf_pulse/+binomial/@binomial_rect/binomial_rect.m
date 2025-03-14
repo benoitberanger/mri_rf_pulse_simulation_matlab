@@ -1,4 +1,6 @@
-classdef binomial_rect < mri_rf_pulse_sim.backend.rf_pulse.binomial & mri_rf_pulse_sim.rf_pulse.rect
+classdef binomial_rect < ...
+        mri_rf_pulse_sim.backend.rf_pulse.binomial & ...
+        mri_rf_pulse_sim.rf_pulse.rect
     % The default parameters are chosen to show how FatSat -> Water Excitation Fast works
     % At 3T, the water at dB0=0pmm is exited, but the fat at dB0=3.5ppm is not.
     %

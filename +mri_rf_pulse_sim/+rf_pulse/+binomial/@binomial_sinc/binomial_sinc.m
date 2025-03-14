@@ -1,4 +1,6 @@
-classdef binomial_sinc < mri_rf_pulse_sim.backend.rf_pulse.binomial & mri_rf_pulse_sim.rf_pulse.sinc
+classdef binomial_sinc < ...
+        mri_rf_pulse_sim.backend.rf_pulse.binomial & ...
+        mri_rf_pulse_sim.rf_pulse.sinc
     % Handbook of MRI Pulse Sequences // Matt A. Bernstein, Kevin F. King, Xiaohong Joe Zhou
 
     methods (Access = public)

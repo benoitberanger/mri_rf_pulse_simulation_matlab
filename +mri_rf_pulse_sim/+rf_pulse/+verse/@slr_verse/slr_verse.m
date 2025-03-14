@@ -1,4 +1,6 @@
-classdef slr_verse < mri_rf_pulse_sim.backend.rf_pulse.verse & mri_rf_pulse_sim.rf_pulse.slr
+classdef slr_verse < ...
+        mri_rf_pulse_sim.backend.rf_pulse.verse & ...
+        mri_rf_pulse_sim.rf_pulse.slr
 
     methods (Access = public)
 
