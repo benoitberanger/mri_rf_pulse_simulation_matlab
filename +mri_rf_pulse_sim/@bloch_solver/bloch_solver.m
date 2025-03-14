@@ -147,7 +147,7 @@ classdef bloch_solver < handle & matlab.mixin.CustomCompactDisplayProvider
             selection{self.dim.dB0 } = idx_dB0;
             value = squeeze(self.M(selection{:}));
             if comb
-                value = sum(value.^2,2);
+                value = sqrt(sum(value.^2,2));
             end
         end
 
@@ -177,7 +177,7 @@ classdef bloch_solver < handle & matlab.mixin.CustomCompactDisplayProvider
             selection{self.dim.dB0 } = idx_dB0;
             value = squeeze(self.M(selection{:}));
             if comb
-                value = sum(value.^2,1);
+                value = sqrt(sum(value.^2,1));
             end
         end
 
