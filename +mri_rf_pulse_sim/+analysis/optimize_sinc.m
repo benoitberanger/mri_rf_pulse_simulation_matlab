@@ -21,7 +21,7 @@ COLORS = lines(nPULSE);
 % set parameters of the solver
 solver = mri_rf_pulse_sim.bloch_solver();
 n_dz = 301;
-solver.setSpatialPosition(linspace(-SINC_base.slice_thickness.get(),+SINC_base.slice_thickness.get(),n_dz));
+solver.setSpatialPosition(linspace(-SINC_base.slice_thickness.get()*1.5,+SINC_base.slice_thickness.get()*1.5,n_dz));
 solver.setDeltaB0(0); % in this example, assume no dB0
 solver.setT1(0.800); % WM @ 3T
 solver.setT2(0.080); % WM @ 3T

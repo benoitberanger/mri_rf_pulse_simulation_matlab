@@ -13,7 +13,7 @@ SINC.n_points.set(256);
 solver = mri_rf_pulse_sim.bloch_solver();
 n_dz = 301;
 solver.setPulse(SINC);
-solver.setSpatialPosition(linspace(-SINC.slice_thickness.get(),+SINC.slice_thickness.get(),n_dz));
+solver.setSpatialPosition(linspace(-SINC.slice_thickness.get()*1.5,+SINC.slice_thickness.get()*1.5,n_dz));
 solver.setDeltaB0(0); % in this example, assume no dB0
 
 % number of side lobs : TBWP = 2*n_side_lob
