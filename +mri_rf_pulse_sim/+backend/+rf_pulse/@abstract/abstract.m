@@ -132,9 +132,9 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
 
             a(4) = subplot(6,1,4,'Parent',container);
             hold(a(4), 'on')
-            plot(a(4), self.time*1e3, self.angle()/(2*pi), lineprop_B1{:}, 'Color', [100 182 229]/255)
+            plot(a(4), self.time*1e3, self.angle/pi, lineprop_B1{:}, 'Color', [100 182 229]/255)
             a(4).XTickLabel = {};
-            a(4).YLabel.String = 'Pha x2π[rad]';
+            a(4).YLabel.String = 'Pha xπ [rad]';
             a(4).YLabel.Rotation = 0;
             a(4).YLabel.HorizontalAlignment = 'right';
             plot(a(4), lineprop_ref{:})
