@@ -69,10 +69,12 @@ classdef BRUKER < mri_rf_pulse_sim.backend.rf_pulse.abstract
             % gen
             self.time = linspace(0, self.duration.get(), self.n_points.get());
             MAG = self.pulse_data.RF(:,1);
-            MAG = MAG / trapz(self.time, MAG); % normalize integral
-            MAG = MAG * deg2rad(self.flip_angle.get()) / self.gamma; % scale integrale with flip angle
             PHA = deg2rad(self.pulse_data.RF(:,2));
             self.B1 = MAG .* exp(1j * PHA);
+            RE = real(self.B1);
+            IM = imag(self.B1);
+            amplitude_integral = sqrt( trapz(self.time,RE)^2 + trapz(self.time,IM)^2 );
+            self.B1 = self.B1  / amplitude_integral * deg2rad(self.flip_angle.get()) / self.gamma; % scale amplitude integrale with flip angle
             self.GZ = ones(size(self.time)) * self.GZavg;
             self.add_gz_rewinder()
         end % fcn
