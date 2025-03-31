@@ -115,9 +115,10 @@ classdef list < mri_rf_pulse_sim.backend.base_class
 
         function callback_update(self, src, ~)
             prev_idx = self.idx;
+            src.String = cellstr(src.String); % ensure cellstr for cleaner code later
             if isstring(self.items) && any(self.items == src.String{src.Value})
                 self.value = src.String{src.Value};
-            elseif isnumeric(self.items) && any(self.items == str2double(src.String(src.Value,:)))
+            elseif isnumeric(self.items) && any(self.items == str2double(src.String{src.Value}))
                 self.value = str2double(src.String(src.Value));
             else
                 src.Value = prev_idx;
