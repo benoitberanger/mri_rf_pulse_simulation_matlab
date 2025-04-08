@@ -1,8 +1,11 @@
 classdef HSn < mri_rf_pulse_sim.backend.rf_pulse.abstract
     % Hyperbolic Secant of order `n`, as implmented in **Siemens** scanners
+    % With Gradient Modulation, it becomes a GOIA_HS
 
     properties (GetAccess = public, SetAccess = public)
-        n          mri_rf_pulse_sim.ui_prop.scalar                         % [] power factor of the magnitude waveform
+        AM_power   mri_rf_pulse_sim.ui_prop.scalar                         % [] power factor of the magnitude waveform
+        GM_power   mri_rf_pulse_sim.ui_prop.scalar                         % [] power factor of the gradient  waveform
+        GM_dip     mri_rf_pulse_sim.ui_prop.scalar                         % [] dip in the gradient waveform : 0 is no dip (==flat), 1 is full dip
         R          mri_rf_pulse_sim.ui_prop.scalar                         % [] R = TimeBandWidthProduct (TBWP), it's the quality factor
         Fsweep     mri_rf_pulse_sim.ui_prop.scalar                         % [] fsweep = frequency sweep, from -F to +F, it's the quality factor
         Siemens_FA mri_rf_pulse_sim.ui_prop.scalar                         % [°] Flip angle as defined in Siemens : scaled by a 1ms 180° RECT.
@@ -21,11 +24,13 @@ classdef HSn < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
         % constructor
         function self = HSn()
-            self.n          = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='n'         , value= 4                           );
+            self.AM_power   = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='AM_power'  , value= 4                           );
+            self.GM_power   = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='GM_power'  , value= 0                           );
+            self.GM_dip     = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='GM_dip'    , value= 0.80                        );
             self.R          = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='R'         , value= 20                          );
             self.Fsweep     = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='fsweep'    , value=0                 , unit='Hz');
             self.Siemens_FA = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='Siemens_FA', value=300               , unit='°' );
-            self.b1cutoff   = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='b1cutoff'  , value=  0.05, scale=1e2 , unit='%' );
+            self.b1cutoff   = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='b1cutoff'  , value=  0.01, scale=1e2 , unit='%' );
             self.my_tbwp = self.R.get(); % hidden, internal value
             self.Fsweep.set( self.get_hs_bandwidth()/2 )
             self.generate_HSn();
@@ -45,18 +50,27 @@ classdef HSn < mri_rf_pulse_sim.backend.rf_pulse.abstract
             T = (2*self.time / self.duration);
 
             % base waveforms
-            magnitude =                     sech(self.beta * T.^self.n)    ;
-            freq      = cumtrapz(self.time, sech(self.beta * T.^self.n).^2);
+            magnitude     =                                 sech(self.beta * T.^self.AM_power);
+            if self.GZavg.get() > 0
+                gradient  = self.GZavg * (1 - self.GM_dip * sech(self.beta * T.^self.GM_power));
+                freq      = cumtrapz(self.time, magnitude.^2 ./ gradient);
+            else
+                gradient  = zeros(size(self.time));
+                freq      = cumtrapz(self.time, magnitude.^2);
+            end
 
             % get phase from freq
-            freq      = freq - mean(freq);       % center
-            freq      = freq / max(freq);        % normalize
-            freq      = freq* self.bandwidth*pi; % scale
+            freq      = freq - mean(freq);              % center
+            freq      = freq / max (freq);              % normalize
+            if self.GZavg.get() > 0
+                freq  = freq .* gradient/max(gradient); % reshape
+            end
+            freq      = freq* self.bandwidth * pi;      % scale
             phase     = self.freq2phase(freq);
 
             % final pulse shape (before magnitude scaling)
             self.B1 = magnitude .* exp(1j * phase);
-            self.GZ = ones(size(self.time)) * self.GZavg;
+            self.GZ = gradient;
 
             % --- prepare scaling factor using Siemens `Vref` style ---
 
@@ -92,9 +106,9 @@ classdef HSn < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
         % synthesis text
         function txt = summary(self)
-            txt = sprintf('[%s] { HS%d_R%g / HS%d_Fsweep%g } : n=%s R=%s Fsweep=%s Siemens_FA=%s  cutoff=%s', ...
-                mfilename, self.n.value, self.R.value, self.n.value, self.Fsweep.value, ...
-                self.n.repr, self.R.repr, self.Fsweep.repr, self.Siemens_FA.repr, self.b1cutoff.repr);
+            txt = sprintf('[%s] { HS%d_R%g / HS%d_Fsweep%g } : AM_power=%s GM_power=%s GM_dip=%s R=%s Fsweep=%s Siemens_FA=%s  cutoff=%s', ...
+                mfilename, self.AM_power.value, self.R.value, self.AM_power.value, self.Fsweep.value, ...
+                self.AM_power.repr, self.GM_power.repr, self.GM_dip.repr, self.R.repr, self.Fsweep.repr, self.Siemens_FA.repr, self.b1cutoff.repr);
         end % fcn
 
         function init_specific_gui(self, container)
@@ -103,8 +117,13 @@ classdef HSn < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
             mri_rf_pulse_sim.ui_prop.scalar.add_uicontrol_multi_scalar(...
                 container,...
-                [self.n, self.Siemens_FA, self.b1cutoff], ...
+                [self.AM_power, self.GM_power, self.GM_dip, self.Siemens_FA, self.b1cutoff], ...
                 pos1);
+            self.AM_power  .edit.Tooltip = "Power factor of Amplitude Modulation";
+            self.GM_power  .edit.Tooltip = "Power factor of Gradient Modulation (HSn -> GOIA_HS)";
+            self.GM_dip    .edit.Tooltip = "dip in the Gradient Modulation, from 0 (no dip=flat gradient) to 1 (100% dip of Gradient Modulation)";
+            self.Siemens_FA.edit.Tooltip = "Equivalent FlipAngle in Siemens scanners, scaled by a 1ms 180° RECT";
+            self.b1cutoff  .edit.Tooltip = "Percentage (%) of B1 cutoff : beta=asech(b1cutoff)";
 
             panel_bw = uibuttongroup(Parent=container, Units="normalized", Position=pos2, BackgroundColor=container.BackgroundColor);
             uicontrol(Parent=panel_bw, Style="radiobutton", BackgroundColor=container.BackgroundColor, Units="normalized", ...
@@ -113,6 +132,9 @@ classdef HSn < mri_rf_pulse_sim.backend.rf_pulse.abstract
                 String="F>R", Position=[0.15 0.00 0.15 1.00], Tooltip="Keep Fsweep when duration is modified")
             self.R     .add_uicontrol(panel_bw, [0.30 0.00 0.30 1.00])
             self.Fsweep.add_uicontrol(panel_bw, [0.60 0.00 0.30 1.00])
+            self.R     .edit.Tooltip = "R = TimeBandWidthProduct= Time * BandWidth, quality factor)";
+            self.Fsweep.edit.Tooltip = "Frequency Modulation will sweep from -Fsweep to +Fsweep";
+
         end % fcn
 
         % override the default method
