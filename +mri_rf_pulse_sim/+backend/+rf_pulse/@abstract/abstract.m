@@ -42,6 +42,7 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
         FM                                                                 % [Hz]    frequency modulation -> its the derivation of the phase(t)
         bandwidth       mri_rf_pulse_sim.ui_prop.scalar                    % [Hz]    bandwidth of the pulse
         B1max           mri_rf_pulse_sim.ui_prop.scalar                    % [T]     max value of magnitude(t)
+        B1hz            mri_rf_pulse_sim.ui_prop.scalar                    % [Hz]    max value of magnitude(t)
         GZmax           mri_rf_pulse_sim.ui_prop.scalar                    % [T/m]   max value of  gradient(t)
         GZavg           mri_rf_pulse_sim.ui_prop.scalar                    % [T/m]   average value of gradient(t) -> used for slice thickness
         tbwp            mri_rf_pulse_sim.ui_prop.scalar                    % []      time-bandwidth product -> in the literature, it represents a "quality" factor
@@ -57,6 +58,7 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
 
         function value = get.bandwidth(self); value = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='bandwidth', value=self.get_bandwidth()                                   , unit='Hz'                 ); end
         function value = get.B1max    (self); value = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='B1max'    , value=max(abs(self.B1))                                      , unit='µT'     , scale=1e06); end
+        function value = get.B1hz     (self); value = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='B1hz'     , value=self.B1max*self.gamma/(2*pi)                           , unit='Hz'                 ); end
         function value = get.GZmax    (self); value = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='GZmax'    , value=max(abs(self.GZ))                                      , unit='mT/m'   , scale=1e03); end
         function value = get.GZavg    (self); value = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='GZavg'    , value=2*pi*self.bandwidth / (self.gamma*self.slice_thickness), unit='mT/m'   , scale=1e03); end
         function value = get.tbwp     (self); value = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='tbwp'     , value=self.duration * self.bandwidth                                                     ); end
