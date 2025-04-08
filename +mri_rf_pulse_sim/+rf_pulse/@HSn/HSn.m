@@ -106,27 +106,46 @@ classdef HSn < mri_rf_pulse_sim.backend.rf_pulse.abstract
                 [self.n, self.Siemens_FA, self.b1cutoff], ...
                 pos1);
 
-            panel_bw = uipanel(Parent=container, Units="normalized", Position=pos2, BackgroundColor=container.BackgroundColor);
-            self.R     .add_uicontrol(panel_bw, [0.00 0.00 0.50 1.00])
-            self.Fsweep.add_uicontrol(panel_bw, [0.50 0.00 0.50 1.00])
+            panel_bw = uibuttongroup(Parent=container, Units="normalized", Position=pos2, BackgroundColor=container.BackgroundColor);
+            uicontrol(Parent=panel_bw, Style="radiobutton", BackgroundColor=container.BackgroundColor, Units="normalized", ...
+                String="R>F", Position=[0.00 0.00 0.15 1.00], Tooltip="Keep R when duration is modified")
+            uicontrol(Parent=panel_bw, Style="radiobutton", BackgroundColor=container.BackgroundColor, Units="normalized", ...
+                String="F>R", Position=[0.15 0.00 0.15 1.00], Tooltip="Keep Fsweep when duration is modified")
+            self.R     .add_uicontrol(panel_bw, [0.30 0.00 0.30 1.00])
+            self.Fsweep.add_uicontrol(panel_bw, [0.60 0.00 0.30 1.00])
         end % fcn
 
         % override the default method
         function callback_update(self, ~, ~)
 
-            is_new_R = abs(self.R      - self.my_tbwp                ) > 0;
-            is_new_F = abs(self.Fsweep - self.my_tbwp/self.duration/2) > 0;
+            is_new_D = abs(self.duration - (self.time(end)-self.time(1))) > 0;
 
-            if is_new_R && is_new_F
-                warning('wtf ?    is_new_R && is_new_F ')
-            elseif is_new_R
-                self.my_tbwp = self.R.value;
-                self.Fsweep.set(self.my_tbwp/self.duration/2);
-            elseif is_new_F
-                self.my_tbwp = self.Fsweep * 2 * self.duration;a
-                self.R.set(self.my_tbwp);
+            if is_new_D
+
+                panel = self.R.edit.Parent;
+                switch panel.SelectedObject.String
+                    case "R>F"
+                        self.Fsweep.set(self.my_tbwp / self.duration / 2);
+                    case "F>R"
+                        self.R.set(self.Fsweep * 2 * self.duration);
+                        self.my_tbwp = self.Fsweep * 2 * self.duration;
+                end
+
             else
-                % pass
+                is_new_R = abs(self.R        - self.my_tbwp                 ) > 0;
+                is_new_F = abs(self.Fsweep   - self.my_tbwp/self.duration/2 ) > 0;
+
+                if is_new_R && is_new_F
+                    warning('wtf ?    is_new_R && is_new_F ')
+                elseif is_new_R
+                    self.my_tbwp = self.R.value;
+                    self.Fsweep.set(self.my_tbwp/self.duration/2);
+                elseif is_new_F
+                    self.my_tbwp = self.Fsweep * 2 * self.duration;
+                    self.R.set(self.my_tbwp);
+                else
+                    % pass
+                end
             end
 
             self.notify_parent();
