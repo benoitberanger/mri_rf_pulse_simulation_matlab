@@ -28,12 +28,12 @@ classdef slr < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.filter_type    = mri_rf_pulse_sim.ui_prop.list  (parent=self, name=''           , value= 'min', items= {'ms', 'pm', 'ls', 'min', 'max'});
             self.flip_angle     = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle' , value= 90   , unit='°'          );
             self.generate_slr();
-            self.add_gz_rewinder();
+            self.add_gz_rewinder_slr();
         end % fcn
 
         function generate(self) % #abstract
             self.generate_slr();
-            self.add_gz_rewinder();
+            self.add_gz_rewinder_slr();
         end % fcn
 
         function generate_slr(self)
@@ -62,23 +62,18 @@ classdef slr < mri_rf_pulse_sim.backend.rf_pulse.abstract
         end % fcn
 
         % SLR pulses can be asymmetric : overload the method with a dedicated one
-        function add_gz_rewinder(self, status)
+        function add_gz_rewinder_slr(self, status)
             self.gz_rewinder.visible = "on";
             if nargin == 1, status = self.gz_rewinder.get(); end
             if ~status    , return                         , end
 
-            switch self.filter_type.get()
-                case {'min','max'}
-                    [~,idx_max] = max(abs(self.B1));
-                    dur = self.time(end) - self.time(idx_max);
-                otherwise
-                    dur = self.duration/2;
-            end
+            [~,idx_max] = max(abs(self.B1));
+            dur = self.time(end) - self.time(idx_max);
 
-            n_new_points = round(self.n_points/2);
+            n_new_points = self.n_points - idx_max;
             self.time = [self.time linspace(self.time(end), self.time(end)+dur, n_new_points)];
             self.B1   = [self.B1   zeros(1,n_new_points)                                     ];
-            self.GZ   = [self.GZ   -self.GZ(n_new_points+1:end)                              ];
+            self.GZ   = [self.GZ   -self.GZ(end-n_new_points+1:end)                              ];
         end % fcn
 
         function txt = summary(self) % #abstract
