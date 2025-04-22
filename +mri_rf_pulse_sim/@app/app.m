@@ -21,6 +21,12 @@ classdef app < handle
         fig                   matlab.ui.Figure % for the "one figure" configuration
     end % props
 
+    methods (Static)
+        function my_app = open         (), my_app = mri_rf_pulse_sim.app('opengui'       ); end
+        function my_app = open_multifig(), my_app = mri_rf_pulse_sim.app('opengui'       ); end
+        function my_app = open_onefig  (), my_app = mri_rf_pulse_sim.app('opengui_onefig'); end
+    end % meths
+
     methods (Access = public)
 
         %------------------------------------------------------------------
