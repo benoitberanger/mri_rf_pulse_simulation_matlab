@@ -157,8 +157,16 @@ classdef app < handle
             set(self.simulation_results.line_C_Mpara,'XData',               db0, 'YData', bloch.getChemicalShiftPara(dZ.selected_value));
             set(self.simulation_results.line_C_Mperp,'XData',               db0, 'YData', bloch.getChemicalShiftPerp(dZ.selected_value));
             set(self.simulation_results.line_C_vert ,'XData', [dB0.selected_value dB0.selected_value].*dB0.scale);
-            set(self.simulation_results.line_C_bwL  ,'XData', -[pulse.bandwidth.get() pulse.bandwidth.get()]/2 / (self.simulation_parameters.B0.get() * self.pulse_definition.rf_pulse.gamma/(2*pi))*1e6);
-            set(self.simulation_results.line_C_bwR  ,'XData', +[pulse.bandwidth.get() pulse.bandwidth.get()]/2 / (self.simulation_parameters.B0.get() * self.pulse_definition.rf_pulse.gamma/(2*pi))*1e6);
+            if -pulse.bandwidth.get()/2 >= dB0.vect(1) * self.simulation_parameters.B0.get() * self.pulse_definition.rf_pulse.gamma / (2*pi)
+                set(self.simulation_results.line_C_bwL, 'XData', -[pulse.bandwidth.get() pulse.bandwidth.get()]/2 / (self.simulation_parameters.B0.get() * self.pulse_definition.rf_pulse.gamma/(2*pi))*1e6);
+            else
+                set(self.simulation_results.line_C_bwL, 'XData', [NaN NaN]);
+            end
+            if +pulse.bandwidth.get()/2 <= dB0.vect(end) * self.simulation_parameters.B0.get() * self.pulse_definition.rf_pulse.gamma / (2*pi)
+                set(self.simulation_results.line_C_bwR, 'XData', +[pulse.bandwidth.get() pulse.bandwidth.get()]/2 / (self.simulation_parameters.B0.get() * self.pulse_definition.rf_pulse.gamma/(2*pi))*1e6);
+            else
+                set(self.simulation_results.line_C_bwR, 'XData', [NaN NaN]);
+            end
             bw_hz = round(self.simulation_results.axes_ChemicalShiftPPM.XTick*1e-6 * self.simulation_parameters.B0.get() * self.pulse_definition.rf_pulse.gamma/(2*pi));
             set(self.simulation_results.axes_ChemicalShiftHz, 'XTick', bw_hz, 'XTickLabel', num2cell(bw_hz), 'XLim', [bw_hz(1) bw_hz(end)])
         end % fcn
