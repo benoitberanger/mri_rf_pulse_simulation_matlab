@@ -27,7 +27,7 @@ classdef foci < mri_rf_pulse_sim.rf_pulse.hs
     methods (Access = public)
 
         function self = foci()
-            self@mri_rf_pulse_sim.rf_pulse.hs; % call HS constructor
+            self.b1cutoff.set(0.005);
             self.generate_foci();
         end % fcn
 
@@ -41,11 +41,18 @@ classdef foci < mri_rf_pulse_sim.rf_pulse.hs
 
             self.generate_hs();
 
-            magnitude_Cshaped = self.Cshape .* self.magnitude;
-            freqmod_Cshaped   = self.Cshape .* self.FM;
+            % reshape the magnitude
+            magnitude_Cshaped = self.Cshape .* self.magnitude; 
+
+            % reshape the frequency modulation
+            freqmod_Cshaped   = self.Cshape .* self.FM;        
+            freqmod_Cshaped   = freqmod_Cshaped / max(freqmod_Cshaped) * self.bw/2 * 2*pi; % correct the frequency sweep
             phase_from_freqmod_Cshaped = self.freq2phase(freqmod_Cshaped);
+
             self.B1 = magnitude_Cshaped .* exp(1j * phase_from_freqmod_Cshaped);
-            self.GZ = self.GZavg / mean(self.Cshape) * self.Cshape;
+
+            % reshape the gradient
+            self.GZ = self.GZ .* self.Cshape/max(self.Cshape); 
         end % fcn
 
         % synthesis text

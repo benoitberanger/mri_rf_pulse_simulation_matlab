@@ -19,9 +19,9 @@ classdef hs < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
         % constructor
         function self = hs()
-            self.bw       = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='bw'      , value=2000   , scale=1e-3, unit='kHz');
-            self.b1max    = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='b1max'   , value=  20e-6, scale=1e6 , unit='µT' );
-            self.b1cutoff = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='b1cutoff', value=   0.01, scale=1e2 , unit='%'  );
+            self.bw       = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='bw'      , value=2000   ,             unit='Hz');
+            self.b1max    = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='b1max'   , value=  20e-6, scale=1e6 , unit='µT');
+            self.b1cutoff = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='b1cutoff', value=   0.05, scale=1e2 , unit='%' );
             self.generate_hs();
         end % fcn
 
@@ -40,7 +40,7 @@ classdef hs < mri_rf_pulse_sim.backend.rf_pulse.abstract
             freq      = tanh(self.beta*T);
 
             % get phase from freq
-            freq      = freq/max(freq) * self.bw*pi;
+            freq      = freq/max(freq) * self.bw/2 * 2*pi;
             phase     = self.freq2phase(freq);
 
             % final pulse shape
