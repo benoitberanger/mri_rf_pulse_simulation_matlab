@@ -44,10 +44,10 @@ classdef HSn < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
             % --- prepare pulse waveform ---
 
-            self.time = linspace(-self.duration/2, +self.duration/2, self.n_points);
+            self.time = linspace(0, self.duration, self.n_points);
 
             % reshape time so the magnitude waveform only depends on the cutoff
-            T = (2*self.time / self.duration);
+            T = (2*self.time / self.duration) - 1;
 
             % base waveforms
             magnitude     =                                 sech(self.beta * T.^self.AM_power);
@@ -65,7 +65,7 @@ classdef HSn < mri_rf_pulse_sim.backend.rf_pulse.abstract
             if self.GZavg.get() > 0
                 freq  = freq .* gradient/max(gradient); % reshape
             end
-            freq      = freq* self.bandwidth * pi;      % scale
+            freq      = freq * self.bandwidth/2 * 2*pi; % scale
             phase     = self.freq2phase(freq);
 
             % final pulse shape (before magnitude scaling)
