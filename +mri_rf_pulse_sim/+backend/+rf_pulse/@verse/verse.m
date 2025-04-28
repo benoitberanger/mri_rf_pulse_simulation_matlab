@@ -39,6 +39,8 @@ classdef (Abstract) verse < handle
             dt = diff(self.time);
             t  = [self.time(1) cumsum(dt)];
 
+            need_interp = false;
+
             switch self.type.get()
 
                 case '<no>'
@@ -56,7 +58,6 @@ classdef (Abstract) verse < handle
                     t  = [self.time(1) cumsum(dt)];
 
                 case 'optimise'
-
                     % Hargreaves BA, Cunningham CH, Nishimura DG, Conolly
                     % SM. Variable-rate selective excitation for rapid MRI
                     % sequences. Magn Reson Med. 2004 Sep;52(3):590-7. doi:
@@ -194,19 +195,22 @@ classdef (Abstract) verse < handle
 
                     end % WHILE
 
-                    t = [self.time(1) cumsum(dt)];
-                    %                     % resample time so it is linearly spaced
-                    %                     tv = [self.time(1) cumsum(dt)];
-                    %                     T0 = tv(1);
-                    %                     Tp = tv(N);
-                    %                     t  = linspace(T0,Tp,N);
-                    %                     b  = interp1(tv, b, t, 'linear');
-                    %                     g  = interp1(tv, g, t, 'linear');
+                    need_interp = true;
 
                 otherwise
                     error('verse type ?')
 
             end % switch
+
+            if need_interp
+                % resample time so it is linearly spaced
+                tv = [self.time(1) cumsum(dt)];
+                T0 = tv(1);
+                Tp = tv(N);
+                t  = linspace(T0,Tp,N);
+                b  = interp1(tv, b, t, 'linear');
+                g  = interp1(tv, g, t, 'linear');
+            end
 
             self.time = t;
             self.B1   = b;
@@ -228,30 +232,42 @@ classdef (Abstract) verse < handle
             if nargin == 1, status = self.gz_rewinder.get(); end
             if ~status    , return                         , end
 
-            target_moment = trapz(self.time,self.GZ) / 2;
-            dt = mean(diff(self.time));
+            target_moment = trapz(self.time,self.GZ) / 2; % !!! only works for symetric pulses !!!
+            min_moment_for_trapeze = self.maxGZ.^2 / self.maxSZ;
+            Tp = self.time(end)-self.time(1);
+            Tend = self.time(end);
 
-            half_g = 0;
-            half_t = 0;
-            current_moment = 0;
+            if target_moment < min_moment_for_trapeze % triangle
+                rampe_duration  = sqrt(target_moment/self.maxSZ);
+                rampe_amplitude = -target_moment/rampe_duration;
+                rampe_npoints   = ceil(Tp/rampe_duration);
+                rampe_timeL  = linspace(Tend, Tend+rampe_duration, rampe_npoints);
+                rampe_timeR  = linspace(rampe_timeL(end), rampe_timeL(end)+rampe_duration, rampe_npoints);
+                rampe_curveL = linspace(0, rampe_amplitude, rampe_npoints);
+                rampe_curveR = linspace(rampe_amplitude, 0, rampe_npoints);
 
-            while current_moment <= target_moment
-                next = half_g(end) + self.maxSZ*dt;
+                self.time = [self.time rampe_timeL rampe_timeR];
+                self.B1   = [self.B1 zeros(1,2*rampe_npoints)];
+                self.GZ   = [self.GZ rampe_curveL rampe_curveR];
 
-                if next <= self.maxGZ.get()
-                    half_g(end+1) = next;
-                elseif next > self.maxGZ.get()
-                    half_g(end+1) = self.maxGZ.get();
-                end
+            else % trapeze
+                rampe_amplitude  = -self.maxGZ;
+                rampe_duration   = self.maxGZ/self.maxSZ;
+                plateau_duration = target_moment/self.maxGZ - rampe_duration;
+                rampe_npoints    = ceil(Tp/rampe_duration);
+                plateau_npoints  = ceil(Tp/plateau_duration);
+                rampe_curveL  = linspace(0, rampe_amplitude, rampe_npoints);
+                plateau_curve = ones(1,plateau_npoints) * rampe_amplitude;
+                rampe_curveR  = linspace(rampe_amplitude, 0, rampe_npoints);
+                rampe_timeL   = linspace(Tend, Tend+rampe_duration, rampe_npoints);
+                plateau_time  = linspace(rampe_timeL(end),rampe_timeL(end)+plateau_duration,plateau_npoints);
+                rampe_timeR   = linspace(plateau_time(end), plateau_time(end)+rampe_duration, rampe_npoints);
 
-                half_t(end+1) = half_t(end)+dt;
-                current_moment = 2 * trapz(half_t,half_g);
+                self.time = [self.time rampe_timeL plateau_time rampe_timeR];
+                self.B1   = [self.B1 zeros(1,2*rampe_npoints + plateau_npoints)];
+                self.GZ   = [self.GZ rampe_curveL plateau_curve rampe_curveR];
             end
 
-            self.time = [self.time self.time(end)+half_t];
-            self.time = [self.time self.time(end)+half_t];
-            self.B1   = [self.B1   zeros(1,length(half_t)*2)];
-            self.GZ   = [self.GZ   -half_g -fliplr(half_g)];
         end % fcn
 
     end % meths
