@@ -6,6 +6,7 @@ classdef sms_mb_sinc < ...
 
         % constructor
         function self = sms_mb_sinc()
+            self.n_points.set(256);
             self.generate_sms_mb_sinc();
         end % fcn
 

@@ -45,6 +45,11 @@ classdef (Abstract) sms_mb < handle
 
         function mb_phase_modulation(self)
 
+            % adjust time so it starts at 0
+            if self.time(1) < 0
+                self.time = self.time - self.time(1);
+            end
+
             % relative spatial positon of the slice
             % mb3->[-1 0 1]
             % mb4->[-1.5 -0.5 +0.5 +1.5]
@@ -55,14 +60,14 @@ classdef (Abstract) sms_mb < handle
             end
 
             if self.time_shifted.get()
-                warning('!!! time shift NOT working yet !!!')
 
                 n_points_time_shifted = round(self.n_points * self.temporal_shift);
-                n_points_shift = round( self.n_points * (1 + self.temporal_shift*(self.n_slice-1)) );
-
+                dilate_factor = (1 + self.temporal_shift*(self.n_slice-1));
+                n_points_shift = round( self.n_points * dilate_factor);
                 subpulse_b1 = zeros(self.n_slice.get(), n_points_shift);
                 offset = 1;
 
+                % compute the phase modulaion : each slice has its own delta of central frequency.
                 for idx = 1 : length(offset_vect)
                     if self.rf_phase_scrambling.get()
                         mb_phase_modulation = exp(1j * (self.gamma * self.GZavg * self.slice_distance*offset_vect(idx) * self.time + phase_offsets(idx)));
@@ -73,14 +78,14 @@ classdef (Abstract) sms_mb < handle
                     subpulse_b1(idx, time_shifted_idx) = self.B1 .* mb_phase_modulation;
                     offset = offset + n_points_time_shifted;
                 end
-                mb_B1 = sum(subpulse_b1, 1);
+                mb_B1   = sum(subpulse_b1, 1);
                 mb_time = linspace(self.time(1),self.time(end),length(mb_B1));
-
-                self.B1 = interp1(mb_time,mb_B1,self.time);
+                self.B1 = interp1(mb_time,mb_B1,self.time) * dilate_factor;
+                self.GZ = self.GZ                          * dilate_factor;
 
             else
 
-                % compute the phase modution : each slice has its own delta of central frequency.
+                % compute the phase modulaion : each slice has its own delta of central frequency.
                 subpulse_b1 = zeros(self.n_slice.get(), self.n_points.get());
                 for idx = 1 : length(offset_vect)
                     if self.rf_phase_scrambling.get()
@@ -93,7 +98,6 @@ classdef (Abstract) sms_mb < handle
                 self.B1 = sum(subpulse_b1, 1);
 
             end
-
 
         end % fcn
 
