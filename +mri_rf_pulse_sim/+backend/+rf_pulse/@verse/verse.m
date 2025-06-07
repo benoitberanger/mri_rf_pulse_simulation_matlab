@@ -5,19 +5,21 @@ classdef (Abstract) verse < handle
     % https://doi.org/10.1016/0022-2364(88)90131-X
 
     properties (GetAccess = public, SetAccess = public)
-        type  mri_rf_pulse_sim.ui_prop.list
-        maxB1 mri_rf_pulse_sim.ui_prop.scalar                              % [T]     max value of magnitude(t)
-        maxGZ mri_rf_pulse_sim.ui_prop.scalar                              % [T/m]   max value of  gradient(t)
-        maxSZ mri_rf_pulse_sim.ui_prop.scalar                              % [T/m/s] max(dGZ/dt)
+        type     mri_rf_pulse_sim.ui_prop.list
+        maxB1    mri_rf_pulse_sim.ui_prop.scalar                           % [T]     max value of magnitude(t)
+        maxGZ    mri_rf_pulse_sim.ui_prop.scalar                           % [T/m]   max value of  gradient(t)
+        maxSZ    mri_rf_pulse_sim.ui_prop.scalar                           % [T/m/s] max(dGZ/dt)
+        resample mri_rf_pulse_sim.ui_prop.bool                             % Resample pulse after VERSE to a linearly spaced timepoints
     end % props
 
     methods(Access = public)
 
         function self = verse()
-            self.type  = mri_rf_pulse_sim.ui_prop.list  (parent=self, name=''     , value= 'optimise' , items= {'<no>', 'optimise', 'rand'});
-            self.maxB1 = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='maxB1', value= 15e-6, scale=1e6, unit='µT'     );
-            self.maxGZ = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='maxGZ', value= 40e-3, scale=1e3, unit='mT/m'   );
-            self.maxSZ = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='maxSZ', value=120   , scale=1  , unit='mT/m/ms');
+            self.type     = mri_rf_pulse_sim.ui_prop.list  (parent=self, name=''        , value='optimise', items= {'<no>', 'optimise', 'rand'});
+            self.maxB1    = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='maxB1'   , value= 15e-6, scale=1e6, unit='µT'     );
+            self.maxGZ    = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='maxGZ'   , value= 40e-3, scale=1e3, unit='mT/m'   );
+            self.maxSZ    = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='maxSZ'   , value=120   , scale=1  , unit='mT/m/ms');
+            self.resample = mri_rf_pulse_sim.ui_prop.bool  (parent=self, name='resample', value=false, text='resample');
         end % fcn
 
         function verse_modulation(self)
@@ -202,7 +204,7 @@ classdef (Abstract) verse < handle
 
             end % switch
 
-            if need_interp
+            if need_interp && self.resample.get()
                 % resample time so it is linearly spaced
                 tv = [self.time(1) cumsum(dt)];
                 T0 = tv(1);
@@ -210,6 +212,8 @@ classdef (Abstract) verse < handle
                 t  = linspace(T0,Tp,N);
                 b  = interp1(tv, b, t, 'linear');
                 g  = interp1(tv, g, t, 'linear');
+            else
+                t = [self.time(1) cumsum(dt)];
             end
 
             self.time = t;
@@ -219,7 +223,8 @@ classdef (Abstract) verse < handle
         end % fcn
 
         function init_verse_gui(self, container)
-            self.type.add_uicontrol(container, [0.00 0.00 0.40 1.00]);
+            self.type    .add_uicontrol(container, [0.00 0.20 0.40 0.80]);
+            self.resample.add_uicontrol(container, [0.00 0.00 0.40 0.20]);
             mri_rf_pulse_sim.ui_prop.scalar.add_uicontrol_multi_scalar(...
                 container,...
                 [self.maxB1 self.maxGZ self.maxSZ],...
