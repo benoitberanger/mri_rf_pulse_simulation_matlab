@@ -2,7 +2,7 @@ function rf_clip()
 %% Too much B1max ? maybe increase pulse duration, but be carefull with off-resonance effects
 % This function show that increasing the duration of a RECT reduce it's $B1_{max}$,
 % so reduces the maximum voltage of the RF power amplifier.
-% But.. it reduces its badnwidth !
+% But.. it reduces its bandwidth !
 
 
 %% Parameters
@@ -13,9 +13,10 @@ RECT = mri_rf_pulse_sim.rf_pulse.rect();
 solver = mri_rf_pulse_sim.bloch_solver();
 n_dz = 301;
 solver.setPulse(RECT);
-solver.setSpatialPosition(linspace(-RECT.slice_thickness.get(),+RECT.slice_thickness.get(),n_dz));
-% solver.setDeltaB0(0); % in this example, assume no dB0
-solver.setDeltaB0(linspace(-5e-6,+5e-6,301));
+solver.setSpatialPosition(linspace(-RECT.slice_thickness*2,+RECT.slice_thickness*2,n_dz));
+n_db0 = 301;
+target_ppm = 5;
+solver.setDeltaB0(linspace(-target_ppm,+target_ppm,n_db0)*1e-6);
 solver.setB0(3.0);   % Tesla
 solver.setT1(0.800); % WM @ 3T
 solver.setT2(0.070); % WM @ 3T
