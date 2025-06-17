@@ -12,7 +12,7 @@ classdef SIEMENS < mri_rf_pulse_sim.backend.rf_pulse.abstract
         file_path         (1,:) char
         file_info_struct  (1,1) struct
         pulse_list_struct (:,1) struct
-        pulse_name        (1,:) char
+        pulse_name        (1,1) string
         pulse_data        (1,1) struct
         button                  matlab.ui.control.UIControl
     end % props
@@ -20,30 +20,74 @@ classdef SIEMENS < mri_rf_pulse_sim.backend.rf_pulse.abstract
     methods (Access = public)
 
         % constructor
-        function self = SIEMENS()
-            % siemens pulse in the correct dir ?
-            location = fullfile(fileparts(mri_rf_pulse_sim.get_package_dir()), 'vendor', 'siemens');
-            assert(exist(location, 'dir'), 'No `vendor/siemens` dir at the expected location : %s', location)
+        function self = SIEMENS(args)
+            arguments
+                args.file_path
+                args.pulse_name
+            end % args
 
-            % fetch all files
-            self.file_list_struct = dir(fullfile(location, '**/*.dat'));
-            assert(~isempty(self.file_list_struct), 'no .dat file found in %s', location)
+            if ~isempty(fieldnames(args))
 
-            % prepare their name
-            list_file_name = fullfile({self.file_list_struct.folder}, {self.file_list_struct.name})';
-            list_file_name = strrep(list_file_name, fullfile(fileparts(mri_rf_pulse_sim.get_package_dir()), 'vendor', 'siemens', filesep), ''); % simplify it for display
-            self.file_path = fullfile({self.file_list_struct(1).folder}, {self.file_list_struct(1).name});
-            self.file_list  = mri_rf_pulse_sim.ui_prop.list  (parent=self, name='file_list' , items=string(list_file_name) , value=list_file_name {1});
+                if isfield(args, 'file_path')
+                    assert( exist(args.file_path,'file'), 'No file found : %s', args.file_path)
+                    self.file_path = args.file_path;
+                    
+                    % fetch file
+                    self.file_list_struct = dir(self.file_path);
+                    list_file_name = fullfile({self.file_list_struct.folder}, {self.file_list_struct.name})';
+                    list_file_name = strrep(list_file_name, fullfile(fileparts(mri_rf_pulse_sim.get_package_dir()), 'vendor', 'siemens', filesep), ''); % simplify it for display
+                    self.file_path = fullfile({self.file_list_struct(1).folder}, {self.file_list_struct(1).name});
+                    
+                    self.file_list  = mri_rf_pulse_sim.ui_prop.list(parent=self, name= 'file_list', items=string(list_file_name), value=list_file_name{1});
+                    self.pulse_list = mri_rf_pulse_sim.ui_prop.list(parent=self, name='pulse_list', items=""                    , value=""               );
+                    
+                    % fetch specific pulse in file ?
+                    if isfield(args, 'pulse_name')
+                        self.pulse_name = args.pulse_name;
+                        self.load_file(fullfile(self.file_list_struct(1).folder, self.file_list_struct(1).name), self.pulse_name);
+                        self.pulse_data = self.pulse_list_struct(self.pulse_list.idx);
+                    else
+                        self.load_file(fullfile(self.file_list_struct(1).folder, self.file_list_struct(1).name));
+                    end
+                end
 
-            % load first file found
-            self.pulse_list = mri_rf_pulse_sim.ui_prop.list  (parent=self, name='pulse_list', items="", value="");
-            self.load_file(fullfile(self.file_list_struct(1).folder, self.file_list_struct(1).name));
-            self.pulse_name = ""; % empty it to force loading the pulse data
+            else
+
+                % siemens pulse in the correct dir ?
+                location = fullfile(fileparts(mri_rf_pulse_sim.get_package_dir()), 'vendor', 'siemens');
+                assert(exist(location, 'dir'), 'No `vendor/siemens` dir at the expected location : %s', location)
+
+                % fetch all files
+                self.file_list_struct = dir(fullfile(location, '**/*.dat'));
+                assert(~isempty(self.file_list_struct), 'no .dat file found in %s', location)
+
+                % prepare their name
+                list_file_name = fullfile({self.file_list_struct.folder}, {self.file_list_struct.name})';
+                list_file_name = strrep(list_file_name, fullfile(fileparts(mri_rf_pulse_sim.get_package_dir()), 'vendor', 'siemens', filesep), ''); % simplify it for display
+                self.file_path = fullfile({self.file_list_struct(1).folder}, {self.file_list_struct(1).name});
+                self.file_list  = mri_rf_pulse_sim.ui_prop.list  (parent=self, name='file_list' , items=string(list_file_name) , value=list_file_name {1});
+
+                % load first file found
+                self.pulse_list = mri_rf_pulse_sim.ui_prop.list  (parent=self, name='pulse_list', items="", value="");
+                self.load_file(fullfile(self.file_list_struct(1).folder, self.file_list_struct(1).name));
+                self.pulse_name = ""; % empty it to force loading the pulse data
+
+            end
 
             self.flip_angle = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle', value=90, unit='°');
             self.n_points.editable = "off";
             self.generate_SIEMENS();
             self.add_gz_rewinder();
+        end % fcn
+
+        function setFile(self, fname)
+            self.file_list.value = fname;
+        end % fcn
+
+        function setPulse(self, pname)
+            self.pulse_list.value = pname;
+            self.pulse_name = pname;
+            self.pulse_data = self.pulse_list_struct(self.pulse_list.idx);
         end % fcn
 
         function value = get_bandwidth(self) % #abstract
@@ -57,12 +101,6 @@ classdef SIEMENS < mri_rf_pulse_sim.backend.rf_pulse.abstract
         end % fcn
 
         function generate(self) %  #abstract
-            self.generate_SIEMENS();
-            self.add_gz_rewinder();
-        end % fcn
-
-        function generate_SIEMENS(self)
-
             % get selected file name
             idx_file      = self.file_list.idx;
             selected_file = self.file_list_struct(idx_file);
@@ -84,6 +122,11 @@ classdef SIEMENS < mri_rf_pulse_sim.backend.rf_pulse.abstract
                 end
 
             end
+            self.generate_SIEMENS();
+            self.add_gz_rewinder();
+        end % fcn
+
+        function generate_SIEMENS(self)
 
             % the reference pulse for scaling is a RECT of 1ms and 180°
             rect = mri_rf_pulse_sim.rf_pulse.rect();
@@ -148,13 +191,22 @@ classdef SIEMENS < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
     methods (Access = protected)
 
-        function list_pulse_name = load_file(self, filepath)
+        function list_pulse_name = load_file(self, filepath, pname)
+            if nargin < 3
+                pname = "";
+            else
+                pname = string(pname);
+            end
             [self.pulse_list_struct, self.file_info_struct] = mri_rf_pulse_sim.load_siemens_RFpulse(filepath);
             self.file_path = filepath;
             list_pulse_name = strcat({self.pulse_list_struct.family}, '/',  {self.pulse_list_struct.name})';
             self.pulse_list.items = string(list_pulse_name);
-            self.pulse_list.value = list_pulse_name{1};
-            self.pulse_name       = self.pulse_list.value;
+            if isempty(pname{1})
+                self.setPulse(self.pulse_list.items(1));
+            else
+                self.setPulse(pname);
+            end
+
             if ishandle(self.pulse_list.listbox)
                 self.pulse_list.listbox.String = self.pulse_list.items;
                 self.pulse_list.listbox.Value = 1;
