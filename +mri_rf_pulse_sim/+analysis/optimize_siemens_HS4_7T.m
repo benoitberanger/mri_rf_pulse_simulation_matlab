@@ -6,7 +6,7 @@ function optimize_siemens_HS4_7T()
 
 %% Parameters
 
-% traget inversion efficiency
+% target inversion efficiency
 target_Mz = -0.95;
 
 % evaluate pulse chemical shift profile in this ppm range
