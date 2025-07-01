@@ -4,7 +4,7 @@ function [contour_fat_signal, contour_water_reserve] = optimize_FatSat_pulse_7T(
 
 %% Settings
 
-B0      = 6.98; % [T]  , Siemens 7T magnets
+B0      = 2.89; % [T]  , Siemens 7T magnets
 
 ppm_fat = -3.3; % [ppm], default Fat frequency offset on Siemens scanners
 
@@ -13,7 +13,7 @@ pulse = mri_rf_pulse_sim.rf_pulse.gaussian();
 pulse.n_points.set(64);         % waveform is simple, save computation time
 base_freq_offset = ppm_fat*1e-6 * pulse.gamma/(2*pi) * B0; % Hz
 pulse.slice_thickness.set(Inf); % non-selective pulse
-pulse.duration.set(2.048e-3);   % cmrr_mbep2d_* setting, hardcoded paramters
+pulse.duration.set(5.120e-3);   % cmrr_mbep2d_* setting, hardcoded paramters
 pulse.flip_angle.set(110);      % default FA for cmrr_mb_*, available in the Sequence > Special
 pulse.frequency_offcet.set(base_freq_offset);
 
@@ -22,8 +22,8 @@ solver = mri_rf_pulse_sim.bloch_solver();
 solver.setPulse(pulse);
 solver.setSpatialPosition(0); % non-selective pulse
 solver.setB0(B0);
-solver.T1.setScaled(1600); % GM @ 7T
-solver.T2.setScaled(60);   % WM @ 7T
+solver.T1.setScaled(1300); % GM @ 3T
+solver.T2.setScaled(80);   % WM @ 3T
 n_db0 = 301;
 solver.setDeltaB0(linspace(-ppm_fat*2,+ppm_fat,n_db0)*1e-6);
 
@@ -34,7 +34,7 @@ solver.setDeltaB0(linspace(-ppm_fat*2,+ppm_fat,n_db0)*1e-6);
 %% Computation
 
 eval_fa =     0 :  5 :   180; % deg
-eval_df = -2000 : 20 : +2000; % Hz
+eval_df = -1000 : 10 : +1000; % Hz
 
 [grid_fa, grid_df] = ndgrid(eval_fa, eval_df);
 nr = numel(grid_fa);
