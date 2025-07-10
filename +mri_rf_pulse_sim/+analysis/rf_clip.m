@@ -1,5 +1,5 @@
 function rf_clip()
-%% Too much B1max ? maybe increase pulse duration, but be carefull with off-resonance effects
+%% Too much B1max ? maybe increase pulse duration, but be careful with off-resonance effects
 % This function show that increasing the duration of a RECT reduce it's $B1_{max}$,
 % so reduces the maximum voltage of the RF power amplifier.
 % But.. it reduces its bandwidth !

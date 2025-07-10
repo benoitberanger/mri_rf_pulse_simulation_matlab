@@ -44,7 +44,7 @@ classdef sinc_exc_ref < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.duration.editable   = "off";
             self.duration.value      = self.get_exc_ref_duration();
 
-            % slice thickness will be manipulated independantly for EXC and REF pulses
+            % slice thickness will be manipulated independently for EXC and REF pulses
             % the REF pulse flat Mxy part must contain the whole slice profile of EXC
             self.slice_thickness.visible = "off";
 

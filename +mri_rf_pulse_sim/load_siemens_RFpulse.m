@@ -8,7 +8,7 @@ function [pulse, info] = load_siemens_RFpulse(filepath)
 %   pulse : struct array
 %   info  : struct containing the file info
 %
-% ------------------------------- EXEMPLE ---------------------------------
+% ------------------------------- EXAMPLE ---------------------------------
 %
 % [pulse, info] = mri_rf_pulse_sim.load_siemens_RFpulse('vendor/siemens/mypulselib.dat')
 %

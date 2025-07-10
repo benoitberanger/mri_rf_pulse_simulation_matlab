@@ -20,7 +20,7 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
         % This method is called by the App to create UI elements that are specific to the pulse class
         init_specific_gui                                                  % draw UI elements
 
-        % Returns text that summarize the pulse paramters
+        % Returns text that summarize the pulse parameters
         summary                                                            % print summary text
     end % meths
 
@@ -196,7 +196,7 @@ classdef (Abstract) abstract < mri_rf_pulse_sim.backend.base_class
                 StringArray=txt,AllowTruncatedDisplayForScalar=true);
         end % fcn
 
-        % Enable the possiblity to add a gradient rewinder lob
+        % Enable the possibility to add a gradient rewinder lob
         % Some pulses use a local copy of the method,
         % such as `add_gz_rewinder_verse` in the `verse` abstract class
         function add_gz_rewinder(self, status)

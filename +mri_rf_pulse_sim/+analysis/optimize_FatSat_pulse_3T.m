@@ -1,5 +1,5 @@
-function [contour_fat_signal, contour_water_reserve] = optimize_FatSat_pulse_7T()
-%% Are the default paramters of the FatSut pulse for cmrr_mbep2d* sequence optimal ?
+function [contour_fat_signal, contour_water_reserve] = optimize_FatSat_pulse_3T()
+%% Are the default parameters of the FatSut pulse for cmrr_mbep2d* sequence optimal ?
 
 
 %% Settings
@@ -13,7 +13,7 @@ pulse = mri_rf_pulse_sim.rf_pulse.gaussian();
 pulse.n_points.set(64);         % waveform is simple, save computation time
 base_freq_offset = ppm_fat*1e-6 * pulse.gamma/(2*pi) * B0; % Hz
 pulse.slice_thickness.set(Inf); % non-selective pulse
-pulse.duration.set(5.120e-3);   % cmrr_mbep2d_* setting, hardcoded paramters
+pulse.duration.set(5.120e-3);   % cmrr_mbep2d_* setting, hardcoded parameters
 pulse.flip_angle.set(110);      % default FA for cmrr_mb_*, available in the Sequence > Special
 pulse.frequency_offcet.set(base_freq_offset);
 

@@ -19,7 +19,7 @@ eval_fa  = 100 : 50 : 900; % Siemens FlipAngle scaling == B1 peak scaling == Vol
 
 %% Setup
 
-% set base paramters of the pulse
+% set base parameters of the pulse
 location = fullfile(fileparts(mri_rf_pulse_sim.get_package_dir()), 'vendor', 'siemens');
 fname = 'extrf.dat';
 pulse = mri_rf_pulse_sim.rf_pulse.SIEMENS( ...

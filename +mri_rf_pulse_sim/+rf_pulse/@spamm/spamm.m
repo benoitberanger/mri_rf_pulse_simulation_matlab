@@ -5,7 +5,7 @@ classdef spamm < mri_rf_pulse_sim.rf_pulse.binomial.binomial_rect
     % Handbook of MRI Pulse Sequences // Matt A. Bernstein, Kevin F. King, Xiaohong Joe Zhou
 
     properties (GetAccess = public, SetAccess = public)
-        wavelength mri_rf_pulse_sim.ui_prop.scalar                         % [m]   spatial dimention of the modulation
+        wavelength mri_rf_pulse_sim.ui_prop.scalar                         % [m]   spatial dimension of the modulation
     end % props
 
     properties(GetAccess = public, SetAccess = protected, Dependent)

@@ -50,7 +50,7 @@ classdef (Abstract) sms_mb < handle
                 self.time = self.time - self.time(1);
             end
 
-            % relative spatial positon of the slice
+            % relative spatial position of the slice
             % mb3->[-1 0 1]
             % mb4->[-1.5 -0.5 +0.5 +1.5]
             offset_vect = (1:self.n_slice.get()) - (self.n_slice.get()+1)/2;

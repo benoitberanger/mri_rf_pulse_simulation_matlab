@@ -1,4 +1,4 @@
-# MRI $RF$ pulse simulation in MALTAB
+# MRI $RF$ pulse simulation in MATLAB
 
 This repository is a MATLAB application that simulate the response of MRI **R**adio**F**requency (**RF**) pulses.
 The app is a GUI, and the code also made to be used purely programmatically.

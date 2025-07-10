@@ -21,7 +21,7 @@ eval_b1max = 10 : 2 : 20; % uT
 
 %% Setup
 
-% set base paramters of the pulse
+% set base parameters of the pulse
 pulse = mri_rf_pulse_sim.rf_pulse.goia.goia_hs();
 pulse.slice_thickness.set(Inf); % set non-selective pulse
 

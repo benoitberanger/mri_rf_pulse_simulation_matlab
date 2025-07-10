@@ -96,7 +96,7 @@ classdef SIEMENS < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
         function value = get_SIEMENS_bandwidth(self)
             % refgrad => Amplitude of slice selection gradient required to excite a 10mm thick slice
-            % also, gamma (in siemens doc) is in Hz/T, so the 2pi factor is not present bellow because my gamma is in rad/T
+            % also, gamma (in siemens doc) is in Hz/T, so the 2pi factor is not present below because my gamma is in rad/T
             value = self.pulse_data.refgrad/1000 * self.gamma * 0.010 * (0.001/self.duration);
         end % fcn
 

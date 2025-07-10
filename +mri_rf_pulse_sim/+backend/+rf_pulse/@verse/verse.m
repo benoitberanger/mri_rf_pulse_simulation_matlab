@@ -237,7 +237,7 @@ classdef (Abstract) verse < handle
             if nargin == 1, status = self.gz_rewinder.get(); end
             if ~status    , return                         , end
 
-            target_moment = trapz(self.time,self.GZ) / 2; % !!! only works for symetric pulses !!!
+            target_moment = trapz(self.time,self.GZ) / 2; % !!! only works for symmetric pulses !!!
             min_moment_for_trapeze = self.maxGZ.^2 / self.maxSZ;
             Tp = self.time(end)-self.time(1);
             Tend = self.time(end);

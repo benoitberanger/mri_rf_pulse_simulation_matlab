@@ -3,8 +3,8 @@ classdef sinc_clipped < mri_rf_pulse_sim.rf_pulse.sinc
     % choose to adjust its flip angleto the maximum available "voltage"
 
     properties (GetAccess = public, SetAccess = public)
-        max_B1  mri_rf_pulse_sim.ui_prop.scalar                            % [T] maximum B1 field, corresponds to a maxium Transmiter Voltage
-        rescale mri_rf_pulse_sim.ui_prop.bool                              % [] adjust B1peak to max_B1 paramter
+        max_B1  mri_rf_pulse_sim.ui_prop.scalar                            % [T] maximum B1 field, corresponds to a maximum Transmitter Voltage
+        rescale mri_rf_pulse_sim.ui_prop.bool                              % [] adjust B1peak to max_B1 parameter
     end % props
 
     methods (Access = public)

@@ -1,5 +1,5 @@
 classdef HSn < mri_rf_pulse_sim.backend.rf_pulse.abstract
-    % Hyperbolic Secant of order `n`, as implmented in **Siemens** scanners
+    % Hyperbolic Secant of order `n`, as implemented in **Siemens** scanners
     % With Gradient Modulation, it becomes a GOIA_HS
 
     properties (GetAccess = public, SetAccess = public)
