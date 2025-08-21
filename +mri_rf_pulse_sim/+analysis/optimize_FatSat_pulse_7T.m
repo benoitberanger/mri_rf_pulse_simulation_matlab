@@ -42,8 +42,9 @@ nr = numel(grid_fa);
 Mpara_water = zeros(size(grid_fa));
 Mperp_fat   = zeros(size(grid_fa));
 
+t0 = tic;
 for i = 1 : nr
-    if mod(i,10) == 0
+    if mod(i,100) == 0
         fprintf('sim : %d/%d \n', i, nr)
     end
     pulse.flip_angle      .set(                   grid_fa(i));
@@ -56,6 +57,8 @@ for i = 1 : nr
     Mpara_water(i) = chemical_profile_para(idx_water);
     Mperp_fat  (i) = chemical_profile_perp(idx_fat  );
 end
+t1 = toc(t0);
+fprintf('sim took %gs \n', t1)
 
 
 %% Plot
