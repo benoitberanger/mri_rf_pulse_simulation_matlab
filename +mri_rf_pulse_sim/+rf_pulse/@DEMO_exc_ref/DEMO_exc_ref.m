@@ -22,6 +22,7 @@ classdef DEMO_exc_ref < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.exc__SLR.pulse_type.value = "ex";
             self.exc__SLR.filter_type.value = "ls";
             self.exc__SLR.duration.set(2e-3);
+            self.exc__SLR.gz_rewinder.setTrue();
 
             self.ref__SLR = mri_rf_pulse_sim.rf_pulse.slr();
             self.ref__SLR.parent = self; % this allows the automatic GUI update
@@ -45,8 +46,12 @@ classdef DEMO_exc_ref < mri_rf_pulse_sim.backend.rf_pulse.abstract
         function generate_DEMO_exc_ref(self)
 
             % prep pulses
+            exc_rewinder = self.exc__SLR.gz_rewinder.get();
+            self.exc__SLR.gz_rewinder.setFalse();
             self.exc__SLR.generate();
+            self.exc__SLR.gz_rewinder.set(exc_rewinder);
             self.ref__SLR.generate();
+
 
             % prep timings and index
             self.duration.value = self.get_DEMO_ref_duration();
@@ -61,15 +66,19 @@ classdef DEMO_exc_ref < mri_rf_pulse_sim.backend.rf_pulse.abstract
             exc__waveform = interp1(self.exc__SLR.time,self.exc__SLR.B1, exc__time, 'spline');
             ref__waveform = interp1(self.ref__SLR.time,self.ref__SLR.B1, ref__time, 'spline');
 
-            exc__grad = ones(size(exc__time)) * 2*pi*self.exc__SLR.get_bandwidth() / (self.exc__SLR.gamma*self.exc__SLR.slice_thickness);
-            ref__grad = ones(size(ref__time)) * 2*pi*self.ref__SLR.get_bandwidth() / (self.ref__SLR.gamma*self.ref__SLR.slice_thickness);
+            exc__grad     = interp1(self.exc__SLR.time,self.exc__SLR.GZ, exc__time, 'spline');
+            ref__grad     = interp1(self.ref__SLR.time,self.ref__SLR.GZ, ref__time, 'spline');
 
             self.B1 = zeros(size(self.time));
             self.GZ = zeros(size(self.time));
 
             self.B1(exc_idx) = exc__waveform;
             self.GZ(exc_idx) = exc__grad;
-            self.GZ(rew_idx) = -exc__grad(1:sum(rew_idx));
+            if self.exc__SLR.gz_rewinder
+                [~,waveform_max_idx] = max(abs(exc__waveform));
+                asymmetry = 1 - (waveform_max_idx / length(exc__waveform));
+                self.GZ(rew_idx) = -exc__grad(1:sum(rew_idx)) * (asymmetry/0.5); % quick and dirty way to have correct phase
+            end
             self.B1(ref_idx) = ref__waveform;
             self.GZ(ref_idx) = ref__grad;
 
@@ -105,6 +114,8 @@ classdef DEMO_exc_ref < mri_rf_pulse_sim.backend.rf_pulse.abstract
                 'Units','Normalized',...
                 'Position',pos_ref,...
                 'BackgroundColor',fig_col.figureBG);
+
+            self.ref__SLR.gz_rewinder.visible = "off";
 
             self.exc__SLR.init_base_gui(panel_exc);
             self.ref__SLR.init_base_gui(panel_ref);
