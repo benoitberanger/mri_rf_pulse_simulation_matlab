@@ -47,6 +47,10 @@ classdef bool < mri_rf_pulse_sim.backend.base_class
             if isfield(args, 'parent' ), self.parent  = args.parent ; end
         end % fcn
 
+        function out = logical(self)
+            out = self.value;
+        end % fcn
+
         function out = get(self)
             out = self.value;
         end % fcn
