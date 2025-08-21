@@ -34,7 +34,7 @@ classdef bloch_solver < handle & matlab.mixin.CustomCompactDisplayProvider
             end
 
             % do not define .rf_pulse -> let the user do it
-            self.B0              = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='B0'             , value=2.89                               , unit='T'  );
+            self.B0              = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='B0'             , value=3.00                               , unit='T'  );
             self.SpatialPosition = mri_rf_pulse_sim.ui_prop.range (parent=self, name='SpatialPosition', vect=linspace(-10,+10,11)*1e-3, scale=1e3, unit='mm' );
             self.DeltaB0         = mri_rf_pulse_sim.ui_prop.range (parent=self, name='DelatB0'        , vect=linspace(-10,+10, 3)*1e-6, scale=1e6, unit='ppm');
             self.M0              = mri_rf_pulse_sim.ui_prop.vec3  (parent=self, name='M0'             , xyz=[0 0 1]'                                         );

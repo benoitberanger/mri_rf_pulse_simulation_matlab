@@ -13,6 +13,7 @@ classdef slr < mri_rf_pulse_sim.backend.rf_pulse.abstract
         pulse_type  mri_rf_pulse_sim.ui_prop.list
         filter_type mri_rf_pulse_sim.ui_prop.list
         flip_angle  mri_rf_pulse_sim.ui_prop.scalar                        % [deg] flip angle
+        rf_phase    mri_rf_pulse_sim.ui_prop.scalar                        % [deg] RF phase
     end % props
 
     methods (Access = public)
@@ -21,12 +22,13 @@ classdef slr < mri_rf_pulse_sim.backend.rf_pulse.abstract
         function self = slr()
             check_slr_dependency();
             self.n_points.value = 128;
-            self.d1             = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='d1'         , value=  0.01, unit=' from 0 to 1');
-            self.d2             = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='d2'         , value=  0.01, unit=' from 0 to 1');
-            self.TBWP           = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='TBWP'       , value=  8                       );
+            self.d1             = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='d1'         , value=  0.01, unit='from 0 to 1');
+            self.d2             = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='d2'         , value=  0.01, unit='from 0 to 1');
+            self.TBWP           = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='TBWP'       , value=  8                        );
             self.pulse_type     = mri_rf_pulse_sim.ui_prop.list  (parent=self, name=''           , value= 'ex' , items= {'st', 'ex', 'se', 'sat', 'inv'});
             self.filter_type    = mri_rf_pulse_sim.ui_prop.list  (parent=self, name=''           , value= 'min', items= {'ms', 'pm', 'ls', 'min', 'max'});
-            self.flip_angle     = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle' , value= 90   , unit='°'          );
+            self.flip_angle     = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='flip_angle' , value= 90   , unit='°'           );
+            self.rf_phase       = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='rf_phase'   , value= 0    , unit='°'           );
             self.generate_slr();
             self.add_gz_rewinder_slr();
         end % fcn
@@ -50,7 +52,7 @@ classdef slr < mri_rf_pulse_sim.backend.rf_pulse.abstract
             % scale waveform
             waveform = waveform / trapz(self.time, waveform); % normalize integral
             waveform = waveform * deg2rad(self.flip_angle.get()) / self.gamma; % scale integrale with flip angle
-            self.B1 = waveform;
+            self.B1  = waveform * exp(1j * deg2rad(self.rf_phase.get()));
         end % fcn
 
         function value = get_bandwidth(self) % #abstract
@@ -77,8 +79,8 @@ classdef slr < mri_rf_pulse_sim.backend.rf_pulse.abstract
         end % fcn
 
         function txt = summary(self) % #abstract
-            txt = sprintf('[%s]  d1=%g  d2=%g  TBWP=%g  ptype=%s  ftype=%s  FA=%g°',...
-                mfilename, self.d1.get(), self.d2.get(), self.TBWP.get(), self.pulse_type.get(), self.filter_type.get(), self.flip_angle.get());
+            txt = sprintf('[%s]  d1=%g  d2=%g  TBWP=%s  ptype=%s  ftype=%s  FA=%s phase=%s',...
+                mfilename, self.d1.get(), self.d2.get(), self.TBWP.repr, self.pulse_type.repr, self.filter_type.repr, self.flip_angle.repr, self.rf_phase.repr);
         end % fcn
 
         function init_specific_gui(self, container) % #abstract
@@ -87,7 +89,7 @@ classdef slr < mri_rf_pulse_sim.backend.rf_pulse.abstract
             rect_ftype  = [0.8 0.0 0.2 1.0];
             mri_rf_pulse_sim.ui_prop.scalar.add_uicontrol_multi_scalar(...
                 container,...
-                [self.d1 self.d2 self.TBWP self.flip_angle],...
+                [self.d1 self.d2 self.TBWP self.flip_angle self.rf_phase],...
                 rect_scalar...
                 );
             self.pulse_type .add_uicontrol(container, rect_ptype);
