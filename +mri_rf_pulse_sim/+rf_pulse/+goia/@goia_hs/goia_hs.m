@@ -46,7 +46,7 @@ classdef goia_hs < mri_rf_pulse_sim.backend.rf_pulse.abstract
             T = (2*self.time / self.duration) - 1;
 
             magnitude     = self.b1max *               sech(self.beta * T.^self.n) ;
-            if self.GZavg.get() > 0
+            if self.GZavg > 0
                 gradient  = self.GZavg * (1 - self.f * sech(self.beta * T.^self.m));
                 freq      = cumtrapz(self.time, magnitude.^2 ./ gradient);
             else
@@ -55,7 +55,7 @@ classdef goia_hs < mri_rf_pulse_sim.backend.rf_pulse.abstract
             end
             freq      = freq - mean(freq);
             freq      = freq / max(freq);
-            if self.GZavg.get() > 0
+            if self.GZavg > 0
                 freq  = freq .* gradient/max(gradient);
             end
             freq      = freq * self.bw * pi;

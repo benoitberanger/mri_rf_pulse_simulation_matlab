@@ -48,7 +48,7 @@ classdef gaussian < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.B1   = self.Ag * exp(-self.time.^2/(2*self.sigma^2)) .* exp(1j*2*pi*self.frequency_offcet*self.time);
             self.GZ   = ones(size(self.time)) * self.GZavg;
 
-            if self.spoiler_duration.get() > 0
+            if self.spoiler_duration > 0
                 n_pts = round(self.n_points * self.spoiler_duration / self.duration);
                 self.time = [self.time linspace(self.time(end), self.time(end)+self.spoiler_duration, n_pts)];
                 self.B1   = [self.B1   zeros(1,n_pts)                       ];

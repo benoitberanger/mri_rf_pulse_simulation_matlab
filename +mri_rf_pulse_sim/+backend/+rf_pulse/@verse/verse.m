@@ -204,7 +204,7 @@ classdef (Abstract) verse < handle
 
             end % switch
 
-            if need_interp && self.resample.get()
+            if need_interp && self.resample
                 % resample time so it is linearly spaced
                 tv = [self.time(1) cumsum(dt)];
                 T0 = tv(1);

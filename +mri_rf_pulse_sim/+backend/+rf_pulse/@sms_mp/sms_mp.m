@@ -37,11 +37,11 @@ classdef (Abstract) sms_mp < handle
         end
 
         function make_multiphoton(self)
-            if self.gz_modulation.get()
+            if self.gz_modulation
                 self.GZ = self.GZ + sin(2*pi*self.band_seperation * self.time) * self.GZavg * self.ac_factor;
             end
 
-            switch self.shift.get()
+            switch self.shift
                 case "None"
                 case "Left"
                     self.B1 = self.get_shift("Left");

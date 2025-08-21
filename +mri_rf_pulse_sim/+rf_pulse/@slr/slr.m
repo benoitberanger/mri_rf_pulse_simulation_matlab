@@ -41,7 +41,7 @@ classdef slr < mri_rf_pulse_sim.backend.rf_pulse.abstract
         function generate_slr(self)
 
             MAX_N = 512; % this value comes from the .c file, if the code is run with 512+ points MATLAB crashes
-            assert(self.n_points.get() < MAX_N, 'n_points must be < %d', MAX_N)
+            assert(self.n_points < MAX_N, 'n_points must be < %d', MAX_N)
 
             self.time = linspace(-self.duration/2, +self.duration/2, self.n_points.get());
             self.GZ = ones(size(self.time)) * self.GZavg;

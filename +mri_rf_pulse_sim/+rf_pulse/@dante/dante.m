@@ -51,7 +51,7 @@ classdef dante < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
             MAG = zeros(size(self.time));
             PHA = zeros(size(self.time));
-            if self.use_blip.get()
+            if self.use_blip
                 GZ = zeros(size(self.time));
             else
                 GZ = ones(size(self.time));
@@ -67,10 +67,10 @@ classdef dante < mri_rf_pulse_sim.backend.rf_pulse.abstract
             gz_slope_sign = +1;
             phase_increament = +180; % in degree
 
-            for idx = 1 : self.n_points.get()
+            for idx = 1 : self.n_points
 
                 % ensure first and last points are 0
-                if idx == 1 || idx == self.n_points.get()
+                if idx == 1 || idx == self.n_points
                     continue
                 end
 
@@ -78,7 +78,7 @@ classdef dante < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
                     if idx <= sample_subpulse
                         MAG(idx) = 1;
-                        if self.phase_alternation.get()
+                        if self.phase_alternation
                             PHA(idx) = phase_increament;
                         end
                     else
@@ -90,7 +90,7 @@ classdef dante < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
                     if idx <= sample_subpulse*(n_subpulse+1) + sample_blip*n_blip
                         MAG(idx) = 1;
-                        if self.phase_alternation.get()
+                        if self.phase_alternation
                             PHA(idx) = phase_increament;
                         end
                     else
@@ -101,7 +101,7 @@ classdef dante < mri_rf_pulse_sim.backend.rf_pulse.abstract
                 elseif n_blip < n_subpulse % fill blip
 
                     if idx <= sample_subpulse*n_subpulse + sample_blip*(n_blip+1)
-                        if self.use_blip.get()
+                        if self.use_blip
                             GZ(idx) = GZ(idx-1) + gz_slope_sign*gz_increase;
                             if GZ(idx) >= 1
                                 gz_slope_sign = -1;

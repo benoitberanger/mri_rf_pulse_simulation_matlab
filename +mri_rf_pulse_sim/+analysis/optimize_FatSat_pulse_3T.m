@@ -1,4 +1,4 @@
-function [contour_fat_signal, contour_water_reserve] = optimize_FatSat_pulse_3T()
+function optimize_FatSat_pulse_3T()
 %% Are the default parameters of the FatSut pulse for cmrr_mbep2d* sequence optimal ?
 
 
@@ -64,8 +64,8 @@ f = figure(Name=sprintf('[%s]', mfilename), NumberTitle='off', Units='pixels', P
 ax = axes(f);
 hold(ax, 'on')
 
-contour_fat_signal    = contour(ax,grid_fa,grid_df,Mperp_fat  ,  0.1:0.2:1                        , 'ShowText','on', 'LineStyle', '--');
-contour_water_reserve = contour(ax,grid_fa,grid_df,Mpara_water, [0.1:0.1:0.9 0.95 0.98 0.99 0.999], 'ShowText','on', 'LineStyle', '-' );
+contour(ax,grid_fa,grid_df,Mperp_fat  ,  0.1:0.2:1                        , 'ShowText','on', 'LineStyle', '--');
+contour(ax,grid_fa,grid_df,Mpara_water, [0.1:0.1:0.9 0.95 0.98 0.99 0.999], 'ShowText','on', 'LineStyle', '-' );
 legend({ ...
     'Fat signal suppressed : Higher is better', ...
     'Water signal reserve  : Higher is better' ...

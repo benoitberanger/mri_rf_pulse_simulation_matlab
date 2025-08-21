@@ -91,6 +91,34 @@ classdef scalar < mri_rf_pulse_sim.backend.base_class
             out = double(LEFT) .^ double(RIGHT);
         end % fcn
 
+        function out = lt(LEFT,RIGHT)
+            out = double(LEFT) < double(RIGHT);
+        end % fcn
+        function out = gt(LEFT,RIGHT)
+            out = double(LEFT) > double(RIGHT);
+        end % fcn
+        function out = le(LEFT,RIGHT)
+            out = double(LEFT) <= double(RIGHT);
+        end % fcn
+        function out = ge(LEFT,RIGHT)
+            out = double(LEFT) >= double(RIGHT);
+        end % fcn
+
+        function out = eq(LEFT,RIGHT)
+            out = double(LEFT) == double(RIGHT);
+        end % fcn
+        function out = ne(LEFT,RIGHT)
+            out = double(LEFT) ~= double(RIGHT);
+        end % fcnÒ
+
+        function out = colon(a,d,b)
+            if nargin == 2
+                b = d;
+                d = 1;
+            end
+            out = double(a) : double(d) : double(b);
+        end % fcn
+
         function out = getRaw(self)
             out = self.value;
         end % fcn

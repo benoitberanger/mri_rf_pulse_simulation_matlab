@@ -13,7 +13,7 @@ SINC.n_points.set(256);
 solver = mri_rf_pulse_sim.bloch_solver();
 n_dz = 301;
 solver.setPulse(SINC);
-solver.setSpatialPosition(linspace(-SINC.slice_thickness.get()*1.5,+SINC.slice_thickness.get()*1.5,n_dz));
+solver.setSpatialPosition(linspace(-SINC.slice_thickness*1.5,+SINC.slice_thickness*1.5,n_dz));
 solver.setDeltaB0(0); % in this example, assume no dB0
 
 % number of side lobs : TBWP = 2*n_side_lob
@@ -67,8 +67,8 @@ for i = 1 : N
 end
 linestyle_tips = {'LineStyle',':', 'Color','black', 'LineWidth', 0.5};
 plot(ax(1), SINC.time*1e3, zeros(size(SINC.time)), linestyle_tips{:})
-plot(ax(2), [-SINC.slice_thickness.get() -SINC.slice_thickness.get()]/2*solver.SpatialPosition.scale, [0 1], linestyle_tips{:})
-plot(ax(2), [+SINC.slice_thickness.get() +SINC.slice_thickness.get()]/2*solver.SpatialPosition.scale, [0 1], linestyle_tips{:})
+plot(ax(2), [-SINC.slice_thickness -SINC.slice_thickness]/2*solver.SpatialPosition.scale, [0 1], linestyle_tips{:})
+plot(ax(2), [+SINC.slice_thickness +SINC.slice_thickness]/2*solver.SpatialPosition.scale, [0 1], linestyle_tips{:})
 
 xlabel(ax(1),'time (ms)')
 ylabel(ax(1),'µT')

@@ -12,7 +12,7 @@ pulse = mri_rf_pulse_sim.rf_pulse.hs();
 solver = mri_rf_pulse_sim.bloch_solver();
 solver.setPulse(pulse);
 n_dz = 301;
-solver.setSpatialPosition(linspace(-pulse.slice_thickness.get(),+pulse.slice_thickness.get(),n_dz));
+solver.setSpatialPosition(linspace(-pulse.slice_thickness,+pulse.slice_thickness,n_dz));
 solver.setDeltaB0(0); % in this example, assume no dB0
 
 % Evaluate slice profile over these deferent max amplitude :

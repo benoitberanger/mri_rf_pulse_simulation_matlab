@@ -45,7 +45,7 @@ classdef goia_wurst < mri_rf_pulse_sim.backend.rf_pulse.abstract
             abs_sin = abs(sin((pi/2)*T));
 
             magnitude     = self.b1max *  (1           -        abs_sin.^self.n);
-            if self.GZavg.get() > 0
+            if self.GZavg > 0
                 gradient  = self.GZavg * ((1 - self.f) + self.f*abs_sin.^self.m);
                 freq      = cumtrapz(self.time, magnitude.^2 ./ gradient);
             else
@@ -54,7 +54,7 @@ classdef goia_wurst < mri_rf_pulse_sim.backend.rf_pulse.abstract
             end
             freq      = freq - mean(freq);
             freq      = freq / max(freq);
-            if self.GZavg.get() > 0
+            if self.GZavg > 0
                 freq  = freq .* gradient/max(gradient);
             end
             freq      = freq * self.bw * pi;

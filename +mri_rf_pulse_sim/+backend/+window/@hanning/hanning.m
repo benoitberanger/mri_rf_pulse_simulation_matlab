@@ -51,8 +51,8 @@ classdef hanning < mri_rf_pulse_sim.backend.window.abstract
 
         % synthesis text
         function txt = summary(self)
-            txt = sprintf('%s window : a0=%g  a1=%g',...
-                self.name, self.a0.get(), self.a1.get());
+            txt = sprintf('%s window : a0=%s  a1=%s',...
+                self.name, self.a0.repr, self.a1.repr);
         end % fcn
 
     end % meths

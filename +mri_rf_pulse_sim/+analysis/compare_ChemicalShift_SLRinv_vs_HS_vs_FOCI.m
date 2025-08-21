@@ -26,7 +26,7 @@ pulse3 = mri_rf_pulse_sim.rf_pulse.foci();
 solver = mri_rf_pulse_sim.bloch_solver();
 n_dz  = 301;
 n_db0 = 301;
-solver.setSpatialPosition(linspace(-pulse1.slice_thickness.get()*2,+pulse1.slice_thickness.get()*2,n_dz));
+solver.setSpatialPosition(linspace(-pulse1.slice_thickness*2,+pulse1.slice_thickness*2,n_dz));
 solver.DeltaB0.N = n_db0;
 
 

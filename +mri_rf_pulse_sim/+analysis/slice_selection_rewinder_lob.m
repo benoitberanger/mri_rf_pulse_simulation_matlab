@@ -16,7 +16,7 @@ SINC.rf_phase.set(180);     % so magnetization will be on +y instead of -y ---> 
 solver = mri_rf_pulse_sim.bloch_solver();
 solver.setPulse(SINC);
 n_dz = 501;
-solver.setSpatialPosition(linspace(-SINC.slice_thickness.get()*1.5,+SINC.slice_thickness.get()*1.5,n_dz));
+solver.setSpatialPosition(linspace(-SINC.slice_thickness*1.5,+SINC.slice_thickness*1.5,n_dz));
 solver.setDeltaB0(0); % in this example, assume no delta B0
 
 

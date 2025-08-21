@@ -68,7 +68,7 @@ classdef sms_pins < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.B1  = waveform;
 
             % generate gradient shape
-            if self.use_blip.get()
+            if self.use_blip
                 gradientshape = zeros(size(self.time));
                 for m = 1 : self.M
                     signal = (self.blip(-(m-0.5)/self.M*self.duration/2) + self.blip(+(m-0.5)/self.M*self.duration/2));
@@ -119,8 +119,8 @@ classdef sms_pins < mri_rf_pulse_sim.backend.rf_pulse.abstract
             subpulse_points = round(self.n_points * self.subpulse_duration/self.duration);
 
             idx = round(pos_idx + (1:subpulse_points) - subpulse_points/2);
-            idx(idx<=0                  ) = [];
-            idx(idx >self.n_points.get()) = [];
+            idx(idx<=0            ) = [];
+            idx(idx >self.n_points) = [];
             if ~isempty(idx)
                 signal(idx) = 1;
             end

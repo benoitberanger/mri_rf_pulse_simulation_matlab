@@ -27,7 +27,7 @@ classdef sinc_clipped < mri_rf_pulse_sim.rf_pulse.sinc
             self.generate_sinc();
             RE = self.real();
             IM = self.imag();
-            if self.rescale.get()
+            if self.rescale
                 is_RE_clipping = any(abs(RE)/self.max_B1 > 1);
                 is_IM_clipping = any(abs(IM)/self.max_B1 > 1);
                 if is_RE_clipping || is_IM_clipping
@@ -36,10 +36,10 @@ classdef sinc_clipped < mri_rf_pulse_sim.rf_pulse.sinc
                     IM = IM / factor;
                 end
             else
-                RE(RE>+self.max_B1.get()) = +self.max_B1.get();
-                IM(IM>+self.max_B1.get()) = +self.max_B1.get();
-                RE(RE<-self.max_B1.get()) = -self.max_B1.get();
-                IM(IM<-self.max_B1.get()) = -self.max_B1.get();
+                RE(RE>+self.max_B1) = +self.max_B1;
+                IM(IM>+self.max_B1) = +self.max_B1;
+                RE(RE<-self.max_B1) = -self.max_B1;
+                IM(IM<-self.max_B1) = -self.max_B1;
             end
             self.B1 = RE + 1j*IM;
         end % fcn

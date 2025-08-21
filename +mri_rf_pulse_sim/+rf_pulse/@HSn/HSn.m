@@ -51,7 +51,7 @@ classdef HSn < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
             % base waveforms
             magnitude     =                                 sech(self.beta * T.^self.AM_power);
-            if self.GZavg.get() > 0
+            if self.GZavg > 0
                 gradient  = self.GZavg * (1 - self.GM_dip * sech(self.beta * T.^self.GM_power));
                 freq      = cumtrapz(self.time, magnitude.^2 ./ gradient);
             else
@@ -62,7 +62,7 @@ classdef HSn < mri_rf_pulse_sim.backend.rf_pulse.abstract
             % get phase from freq
             freq      = freq - mean(freq);              % center
             freq      = freq / max (freq);              % normalize
-            if self.GZavg.get() > 0
+            if self.GZavg > 0
                 freq  = freq .* gradient/max(gradient); % reshape
             end
             freq      = freq * self.bandwidth/2 * 2*pi; % scale

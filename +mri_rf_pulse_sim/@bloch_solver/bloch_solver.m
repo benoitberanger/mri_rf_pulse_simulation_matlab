@@ -376,7 +376,7 @@ classdef bloch_solver < handle & matlab.mixin.CustomCompactDisplayProvider
             figure('NumberTitle','off', 'Name',sprintf('FFT apprixmation : %s', class(self.rf_pulse)))
             hold on
             plot(freq, y_fft, 'DisplayName', 'FFT')
-            plot(self.B0.get()*self.DeltaB0.getScaled()*self.rf_pulse.gamma*1e-6/(2*pi), y_block, 'DisplayName', 'Bloch')
+            plot(self.B0*self.DeltaB0.getScaled()*self.rf_pulse.gamma*1e-6/(2*pi), y_block, 'DisplayName', 'Bloch')
             legend
             xlim([-self.rf_pulse.bandwidth +self.rf_pulse.bandwidth]*2)
         end % fcn

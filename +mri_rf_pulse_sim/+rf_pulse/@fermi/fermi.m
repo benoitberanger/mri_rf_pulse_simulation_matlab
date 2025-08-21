@@ -44,7 +44,7 @@ classdef fermi < mri_rf_pulse_sim.backend.rf_pulse.abstract
 
         function generate_fermi(self)
             self.time = linspace(-self.duration/2, +self.duration/2, self.n_points.get());
-            self.B1   = self.Af * exp(1j * 2*pi*self.frequency_offcet.get() * self.time) ./ ( 1 + exp((abs(self.time)-self.t0)/self.a) );
+            self.B1   = self.Af * exp(1j * 2*pi*self.frequency_offcet * self.time) ./ ( 1 + exp((abs(self.time)-self.t0)/self.a) );
             self.GZ   = ones(size(self.time)) * self.GZavg;
         end % fcn
 

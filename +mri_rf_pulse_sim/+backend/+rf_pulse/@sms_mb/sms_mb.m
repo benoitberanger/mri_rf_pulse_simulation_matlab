@@ -53,13 +53,13 @@ classdef (Abstract) sms_mb < handle
             % relative spatial position of the slice
             % mb3->[-1 0 1]
             % mb4->[-1.5 -0.5 +0.5 +1.5]
-            offset_vect = (1:self.n_slice.get()) - (self.n_slice.get()+1)/2;
+            offset_vect = (1:self.n_slice) - (self.n_slice+1)/2;
 
-            if self.rf_phase_scrambling.get()
+            if self.rf_phase_scrambling
                 phase_offsets = self.get_phase_offsets();
             end
 
-            if self.time_shifted.get()
+            if self.time_shifted
 
                 n_points_time_shifted = round(self.n_points * self.temporal_shift);
                 dilate_factor = (1 + self.temporal_shift*(self.n_slice-1));
@@ -69,7 +69,7 @@ classdef (Abstract) sms_mb < handle
 
                 % compute the phase modulaion : each slice has its own delta of central frequency.
                 for idx = 1 : length(offset_vect)
-                    if self.rf_phase_scrambling.get()
+                    if self.rf_phase_scrambling
                         mb_phase_modulation = exp(1j * (self.gamma * self.GZavg * self.slice_distance*offset_vect(idx) * self.time + phase_offsets(idx)));
                     else
                         mb_phase_modulation = exp(1j * 2*pi* self.band_seperation * offset_vect(idx) * self.time);
@@ -88,7 +88,7 @@ classdef (Abstract) sms_mb < handle
                 % compute the phase modulaion : each slice has its own delta of central frequency.
                 subpulse_b1 = zeros(self.n_slice.get(), self.n_points.get());
                 for idx = 1 : length(offset_vect)
-                    if self.rf_phase_scrambling.get()
+                    if self.rf_phase_scrambling
                         mb_phase_modulation = exp(1j * (self.gamma * self.GZavg * self.slice_distance*offset_vect(idx) * self.time + phase_offsets(idx)));
                     else
                         mb_phase_modulation = exp(1j * 2*pi* self.band_seperation * offset_vect(idx) * self.time);
@@ -133,7 +133,7 @@ classdef (Abstract) sms_mb < handle
                 [0, 4.126, 2.266, 0.957, 4.603, 0.815, 3.475, 0.9977, 1.449, 1.192, 0.148, 0.939, 22.531, 3.612, 4.8001] % 15
                 [0, 4.359, 3.5100, 4.410, 1.750, 3.357, 2.061, 5.9948, 3.000, 2.822, 0.627, 2.768, 33.875, 4.173, 4.2224, 5.941] % 16
                 };
-            if self.n_slice.get() <= length(offsets)
+            if self.n_slice <= length(offsets)
                 val = offsets{self.n_slice.get()};
             else
                 val = zeros(1,self.n_slice.get());
