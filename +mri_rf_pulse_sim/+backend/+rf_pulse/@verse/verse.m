@@ -109,13 +109,17 @@ classdef (Abstract) verse < handle
                     % results in a slew violation elsewhere in the
                     % waveform.
 
-                    ALPHA_MAX = 1.01;
+                    ALPHA_MAX = 1.10;
                     TOLERANCE = 1e-3;
+                    MAX_ITER = 1e3;
                     ITER = 0;
                     CONDITION = true;
 
-                    while CONDITION
+                    if self.GZavg == 0
+                        CONDITION = false;
+                    end
 
+                    while CONDITION && (ITER <= MAX_ITER)
                         ITER = ITER + 1;
 
                         %----------------------------------------------
@@ -196,6 +200,10 @@ classdef (Abstract) verse < handle
                         CONDITION = abs(max(abs(s)) - lim_s) > TOLERANCE;
 
                     end % WHILE
+
+                    if (ITER >= MAX_ITER)
+                        warning('[verse]: MAX_ITER reached !! Algorithm did not converge')
+                    end
 
                     need_interp = true;
 
