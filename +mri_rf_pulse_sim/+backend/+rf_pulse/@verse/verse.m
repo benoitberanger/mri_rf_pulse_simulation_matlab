@@ -3,6 +3,10 @@ classdef (Abstract) verse < handle
     % Variable-rate selective excitation, Journal of Magnetic Resonance
     % (1969), Volume 78, Issue 3, 1988, Pages 440-458, ISSN 0022-2364,
     % https://doi.org/10.1016/0022-2364(88)90131-X
+    %
+    % Hargreaves BA, Cunningham CH, Nishimura DG, Conolly SM. Variable-rate
+    % selective excitation for rapid MRI sequences. Magn Reson Med.
+    % 2004;52(3):590-597. doi:10.1002/mrm.20168
 
     properties (GetAccess = public, SetAccess = public)
         type     mri_rf_pulse_sim.ui_prop.list
@@ -109,10 +113,10 @@ classdef (Abstract) verse < handle
                     % results in a slew violation elsewhere in the
                     % waveform.
 
-                    ALPHA_MAX = 1.10;
-                    TOLERANCE = 1e-3;
-                    MAX_ITER = 1e3;
-                    ITER = 0;
+                    ALPHA_MAX = 1.10; % how much the waveform is modified at each step
+                    TOLERANCE = 1e-3; % tolerance between current and target max slew rate
+                    MAX_ITER  = 1e3;  % the procedure should converges in ~25 steps
+                    ITER      = 0;
                     CONDITION = true;
 
                     if self.GZavg == 0
@@ -218,8 +222,8 @@ classdef (Abstract) verse < handle
                 T0 = tv(1);
                 Tp = tv(N);
                 t  = linspace(T0,Tp,N);
-                b  = interp1(tv, b, t, 'linear');
-                g  = interp1(tv, g, t, 'linear');
+                b  = interp1(tv, b, t, 'spline');
+                g  = interp1(tv, g, t, 'spline');
             else
                 t = [self.time(1) cumsum(dt)];
             end

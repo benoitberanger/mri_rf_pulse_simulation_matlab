@@ -197,11 +197,11 @@ classdef scalar < mri_rf_pulse_sim.backend.base_class
                 rect = [0 0 1 1];
             end
 
-            scalars = fliplr(scalars);
-            spacing = 1/numel(scalars);
-            for s = 1 : length(scalars)
-                pos = mri_rf_pulse_sim.backend.gui.compose_rect([0 (s-1)*spacing 1 spacing],rect);
-                scalars(s).add_uicontrol(container, pos);
+            N = length(scalars);
+            spacing = 1/N;
+            for idx = 1:N
+                pos = mri_rf_pulse_sim.backend.gui.compose_rect([0 (N-idx)*spacing 1 spacing],rect);
+                scalars(idx).add_uicontrol(container, pos);
             end
         end % fcn
 
@@ -220,7 +220,7 @@ classdef scalar < mri_rf_pulse_sim.backend.base_class
 
         function postset_update(self, ~, ~)
             if ~ishandle(self.edit), return, end
-            
+
             new_value        = self.value;
             self.edit.String = num2str(new_value * self.scale);
 
