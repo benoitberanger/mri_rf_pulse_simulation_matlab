@@ -41,7 +41,7 @@ for i = 1 : N
     stats(i).tbwp         = SINC.tbwp.get();
     stats(i).B1max_uT     = SINC.B1max * 1e6; % T   -> µT
     stats(i).GZavg_mTm    = SINC.GZavg * 1e3; % T/m -> mT/m
-    stats(i).bandwidth_Hz = SINC.bandwidth;
+    stats(i).bandwidth_Hz = SINC.bandwidth.get();
 end
 
 

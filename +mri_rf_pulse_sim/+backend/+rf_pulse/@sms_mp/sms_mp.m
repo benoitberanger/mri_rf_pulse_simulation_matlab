@@ -31,7 +31,7 @@ classdef (Abstract) sms_mp < handle
         % constructor
         function self = sms_mp()
             self.slice_distance = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='slice_distance', value=6* 1e-3, unit='mm', scale=1e3);
-            self.gz_modulation    = mri_rf_pulse_sim.ui_prop.bool(parent=self, name='gz_modulation' , value=true, text='gz_modulation');
+            self.gz_modulation  = mri_rf_pulse_sim.ui_prop.bool  (parent=self, name='gz_modulation' , value=true, text='gz_modulation');
             self.shift          = mri_rf_pulse_sim.ui_prop.list  (parent=self, name='n_photon'      , value="Center+Left+Right", items=["Center" "Left" "Right" "Center+Left+Right"]);
             self.ac_factor      = mri_rf_pulse_sim.ui_prop.scalar(parent=self, name='ac_factor'     , value=1.5);
         end
@@ -41,7 +41,7 @@ classdef (Abstract) sms_mp < handle
                 self.GZ = self.GZ + sin(2*pi*self.band_seperation * self.time) * self.GZavg * self.ac_factor;
             end
 
-            switch self.shift
+            switch self.shift.get()
                 case "None"
                 case "Left"
                     self.B1 = self.get_shift("Left");

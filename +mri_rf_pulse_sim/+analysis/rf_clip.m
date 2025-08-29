@@ -7,22 +7,23 @@ function rf_clip()
 
 %% Parameters
 
-RECT = mri_rf_pulse_sim.rf_pulse.rect();
+PULSE = mri_rf_pulse_sim.rf_pulse.sinc();
+PULSE.n_side_lobs.set(2.6);
 
 % set parameters of the solver
 solver = mri_rf_pulse_sim.bloch_solver();
 n_dz = 301;
-solver.setPulse(RECT);
-solver.setSpatialPosition(linspace(-RECT.slice_thickness*2,+RECT.slice_thickness*2,n_dz));
+solver.setPulse(PULSE);
+solver.setSpatialPosition(linspace(-PULSE.slice_thickness*1.5,+PULSE.slice_thickness*1.5,n_dz));
 n_db0 = 301;
-target_ppm = 5;
+target_ppm = 10;
 solver.setDeltaB0(linspace(-target_ppm,+target_ppm,n_db0)*1e-6);
 solver.setB0(3.0);   % Tesla
 solver.setT1(0.800); % WM @ 3T
 solver.setT2(0.070); % WM @ 3T
 
 % Evaluate pulse shape and B1max (and check it's profile) with different durations
-vect = [2 4 6 8 10]; % ms
+vect = [2 3 4 5]; % ms
 duration_range = mri_rf_pulse_sim.ui_prop.range(name='duration', vect=vect*1e-3, unit='ms', scale=1e3);
 N = duration_range.N;
 
@@ -31,22 +32,26 @@ N = duration_range.N;
 
 % pre-allocation
 all_B1max          = zeros(                       1,N);
-all_pulse_time     = zeros(RECT.n_points.get()     ,N);
-all_pulse_shape    = zeros(RECT.n_points.get()     ,N);
+all_pulse_time     = zeros(PULSE.n_points.get()    ,N);
+all_pulse_shape    = zeros(PULSE.n_points.get()    ,N);
 all_slice_profile  = zeros(solver.SpatialPosition.N,N);
 all_chemical_shift = zeros(solver.DeltaB0        .N,N);
 colors = jet(N);
 
 % solve and store
 for i = 1 : N
-    RECT.duration.set(duration_range.vect(i));
-    RECT.generate();
+    PULSE.duration.set(duration_range.vect(i));
+    PULSE.generate();
     solver.solve();
-    all_B1max         (1,i) = RECT.B1max* 1e6; % T -> µT
-    all_pulse_time    (:,i) = RECT.time * 1e3; % s -> ms
-    all_pulse_shape   (:,i) = RECT.mag  * 1e6; % T -> µT
+    all_B1max         (1,i) = PULSE.B1max* 1e6; % T -> µT
+    all_pulse_time    (:,i) = PULSE.time * 1e3; % s -> ms
+    all_pulse_shape   (:,i) = PULSE.mag  * 1e6; % T -> µT
     all_slice_profile (:,i) = solver.getSliceProfilePerp();
     all_chemical_shift(:,i) = solver.getChemicalShiftPerp();
+end
+
+for i = 1 : N
+    all_pulse_time    (:,i) = all_pulse_time(:,i) - all_pulse_time(1,i);
 end
 
 
