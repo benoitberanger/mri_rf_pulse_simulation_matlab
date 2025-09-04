@@ -72,15 +72,15 @@ classdef DEMO_exc_ref < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.B1 = zeros(size(self.time));
             self.GZ = zeros(size(self.time));
 
-            self.B1(exc_idx) = exc__waveform;
-            self.GZ(exc_idx) = exc__grad;
+            self.B1(exc_idx) = self.B1(exc_idx) + exc__waveform;
+            self.GZ(exc_idx) = self.GZ(exc_idx) + exc__grad;
             if self.exc__SLR.gz_rewinder
                 [~,waveform_max_idx] = max(abs(exc__waveform));
                 asymmetry = 1 - (waveform_max_idx / length(exc__waveform));
-                self.GZ(rew_idx) = -exc__grad(1:sum(rew_idx)) * (asymmetry/0.5); % quick and dirty way to have correct phase
+                self.GZ(rew_idx) = self.GZ(rew_idx) -exc__grad(1:sum(rew_idx)) * (asymmetry/0.5); % quick and dirty way to have correct phase
             end
-            self.B1(ref_idx) = ref__waveform;
-            self.GZ(ref_idx) = ref__grad;
+            self.B1(ref_idx) = self.B1(ref_idx) + ref__waveform;
+            self.GZ(ref_idx) = self.GZ(ref_idx) + ref__grad;
 
             % prep crushers
             crusher_moment = self.crusher_dephasing / (self.gamma * self.exc__SLR.slice_thickness);
