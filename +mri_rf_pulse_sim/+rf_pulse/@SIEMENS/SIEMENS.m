@@ -58,7 +58,7 @@ classdef SIEMENS < mri_rf_pulse_sim.backend.rf_pulse.abstract
                 assert(exist(location, 'dir'), 'No `vendor/siemens` dir at the expected location : %s', location)
 
                 % fetch all files
-                self.file_list_struct = dir(fullfile(location, '**/*.dat'));
+                self.file_list_struct = [dir(fullfile(location, '**/*.dat')) ; dir(fullfile(location, '**/*.pls'))];
                 assert(~isempty(self.file_list_struct), 'no .dat file found in %s', location)
 
                 % prepare their name
