@@ -36,6 +36,17 @@ classdef HSn < mri_rf_pulse_sim.backend.rf_pulse.abstract
             self.generate_HSn();
         end % fcn
 
+        function setR(self, val)
+            self.R.set(val);
+            self.my_tbwp = self.R.get(); % hidden, internal value
+            self.Fsweep.set(self.R/self.duration/2);
+        end
+        function setFweep(self, val)
+            self.Fsweep.set(val);
+            self.R.set(self.Fsweep*2*self.duration);
+            self.my_tbwp = self.R.get(); % hidden, internal value
+        end
+
         function generate(self) % #abstract
             self.generate_HSn();
         end % fcn
